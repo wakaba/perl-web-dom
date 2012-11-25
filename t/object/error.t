@@ -36,6 +36,27 @@ test {
   done $c;
 } name => 'without message', n => 5;
 
+test {
+  my $c = shift;
+  my $error1 = create_error message => 'hoge',
+      file_name => 'path/to file', line_number => 120;
+  my $error2 = create_error message => 'hoge',
+      file_name => 'path/to file', line_number => 120;
+
+  ok $error1 eq $error1;
+  ok not $error1 ne $error1;
+  ok not $error2 eq $error1;
+  ok $error2 ne $error1;
+  ok $error1 ne undef;
+  ok not $error1 eq undef;
+  is $error1 cmp $error1, 0;
+  isnt $error1 cmp $error2, 0;
+
+  # XXX test unitinialized warning by eq/ne/cmp-ing with undef
+  
+  done $c;
+} name => 'eq', n => 8;
+
 run_tests;
 
 =head1 LICENSE

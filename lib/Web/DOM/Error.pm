@@ -1,7 +1,15 @@
 package Web::DOM::Error;
 use strict;
 use warnings;
-use overload '""' => \&_stringify, bool => sub { 1 }, fallback => 1;
+use Carp;
+use overload
+    '""' => \&_stringify, bool => sub { 1 },
+    cmp => sub {
+      carp "Use of uninitialized value in string comparison (cmp)"
+          unless defined $_[1];
+      overload::StrVal ($_[0]) cmp overload::StrVal ($_[1])
+    },
+    fallback => 1;
 our $VERSION = '1.0';
 
 ## Error
