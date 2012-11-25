@@ -1,0 +1,62 @@
+=head1 NAME
+
+Web::DOM::Implementation - The DOM |DOMImplementation| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Implementation> class implements the DOM
+C<DOMImplementation> interface.
+
+The C<DOMImplementation> object is returned by the C<implementation>
+method of the L<Web::DOM::Document> object.
+
+=head1 METHODS
+
+The class has following methods:
+
+=over 4
+
+=item $impl = Web::DOM::Implementation->new
+
+Create a new instance of the C<DOMImplementation> object.  This method
+is provided for some kind of compatibility and should not be used with
+newer applications.  Now that the L<Web::DOM::Document> class has the
+constructor, the constructor method of the L<Web::DOM::Implementation>
+class is useless. [DOMPERL]
+
+=back
+
+XXX
+
+=head1 SPECIFICATIONS
+
+=over 4
+
+=item DOM
+
+DOM Living Standard
+<http://dom.spec.whatwg.org/#interface-domimplementation>.
+
+=item DOMPERL
+
+manakai's DOM Perl Binding
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding$2233#anchor-37>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Document>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

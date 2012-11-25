@@ -51,11 +51,12 @@ test {
   ok not $error1 eq undef;
   is $error1 cmp $error1, 0;
   isnt $error1 cmp $error2, 0;
+  isnt $error1 . '', $error1;
 
   # XXX test unitinialized warning by eq/ne/cmp-ing with undef
   
   done $c;
-} name => 'eq', n => 8;
+} name => 'eq', n => 9;
 
 run_tests;
 

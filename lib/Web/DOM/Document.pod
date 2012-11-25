@@ -1,0 +1,50 @@
+=head1 NAME
+
+Web::DOM::Document - The DOM |Document| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Document> class implements the DOM C<Document>
+interface, which represents the document (either HTML or XML).
+
+=head1 METHODS
+
+=over 4
+
+=item $doc = new Web::DOM::Document
+
+Create a new document object. [DOM]
+
+=item $impl = $doc->implementation
+
+Return the L<Web::DOM::Implementation> object associated to the
+document. [DOM]
+
+=back
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOM
+
+DOM Living Standard <http://dom.spec.whatwg.org/#interface-document>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

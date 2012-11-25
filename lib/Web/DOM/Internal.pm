@@ -88,6 +88,16 @@ sub search ($$$) {
   };
 } # search
 
+sub impl ($) {
+  my $self = shift;
+  return $self->{impl} || do {
+    require Web::DOM::Implementation;
+    my $impl = bless \[$self], 'Web::DOM::Implementation';
+    weaken ($self->{impl} = $impl);
+    $impl;
+  };
+} # impl
+
 sub connect ($$$) {
   my ($self, $id => $parent_id) = @_;
   my @id = ($id);

@@ -1,0 +1,34 @@
+=head1 NAME
+
+Web::DOM::Node - The DOM |Node| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Node> class implements the DOM C<Node> interface.  The
+C<Web::DOM::Node> class is an abstract class.  It is used as
+subclasses such as C<Web::DOM::Element> and C<Web::DOM::Document>.
+
+=head1 METHODS
+
+XXX
+
+=head1 SPECIFICATION
+
+XXX
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

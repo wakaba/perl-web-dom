@@ -139,10 +139,12 @@ test {
   is $el1 cmp $el1, 0;
   isnt $el1 cmp $el2, 0;
 
+  isnt $el1 . '', $el1;
+
   # XXX test unitinialized warning by eq/ne/cmp-ing with undef
   
   done $c;
-} name => 'eq', n => 9;
+} name => 'eq', n => 10;
 
 test {
   my $c = shift;

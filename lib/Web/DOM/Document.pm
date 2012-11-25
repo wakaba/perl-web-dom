@@ -22,6 +22,10 @@ sub create_element ($$) {
   return $$self->[0]->node ($id);
 } # create_element
 
+sub implementation ($) {
+  return ${$_[0]}->[0]->impl;
+} # implementation
+
 1;
 
 =head1 LICENSE

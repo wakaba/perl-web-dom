@@ -17,6 +17,19 @@ test {
   done $c;
 } name => 'constructor', n => 3;
 
+test {
+  my $c = shift;
+
+  my $doc = new Web::DOM::Document;
+
+  my $impl = $doc->implementation;
+  isa_ok $impl, 'Web::DOM::Implementation';
+
+  is $doc->implementation, $impl;
+
+  done $c;
+} name => 'implementation', n => 2;
+
 run_tests;
 
 =head1 LICENSE
