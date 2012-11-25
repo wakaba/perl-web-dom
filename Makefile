@@ -30,3 +30,5 @@ test-deps: deps
 
 test-main:
 	$(PROVE) t/object/*.t
+
+## License: Public Domain.
