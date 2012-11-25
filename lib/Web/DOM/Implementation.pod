@@ -24,6 +24,17 @@ newer applications.  Now that the L<Web::DOM::Document> class has the
 constructor, the constructor method of the L<Web::DOM::Implementation>
 class is useless. [DOMPERL]
 
+=item $doc = $impl->create_document ($nsurl, $qname, $doctype)
+
+Create a new L<Web::DOM::XMLDocument>.  [DOM]
+
+If first and second arguments are specified, they are used as the
+namespace URL and the qualified name of the document element.  If they
+are not specified, an empty document is created.
+
+If the third argument is specified, it is used as the document type
+node of the document.
+
 =back
 
 XXX

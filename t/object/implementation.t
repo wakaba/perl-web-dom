@@ -87,6 +87,31 @@ test {
   done $c;
 } name => 'destroy', n => 2;
 
+test {
+  my $c = shift;
+
+  my $impl = new Web::DOM::Implementation;
+  my $doc = $impl->create_document;
+  
+  isa_ok $doc, 'Web::DOM::Document';
+  isa_ok $doc, 'Web::DOM::XMLDocument';
+
+  is $doc->node_type, $doc->DOCUMENT_NODE;
+  is $doc->first_child, undef;
+
+  is $doc->url, 'about:blank';
+  is $doc->document_uri, $doc->url;
+  is $doc->content_type, 'application/xml';
+  is $doc->character_set, 'utf-8';
+  is !!$doc->manakai_is_html, !!0;
+  is $doc->compat_mode, 'CSS1Compat';
+  is $doc->manakai_compat_mode, 'no quirks';
+
+  done $c;
+} name => 'create_document';
+
+# XXX create_document arguments tests
+
 run_tests;
 
 =head1 LICENSE

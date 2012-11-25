@@ -3,6 +3,8 @@ use strict;
 use warnings;
 our $VERSION = '1.0';
 use Carp;
+use Web::DOM::Node;
+use Web::DOM::Internal;
 
 use overload
     '""' => sub {
@@ -21,6 +23,34 @@ sub new ($) {
   my $doc = Web::DOM::Document->new;
   return $doc->implementation;
 } # new
+
+sub create_document ($;$$$) {
+  my ($self, $ns, $qn, $doctype) = @_;
+
+  # 1.
+  my $data = {node_type => DOCUMENT_NODE, is_XMLDocument => 1};
+  my $objs = Web::DOM::Internal::Objects->new;
+  my $id = $objs->add_data ($data);
+  $objs->{rc}->[$id]++;
+  my $doc = $objs->node ($id);
+
+  # 2.
+  my $el;
+
+  # 3.
+  if (defined $qn and length $qn) {
+    $el = $doc->create_element_ns ($ns, $qn); # or throw
+  }
+
+  # 4.
+  $doc->append_child ($doctype) if defined $doctype;
+
+  # 5.
+  $doc->append_child ($el) if defined $el;
+
+  # 6.
+  return $doc;
+} # create_document
 
 1;
 

@@ -63,13 +63,20 @@ sub node ($$) {
   my ($self, $id) = @_;
   return $self->{nodes}->[$id] || do {
     my $data = $self->{data}->[$id];
-    my $class = {
-      1 => 'Web::DOM::Element',
-      9 => 'Web::DOM::Document',
-      10 => 'Web::DOM::DocumentType',
-      11 => 'Web::DOM::DocumentFragment',
-    }->{$data->{node_type}};
-    # XXX Element subclasses
+    my $class;
+    my $nt = $data->{node_type};
+    if ($nt == 1) {
+      $class = 'Web::DOM::Element';
+      # XXX Element subclasses
+    } elsif ($nt == 9) {
+      $class = $data->{is_XMLDocument}
+          ? 'Web::DOM::XMLDocument' : 'Web::DOM::Document';
+    } else {
+      $class = {
+        10 => 'Web::DOM::DocumentType',
+        11 => 'Web::DOM::DocumentFragment',
+      }->{$nt};
+    }
     eval qq{ require $class } or die $@;
     my $node = bless \[$self, $id, $data], $class;
     weaken ($self->{nodes}->[$id] = $node);

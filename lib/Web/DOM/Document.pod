@@ -9,16 +9,51 @@ interface, which represents the document (either HTML or XML).
 
 =head1 METHODS
 
+In addition to the methods of the L<Web::DOM::Node> class, following
+methods are available:
+
 =over 4
 
 =item $doc = new Web::DOM::Document
 
 Create a new document object. [DOM]
 
+=item $string = $doc->content_type
+
+Return the MIME type of the document.  [DOM]
+
+=item $bool = $doc->manakai_is_html
+
+=item $doc->manakai_is_html ($bool)
+
+Get or set whether the document is an HTML document or not.  [MANAKAI]
+
+=item $string = $doc->character_set
+
+Return the encoding of the document.  [DOM]
+
+=item $string = $doc->url
+
+=item $string = $doc->document_uri
+
+Return the URL of the document.  [DOM]
+
+=item $string = $doc->compat_mode
+
+Return C<BackComat> if the document is in the quirks mode, or
+C<CSS1Compat> otherwise.  [DOM]
+
+=item $string = $doc->manakai_compat_mode
+
+=item $doc->manakai_compat_mode ($string)
+
+Get or set the mode of the document.  The value can be one of:
+C<no quirks>, C<limited quirks>, and C<quirks>.  [MANAKAI]
+
 =item $impl = $doc->implementation
 
 Return the L<Web::DOM::Implementation> object associated to the
-document. [DOM]
+document.  [DOM]
 
 =back
 
@@ -29,6 +64,11 @@ document. [DOM]
 =item DOM
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-document>.
+
+=item manakai
+
+manakai's DOM Extension - C<Document> extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Document%20Extensions>.
 
 =back
 

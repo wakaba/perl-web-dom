@@ -11,11 +11,21 @@ test {
   
   my $doc = new Web::DOM::Document;
   isa_ok $doc, 'Web::DOM::Document';
+  ok not $doc->isa ('Web::DOM::XMLDocument');
+
   is $doc->node_type, $doc->DOCUMENT_NODE;
   is $doc->local_name, undef;
 
+  is $doc->url, 'about:blank';
+  is $doc->document_uri, $doc->url;
+  is $doc->content_type, 'application/xml';
+  is $doc->character_set, 'utf-8';
+  is !!$doc->manakai_is_html, !!0;
+  is $doc->compat_mode, 'CSS1Compat';
+  is $doc->manakai_compat_mode, 'no quirks';
+
   done $c;
-} name => 'constructor', n => 3;
+} name => 'constructor', n => 11;
 
 test {
   my $c = shift;
@@ -29,6 +39,78 @@ test {
 
   done $c;
 } name => 'implementation', n => 2;
+
+test {
+  my $c = shift;
+  
+  my $doc = new Web::DOM::Document;
+
+  my $doc2 = $doc->implementation->create_document;
+  is $doc2->can ('manakai_is_html') ? 1 : 0, 1, "can manakai_is_html";
+  is $doc2->can ('compat_mode') ? 1 : 0, 1, "can compat_mode";
+  is $doc2->can ('manakai_compat_mode') ? 1 : 0, 1, "can manakai_compat_mode";
+  is $doc2->manakai_is_html ? 1 : 0, 0, "manakai_is_html [0]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [0]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [0]';
+
+  $doc2->manakai_compat_mode ('quirks');
+  is $doc2->manakai_is_html ? 1 : 0, 0, "manakai_is_html [1]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [1]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [1]';
+
+  $doc2->manakai_compat_mode ('limited quirks');
+  is $doc2->manakai_is_html ? 1 : 0, 0, "manakai_is_html [2]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [2]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [2]';
+
+  $doc2->manakai_compat_mode ('no quirks');
+  is $doc2->manakai_is_html ? 1 : 0, 0, "manakai_is_html [3]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [3]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [3]';
+
+  $doc2->manakai_compat_mode ('bogus');
+  is $doc2->manakai_is_html ? 1 : 0, 0, "manakai_is_html [4]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [4]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [4]';
+
+  $doc2->manakai_is_html (1);
+  is $doc2->manakai_is_html ? 1 : 0, 1, "manakai_is_html [5]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [5]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [5]';
+
+  $doc2->manakai_compat_mode ('quirks');
+  is $doc2->manakai_is_html ? 1 : 0, 1, "manakai_is_html [6]";
+  is $doc2->compat_mode, 'BackCompat', 'compat_mode [6]';
+  is $doc2->manakai_compat_mode, 'quirks', 'manakai_compat_mode [6]';
+
+  $doc2->manakai_compat_mode ('limited quirks');
+  is $doc2->manakai_is_html ? 1 : 0, 1, "manakai_is_html [7]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [7]';
+  is $doc2->manakai_compat_mode, 'limited quirks', 'manakai_compat_mode [7]';
+
+  $doc2->manakai_compat_mode ('no quirks');
+  is $doc2->manakai_is_html ? 1 : 0, 1, "manakai_is_html [8]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [8]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [8]';
+
+  $doc2->manakai_compat_mode ('bogus');
+  is $doc2->manakai_is_html ? 1 : 0, 1, "manakai_is_html [9]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [9]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [9]';
+
+  $doc2->manakai_compat_mode ('quirks');
+  $doc2->manakai_is_html (0);
+  is $doc2->manakai_is_html ? 1 : 0, 0, "manakai_is_html [10]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [10]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [10]';
+
+  $doc2->manakai_is_html (1);
+  is $doc2->manakai_is_html ? 1 : 0, 1, "manakai_is_html [11]";
+  is $doc2->compat_mode, 'CSS1Compat', 'compat_mode [11]';
+  is $doc2->manakai_compat_mode, 'no quirks', 'manakai_compat_mode [11]';
+
+  done $c;
+} name => 'html mode', n => 39;
 
 run_tests;
 
