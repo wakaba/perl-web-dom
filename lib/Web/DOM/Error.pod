@@ -32,6 +32,12 @@ Return the file name of the location of the error. [DOMPERL]
 Return the line number, in the file, of the location of the
 error. [DOMPERL]
 
+=item $string = '' . $error
+
+Stringifying the error object returns the error message with its
+location in the Perl standard format (i.e. C<Error message at
+path/to/script.pl line 123.\n>).
+
 =back
 
 =head1 SPECIFICATION
