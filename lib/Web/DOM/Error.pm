@@ -1,7 +1,15 @@
 package Web::DOM::Error;
 use strict;
 use warnings;
+our $VERSION = '1.0';
 use Carp;
+
+## Error
+##   <http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding$2233#anchor-54>
+##   (Modeled on: JavaScript Error object
+##      <http://people.mozilla.org/~jorendorff/es6-draft.html#sec-15.11>
+##      <http://suika.fam.cx/~wakaba/wiki/sw/n/Error$19086>)
+
 use overload
     '""' => \&_stringify, bool => sub { 1 },
     cmp => sub {
@@ -10,13 +18,6 @@ use overload
       overload::StrVal ($_[0]) cmp overload::StrVal ($_[1])
     },
     fallback => 1;
-our $VERSION = '1.0';
-
-## Error
-##   <http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding$2233#anchor-54>
-##   (Modeled on: JavaScript Error object
-##      <http://people.mozilla.org/~jorendorff/es6-draft.html#sec-15.11>
-##      <http://suika.fam.cx/~wakaba/wiki/sw/n/Error$19086>)
 
 sub name ($) { 'Error' }
 sub file_name ($) { $_[0]->{file_name} }
