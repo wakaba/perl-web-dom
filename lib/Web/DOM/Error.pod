@@ -1,0 +1,63 @@
+=head1 NAME
+
+Web::DOM::Error - The base class for errors
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Error> object represents an error or exception in the
+Web platform.
+
+=head1 METHODS
+
+Following methods are available:
+
+=over 4
+
+=item $string = $error->name
+
+Return the name of the error, e.g. C<TimeoutError>. [DOMPERL]
+
+=item $string = $error->message
+
+Return a message describing the error.  This message can be used for
+debugging purpose.  Applications should not rely on the value return
+ed by this method. [DOMPERL]
+
+=item $string = $error->file_name
+
+Return the file name of the location of the error. [DOMPERL]
+
+=item $number = $error->line_number
+
+Return the line number, in the file, of the location of the
+error. [DOMPERL]
+
+=back
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOMPERL
+
+manakai's DOM Perl Binding - Exceptions and errors
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding$2233#anchor-54>.
+
+=back
+
+=head1 SEE ALSO
+
+The class L<Web::DOM::Exception> derived from this class.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

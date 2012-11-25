@@ -1,0 +1,52 @@
+=head1 NAME
+
+Web::DOM::Exception - The DOM |DOMException| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Exception> class implements the DOM C<DOMException>
+interface.
+
+=head1 METHODS
+
+The C<Web::DOM::Exception> class inherits from C<Web::DOM::Error>.  In
+addition, it defines following method:
+
+=over 4
+
+=item $code = $error->code
+
+Return the error code.  This method is considered depreacated and the
+C<name> method should be used instead. [DOM]
+
+=back
+
+=head1 CONSTANTS
+
+This class exports several constants for error codes, but they are now
+considered useless in favor of C<name> method taking string error
+names.
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOM
+
+DOM Living Standard - Exception C<DOMException>
+<http://dom.spec.whatwg.org/#exception-domexception>.
+
+=back
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
