@@ -35,9 +35,22 @@ are not specified, an empty document is created.
 If the third argument is specified, it is used as the document type
 node of the document.
 
-=back
+=item $doc = $impl->create_html_document ($title)
 
-XXX
+Create a new HTML document (L<Web::DOM::Document>).  If the argument
+is specified, it is used as the title of the document.  [DOM]
+
+=item $dt = $impl->create_document_type ($qname, $pubid, $sysid)
+
+Create a new document type node (L<Web::DOM::DocumentType>) with the
+specified name, public identifier, and system identifier.  [DOM]
+
+=item $bool = $impl->has_feature ($feature, $version)
+
+Return whether the specified SVG feature is supported or not.  [DOM]
+[SVG]
+
+=back
 
 =head1 SPECIFICATIONS
 
@@ -52,6 +65,12 @@ DOM Living Standard
 
 manakai's DOM Perl Binding
 <http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding$2233#anchor-37>.
+
+=item SVG
+
+SVG - Feature Strings
+<https://svgwg.org/svg2-draft/single-page.html#chapter-feature>,
+<https://svgwg.org/svg2-draft/single-page.html#svgdom-FeatureStrings>.
 
 =back
 

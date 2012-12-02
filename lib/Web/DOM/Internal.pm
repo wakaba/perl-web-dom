@@ -1,6 +1,20 @@
 package Web::DOM::Internal;
 use strict;
 use warnings;
+use Exporter::Lite;
+
+our @EXPORT;
+
+my $Text = {};
+
+sub text ($$) {
+  return defined $_[1] ? $Text->{$_[1]} ||= \(''.$_[1]) : undef;
+} # text
+
+push @EXPORT, qw(HTML_NS XML_NS XMLNS_NS);
+sub HTML_NS () { q<http://www.w3.org/1999/xhtml> }
+sub XML_NS () { q<http://www.w3.org/XML/1998/namespace> }
+sub XMLNS_NS () { q<http://www.w3.org/2000/xmlns/> }
 
 ## Internal data structure for DOM tree.
 ##
@@ -59,6 +73,14 @@ sub add_data ($$) {
 ## Its the reference to the reference, not just the reference, to
 ## allow overloading of |@{}| and |%{}| in some kinds of nodes.
 
+my $NodeClassByNodeType = {
+  3 => 'Web::DOM::Text',
+  7 => 'Web::DOM::ProcessingInstruction',
+  8 => 'Web::DOM::Comment',
+  10 => 'Web::DOM::DocumentType',
+  11 => 'Web::DOM::DocumentFragment',
+};
+
 sub node ($$) {
   my ($self, $id) = @_;
   return $self->{nodes}->[$id] || do {
@@ -72,10 +94,7 @@ sub node ($$) {
       $class = $data->{is_XMLDocument}
           ? 'Web::DOM::XMLDocument' : 'Web::DOM::Document';
     } else {
-      $class = {
-        10 => 'Web::DOM::DocumentType',
-        11 => 'Web::DOM::DocumentFragment',
-      }->{$nt};
+      $class = $NodeClassByNodeType->{$nt};
     }
     eval qq{ require $class } or die $@;
     my $node = bless \[$self, $id, $data], $class;

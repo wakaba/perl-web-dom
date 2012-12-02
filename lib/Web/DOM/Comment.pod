@@ -1,0 +1,40 @@
+=head1 NAME
+
+Web::DOM::Comment - The DOM |Comment| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Comment> class implements the DOM C<Comment>
+interface.
+
+=head1 METHODS
+
+Methods of the L<Web::DOM::Node> class and the
+L<Web::DOM::CharacterData> class are available.
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOM
+
+DOM Living Standard <http://dom.spec.whatwg.org/#interface-comment>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

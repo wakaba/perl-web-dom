@@ -15,9 +15,10 @@ test {
   isa_ok $doc, 'Web::DOM::XMLDocument';
   isa_ok $doc, 'Web::DOM::Document';
   is $doc->node_type, $doc->DOCUMENT_NODE;
+  is $doc->owner_document, undef;
 
   done $c;
-} name => 'basic', n => 3;
+} name => 'basic', n => 4;
 
 run_tests;
 

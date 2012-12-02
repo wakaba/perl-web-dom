@@ -1,0 +1,52 @@
+=head1 NAME
+
+Web::DOM::CharacterData - The DOM |CharacterData| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::CharacterData> class implements the DOM
+C<CharacterData> interface.
+
+=head1 METHODS
+
+In addition to the methods of the L<Web::DOM::Node> class, following
+methods are available:
+
+=over 4
+
+=item $text = $node->data
+
+=item $node->data ($text)
+
+Get or set the text data of the node.  [DOM]
+
+=back
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOM
+
+DOM Living Standard
+<http://dom.spec.whatwg.org/#interface-characterdata>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>, L<Web::DOM::Text>, L<Web::DOM::CDATASection>,
+L<Web::DOM::Comment>, and L<Web::DOM::ProcessingInstruction>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

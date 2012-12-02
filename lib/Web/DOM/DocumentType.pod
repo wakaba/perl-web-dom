@@ -1,0 +1,57 @@
+=head1 NAME
+
+Web::DOM::DocumentType - The DOM |DocumentType| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::DocumentType> class implements the DOM C<DocumentType>
+interface.
+
+=head1 METHODS
+
+In addition to the methods of the L<Web::DOM::Node> class, following
+methods are available:
+
+=over 4
+
+=item $name = $dt->name
+
+Return the name of the document type.  [DOM]
+
+=item $id = $dt->public_id
+
+Return the public identifier of the document type.  [DOM]
+
+=item $id = $dt->system_id
+
+Return the system identifier of the document type.  [DOM]
+
+=back
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOM
+
+DOM Living Standard
+<http://dom.spec.whatwg.org/#interface-documenttype>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

@@ -18,25 +18,9 @@ methods are available:
 
 Create a new document object. [DOM]
 
-=item $string = $doc->content_type
-
-Return the MIME type of the document.  [DOM]
-
-=item $bool = $doc->manakai_is_html
-
-=item $doc->manakai_is_html ($bool)
-
-Get or set whether the document is an HTML document or not.  [MANAKAI]
-
 =item $string = $doc->character_set
 
 Return the encoding of the document.  [DOM]
-
-=item $string = $doc->url
-
-=item $string = $doc->document_uri
-
-Return the URL of the document.  [DOM]
 
 =item $string = $doc->compat_mode
 
@@ -50,10 +34,47 @@ C<CSS1Compat> otherwise.  [DOM]
 Get or set the mode of the document.  The value can be one of:
 C<no quirks>, C<limited quirks>, and C<quirks>.  [MANAKAI]
 
+=item $string = $doc->content_type
+
+Return the MIME type of the document.  [DOM]
+
+=item $el = $doc->create_element ($local_name)
+
+Create a new element in the HTML namespace (L<Web::DOM::HTMLElement>).
+[DOM]
+
+=item $el = $doc->create_element_ns ($nsurl, $qname)
+
+Create a new element (L<Web::DOM::Element>) with specified namespace
+URL and qualified name.  [DOM]
+
+=item $text = $doc->create_text_node ($data)
+
+Create a new text node (L<Web::DOM::Text>) with the given character
+string.  [DOM]
+
+=item $pi = $doc->create_processing_instruction ($target, $data)
+
+Create a new processing instruction node
+(L<Web::DOM::ProcessingInstruction>) with the specified target and
+data.  [DOM]
+
 =item $impl = $doc->implementation
 
 Return the L<Web::DOM::Implementation> object associated to the
 document.  [DOM]
+
+=item $bool = $doc->manakai_is_html
+
+=item $doc->manakai_is_html ($bool)
+
+Get or set whether the document is an HTML document or not.  [MANAKAI]
+
+=item $string = $doc->url
+
+=item $string = $doc->document_uri
+
+Return the URL of the document.  [DOM]
 
 =back
 

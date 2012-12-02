@@ -2,8 +2,10 @@ use strict;
 use warnings;
 use Path::Class;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', '*', 'lib')->stringify;
+use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'lib')->stringify;
 use Test::X1;
 use Test::More;
+use Test::DOM::Exception;
 use Web::DOM::Exception;
 
 test {
@@ -17,7 +19,7 @@ test {
 test {
   my $c = shift;
 
-  eval { _throw Web::DOM::Exception
+  dies_here_ok { _throw Web::DOM::Exception
              'TimeoutError', 'Something timeouted' };
   my $e = $@;
   isa_ok $e, 'Web::DOM::Exception';
@@ -30,12 +32,12 @@ test {
       (__LINE__ - 10) . ".\n";
 
   done $c;
-} n => 7, name => 'throw and basic attributes';
+} n => 8, name => 'throw and basic attributes';
 
 test {
   my $c = shift;
 
-  eval { _throw Web::DOM::Exception
+  dies_here_ok { _throw Web::DOM::Exception
              'EncodingError', 'Some encoding error' };
   my $e = $@;
   is $e->name, 'EncodingError';
@@ -49,7 +51,7 @@ test {
   is $e->TYPE_MISMATCH_ERR, 17;
 
   done $c;
-} n => 8, name => 'Error name has no corresponding code';
+} n => 9, name => 'Error name has no corresponding code';
 
 run_tests;
 

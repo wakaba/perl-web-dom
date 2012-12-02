@@ -10,11 +10,83 @@ subclasses such as C<Web::DOM::Element> and C<Web::DOM::Document>.
 
 =head1 METHODS
 
-XXX
+=over 4
+
+=item $string = $node->node_name
+
+Return the name of the node.  [DOM] [DOM3] [DOMDTDEF] [MANAKAI]
+
+=item $number = $node->node_type
+
+Return the constant number representing the type of the node.  [DOM]
+[DOM3] [DOMDTDEF] [MANAKAI]
+
+=item $text = $node->node_value
+
+=item $node->node_value ($text)
+
+Get or set the value of the node.  For L<Web::DOM::CharacterData>
+objects, this is equivalent to the C<data> method.  For
+L<Web::DOM::Attr> objects, this is equivalent to the C<value> method.
+For other kinds of nodes, this method has no effect.  [DOM] [MANAKAI]
+
+=item $node = $node->owner_document
+
+Return the node document, i.e. the document the node belongs to,
+except for the document node, fot which the C<undef> value is
+returned.  [DOM]
+
+=back
+
+Following methods are also available: C<prefix>, C<namespace_uri>,
+C<local_name>, and C<manakai_local_name>.  [MANAKAI]
+
+=head1 CONSTANTS
+
+Constants are exported from the L<Web::DOM::Node> module by default.
+In addition, they are accessible as methods of C<Node> objects.
+
+=over 4
+
+=item Node type constants
+
+Following constants are defined for the C<node_type> attribute:
+
+ELEMENT_NODE ATTRIBUTE_NODE TEXT_NODE CDATA_SECTION_NODE
+ENTITY_REFERENCE_NODE ENTITY_NODE PROCESSING_INSTRUCTION_NODE
+COMMENT_NODE DOCUMENT_NODE DOCUMENT_TYPE_NODE DOCUMENT_FRAGMENT_NODE
+NOTATION_NODE [DOM] [DOM3]
+
+XPATH_NAMESPACE_NODE [DOMXPATH]
+
+ELEMENT_TYPE_DEFINITION_NODE ATTRIBUTE_DEFINITION_NODE [DOMDTDEF]
+
+=back
 
 =head1 SPECIFICATION
 
-XXX
+=over 4
+
+=item DOM
+
+DOM Living Standard <http://dom.spec.whatwg.org/#interface-document>.
+
+=item DOMXPATH
+
+Document Object Model XPath
+<http://www.w3.org/TR/DOM-Level-3-XPath/xpath.html>.
+
+=item DOMDTDEF
+
+DOM Document Type Definition Module
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef-work>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Extensions>.
+
+=back
 
 =head1 SEE ALSO
 

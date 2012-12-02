@@ -1,0 +1,72 @@
+=head1 NAME
+
+Web::DOM::Element - The DOM |Element| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Element> class implements the DOM C<Element>
+interface.
+
+=head1 METHODS
+
+In addition to the methods of the L<Web::DOM::Node> class, following
+methods are available:
+
+=over 4
+
+=item $name = $el->local_name
+
+Return the local name of the element.  [DOM]
+
+=item $name = $el->manakai_local_name
+
+Return the local name of the element.  This method is deprecated in
+favor of C<local_name>. [MANAKAI]
+
+=item $url = $el->namespace_uri
+
+Return the namespace URL of the element.  [DOM]
+
+=item $prefix = $el->prefix
+
+Return the namespace prefix of the element, if any, or C<undef>.
+[DOM]
+
+=item $name = $el->tag_name
+
+Return the tag name of the element.  [DOM]
+
+=back
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOM
+
+DOM Living Standard
+<http://dom.spec.whatwg.org/#interface-documenttype>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Node%20Extensions>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
