@@ -20,8 +20,9 @@ Return the name of the error, e.g. C<TimeoutError>.  [DOMPERL]
 =item $string = $error->message
 
 Return a message describing the error.  This message can be used for
-debugging purpose.  Applications should not rely on the value return
-ed by this method.  [DOMPERL]
+debugging purpose.  The value returned by this method is
+implementation-dependent.  Applications should not rely on the value
+returned by this method.  [DOMPERL]
 
 =item $string = $error->file_name
 

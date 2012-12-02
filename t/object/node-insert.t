@@ -47,19 +47,28 @@ for my $method (qw(append_child insert_before)) {
     $doc->create_processing_instruction ('hoge', 'fuga'),
     $doc->implementation->create_document_type ('aa', '', ''),
   ) {
-    test {
-      my $c = shift;
-      my $node2 = $doc->create_element ('el');
-      dies_here_ok {
-        $parent->$method ($node2);
-      };
-      isa_ok $@, 'Web::DOM::Exception';
-      is $@->name, 'HierarchyRequestError';
-      is $@->message, 'The parent node cannot have a child';
-      is scalar @{$parent->child_nodes}, 0;
-      is $node2->parent_node, undef;
-      done $c;
-    } n => 6, name => [$method, $parent->node_type, 'bad parent'];
+    for my $node2 (
+      $doc->create_element ('el'),
+      new Web::DOM::Document,
+      $doc->implementation->create_document_type ('a', '', ''),
+      $doc->create_text_node ('a'),
+      $doc->create_comment ('hoge'),
+      $doc->create_processing_instruction ('hoge', 'fuga'),
+      $doc->create_document_fragment,
+    ) {
+      test {
+        my $c = shift;
+        dies_here_ok {
+          $parent->$method ($node2);
+        };
+        isa_ok $@, 'Web::DOM::Exception';
+        is $@->name, 'HierarchyRequestError';
+        is $@->message, 'The parent node cannot have a child';
+        is scalar @{$parent->child_nodes}, 0;
+        is $node2->parent_node, undef;
+        done $c;
+      } n => 6, name => [$method, $parent->node_type, $node2->node_type, 'bad parent'];
+    }
   }
 }
 
@@ -205,17 +214,34 @@ for my $method (qw(insert_before append_child)) {
   my $doc = new Web::DOM::Document;
   for my $node (
     $doc->create_text_node ('hoge'),
-    new Web::DOM::Document,
   ) {
     test {
       my $c = shift;
-      
+
       dies_here_ok {
         $doc->$method ($node);
       };
       isa_ok $@, 'Web::DOM::Exception';
       is $@->name, 'HierarchyRequestError';
       is $@->message, 'Document node cannot contain this kind of node';
+      is scalar @{$doc->child_nodes}, 0;
+      is $node->parent_node, undef;
+      done $c;
+    } n => 6, name => [$method, $node->node_type, 'cannot be a document node child'];
+  }
+
+  for my $node (
+    new Web::DOM::Document,
+  ) {
+    test {
+      my $c = shift;
+
+      dies_here_ok {
+        $doc->$method ($node);
+      };
+      isa_ok $@, 'Web::DOM::Exception';
+      is $@->name, 'HierarchyRequestError';
+      is $@->message, 'The parent cannot contain this kind of node';
       is scalar @{$doc->child_nodes}, 0;
       is $node->parent_node, undef;
       done $c;
@@ -237,7 +263,7 @@ for my $method (qw(insert_before append_child)) {
     };
     isa_ok $@, 'Web::DOM::Exception';
     is $@->name, 'HierarchyRequestError';
-    is $@->message, 'Document node cannot have two element childs';
+    is $@->message, 'Document node cannot have two element children';
     is scalar @{$doc->child_nodes}, 0;
     is $el1->parent_node, $df;
     is $el2->parent_node, $df;
@@ -285,14 +311,86 @@ for my $method (qw(insert_before append_child)) {
     };
     isa_ok $@, 'Web::DOM::Exception';
     is $@->name, 'HierarchyRequestError';
-    is $@->message, 'Document node cannot have two element childs';
+    is $@->message, 'Document node cannot have two element children';
 
     is scalar @{$doc->child_nodes}, 1;
     is scalar @{$df->child_nodes}, 1;
     is $el2->parent_node, $df;
     done $c;
   } n => 7, name => [$method, 'multiple document elements'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $dt1 = $doc->implementation->create_document_type ('a', '', '');
+    my $dt2 = $doc->implementation->create_document_type ('a', '', '');
+    $doc->append_child ($dt1);
+    dies_here_ok {
+      $doc->$method ($dt2);
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'HierarchyRequestError';
+    is $@->message, 'Document node cannot have two doctype children';
+    is scalar @{$doc->child_nodes}, 1;
+    is $dt1->parent_node, $doc;
+    is $dt2->parent_node, undef;
+    done $c;
+  } n => 7, name => [$method, 'multiple doctype'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $dt = $doc->implementation->create_document_type ('a', '', '');
+    my $el = $doc->create_element ('a');
+    $doc->append_child ($el);
+    dies_here_ok {
+      $doc->$method ($dt);
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'HierarchyRequestError';
+    is $@->message, 'Element cannot precede the document type';
+    is scalar @{$doc->child_nodes}, 1;
+    is $el->parent_node, $doc;
+    is $dt->parent_node, undef;
+    done $c;
+  } n => 7, name => [$method, 'element before doctype'];
 }
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('a', '', '');
+  my $pi = $doc->create_processing_instruction ('b', '', '');
+  my $el = $doc->create_element ('a');
+  $doc->append_child ($el);
+  $doc->append_child ($pi);
+  dies_here_ok {
+    $doc->insert_before ($dt, $pi);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'Element cannot precede the document type';
+  is scalar @{$doc->child_nodes}, 2;
+  is $el->parent_node, $doc;
+  is $dt->parent_node, undef;
+  done $c;
+} n => 7, name => ['insert_before', 'element before doctype'];
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('a', '', '');
+  my $pi = $doc->create_processing_instruction ('b', '', '');
+  my $el = $doc->create_element ('a');
+  $doc->append_child ($el);
+  $doc->append_child ($pi);
+  $doc->insert_before ($dt, $el);
+  is scalar @{$doc->child_nodes}, 3;
+  is $el->parent_node, $doc;
+  is $dt->parent_node, $doc;
+  is $doc->first_child, $dt;
+  done $c;
+} n => 4, name => ['insert_before', 'element after doctype'];
 
 test {
   my $c = shift;
@@ -354,11 +452,11 @@ for my $method (qw(append_child insert_before)) {
     };
     isa_ok $@, 'Web::DOM::Exception';
     is $@->name, 'HierarchyRequestError';
-    is $@->message, 'Document node cannot have two element childs';
+    is $@->message, 'Document node cannot have two element children';
     is scalar @{$doc->child_nodes}, 1;
     is $el2->parent_node, undef;
     done $c;
-  } n => 6, name => [$method, 'multiple document element childs'];
+  } n => 6, name => [$method, 'multiple document element children'];
 }
 
 test {
@@ -445,7 +543,6 @@ for my $method (qw(append_child insert_before)) {
   ) {
     for my $child (
       new Web::DOM::Document,
-      $doc->implementation->create_document_type ('hoge', '', ''),
     ) {
       test {
         my $c = shift;
@@ -455,6 +552,23 @@ for my $method (qw(append_child insert_before)) {
         isa_ok $@, 'Web::DOM::Exception';
         is $@->name, 'HierarchyRequestError';
         is $@->message, 'The parent cannot contain this kind of node';
+        is scalar @{$parent->child_nodes}, 0;
+        is $child->parent_node, undef;
+        done $c;
+      } n => 6, name => [$method, $parent->node_type, $child->node_type, 'parent/child error'];
+    }
+
+    for my $child (
+      $doc->implementation->create_document_type ('hoge', '', ''),
+    ) {
+      test {
+        my $c = shift;
+        dies_here_ok {
+          $parent->$method ($child);
+        };
+        isa_ok $@, 'Web::DOM::Exception';
+        is $@->name, 'HierarchyRequestError';
+        is $@->message, 'Document type cannot be contained by this kind of node';
         is scalar @{$parent->child_nodes}, 0;
         is $child->parent_node, undef;
         done $c;

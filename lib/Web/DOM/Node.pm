@@ -149,17 +149,40 @@ sub insert_before ($$$) {
     }
   }
 
-  # 4.
   my $node_nt = $$node->[2]->{node_type};
+  if ($node_nt == TEXT_NODE) {
+    # 5.
+    if ($parent_nt == DOCUMENT_NODE) {
+      _throw Web::DOM::Exception 'HierarchyRequestError',
+          'Document node cannot contain this kind of node';
+    }
+  } elsif ($node_nt == DOCUMENT_TYPE_NODE) {
+    # 5.
+    if ($parent_nt != DOCUMENT_NODE) {
+      _throw Web::DOM::Exception 'HierarchyRequestError',
+          'Document type cannot be contained by this kind of node';
+    }
+  } elsif ($node_nt == DOCUMENT_FRAGMENT_NODE or
+           $node_nt == ELEMENT_NODE or
+           $node_nt == PROCESSING_INSTRUCTION_NODE or
+           $node_nt == COMMENT_NODE) {
+    #
+  } else {
+    # 4.
+    _throw Web::DOM::Exception 'HierarchyRequestError',
+        'The parent cannot contain this kind of node';
+  }
+
+  # 6.
   if ($parent_nt == DOCUMENT_NODE) {
     if ($node_nt == ELEMENT_NODE) {
-      # 4.3.
+      # 6.2.
       my $has_child;
       for (@{$$parent->[2]->{child_nodes}}) {
         my $data = $$parent->[0]->{data}->[$_];
         if ($data->{node_type} == ELEMENT_NODE) {
           _throw Web::DOM::Exception 'HierarchyRequestError',
-              'Document node cannot have two element childs';
+              'Document node cannot have two element children';
         } elsif (defined $child and $_ == $$child->[1]) {
           $has_child = 1;
         }
@@ -169,33 +192,48 @@ sub insert_before ($$$) {
               'Element cannot precede the document type';
         }
       }
+    } elsif ($node_nt == DOCUMENT_TYPE_NODE) {
+      # 6.3.
+      my $has_child;
+      my $has_element;
+      for (@{$$parent->[2]->{child_nodes}}) {
+        my $data = $$parent->[0]->{data}->[$_];
+        if (defined $child and $_ == $$child->[1]) {
+          $has_child = 1;
+        }
+        if ($data->{node_type} == ELEMENT_NODE and not $has_child) {
+          _throw Web::DOM::Exception 'HierarchyRequestError',
+              'Element cannot precede the document type';
+        } elsif ($data->{node_type} == DOCUMENT_TYPE_NODE) {
+          _throw Web::DOM::Exception 'HierarchyRequestError',
+              'Document node cannot have two doctype children';
+        }
+      }
     } elsif ($node_nt == DOCUMENT_FRAGMENT_NODE) {
-      # 4.2.
+      # 6.1.1.
       my $has_element;
       for (@{$$node->[2]->{child_nodes}}) {
         my $data = $$node->[0]->{data}->[$_];
         if ($data->{node_type} == ELEMENT_NODE) {
-          # 4.2.1.
           if ($has_element) {
             _throw Web::DOM::Exception 'HierarchyRequestError',
-                'Document node cannot have two element childs';
+                'Document node cannot have two element children';
           }
           $has_element = 1;
         } elsif ($data->{node_type} == TEXT_NODE) {
-          # 4.2.1.
           _throw Web::DOM::Exception 'HierarchyRequestError',
               'Document node cannot contain this kind of node';
         }
       }
 
-      # 4.2.2.
+      # 6.1.2.
       if ($has_element) {
         my $has_child;
         for (@{$$parent->[2]->{child_nodes}}) {
           my $data = $$parent->[0]->{data}->[$_];
           if ($data->{node_type} == ELEMENT_NODE) {
             _throw Web::DOM::Exception 'HierarchyRequestError',
-                'Document node cannot have two element childs';
+                'Document node cannot have two element children';
           } elsif (defined $child and $_ == $$child->[1]) {
             $has_child = 1;
           }
@@ -206,28 +244,10 @@ sub insert_before ($$$) {
           }
         }
       }
-    } elsif ($node_nt == DOCUMENT_TYPE_NODE or
-             $node_nt == PROCESSING_INSTRUCTION_NODE or
-             $node_nt == COMMENT_NODE) {
-      #
-    } else {
-      # 4.1.
-      _throw Web::DOM::Exception 'HierarchyRequestError',
-          'Document node cannot contain this kind of node';
-    }
-  } else { # not Document
-    # 5.
-    unless ($node_nt == DOCUMENT_FRAGMENT_NODE or
-            $node_nt == ELEMENT_NODE or
-            $node_nt == TEXT_NODE or
-            $node_nt == PROCESSING_INSTRUCTION_NODE or
-            $node_nt == COMMENT_NODE){
-      _throw Web::DOM::Exception 'HierarchyRequestError',
-          'The parent cannot contain this kind of node';
     }
   }
 
-  # 6.-7.
+  # 7.-8.
   my $insert_position = 0;
   if (defined $child) {
     for (0..$#{$$parent->[2]->{child_nodes}}) {
@@ -253,7 +273,7 @@ sub insert_before ($$$) {
     }
   }
   
-  # 8. adopt
+  # 9. adopt
   {
     # Adopt 1.
     if ($$node->[2]->{node_type} == ELEMENT_NODE) {
@@ -284,7 +304,7 @@ sub insert_before ($$$) {
     # XXX adopt
   } # adopt
 
-  # 9. insert
+  # 10. insert
   {
     # Insert 1.
     #
@@ -346,6 +366,7 @@ sub insert_before ($$$) {
     }
   } # insert
 
+  # 11.
   return $node;
 } # insert_before
 
