@@ -244,7 +244,21 @@ test {
   isa_ok $doc, 'Web::DOM::Document';
   is $doc->first_child, undef;
   done $c;
-} n => 2, name => 'empty element name';
+} n => 2, name => 'create_document / empty element name';
+
+test {
+  my $c = shift;
+  my $doc1 = Web::DOM::Document->new;
+  my $el = $doc1->create_element ('hoge');
+  dies_here_ok {
+    $doc1->implementation->create_document (undef, undef, $el);
+  };
+  isa_ok $@, 'Web::DOM::TypeError';
+  is $@->message, 'Third argument is not a DocumentType';
+  done $c;
+} n => 3, name => 'create_document / doctype not a doctype';
+
+# XXX create_document doctype tests
 
 test {
   my $c = shift;

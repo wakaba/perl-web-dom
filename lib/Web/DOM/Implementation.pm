@@ -3,9 +3,11 @@ use strict;
 use warnings;
 our $VERSION = '1.0';
 use Carp;
-our @CARP_NOT = qw(Web::DOM::Document);
+our @CARP_NOT = qw(Web::DOM::Document Web::DOM::TypeError);
 use Web::DOM::Node;
 use Web::DOM::Internal;
+use Web::DOM::TypeError;
+use Web::DOM::Exception;
 use Char::Class::XML qw(
   InXMLNameChar InXMLNameStartChar
   InXMLNCNameChar InXMLNCNameStartChar
@@ -32,7 +34,11 @@ sub new ($) {
 sub create_document ($;$$$) {
   my ($self, $ns, $qn, $doctype) = @_;
 
-# XXX TypeError
+  # WebIDL
+  if (defined $doctype and
+      not UNIVERSAL::isa ($doctype, 'Web::DOM::DocumentType')) {
+    _throw Web::DOM::TypeError 'Third argument is not a DocumentType';
+  }
 
   # 1.
   my $data = {node_type => DOCUMENT_NODE, is_XMLDocument => 1};

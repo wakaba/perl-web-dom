@@ -17,7 +17,7 @@ addition, it defines following method:
 =item $code = $error->code
 
 Return the error code.  This method is considered depreacated and the
-C<name> method should be used instead. [DOM]
+C<name> method should be used instead.  [DOM]
 
 =back
 

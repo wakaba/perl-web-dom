@@ -7,9 +7,6 @@ our $VERSION = '1.0';
 use Carp;
 use Exporter::Lite;
 
-## DOMException
-##   <http://dom.spec.whatwg.org/#exception-domexception>
-
 sub INDEX_SIZE_ERR () { 1 }
 sub DOMSTRING_SIZE_ERR () { 2 }
 sub HIERARCHY_REQUEST_ERR () { 3 }
@@ -92,3 +89,12 @@ sub code ($) {
 } # code
 
 1;
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

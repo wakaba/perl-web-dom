@@ -15,28 +15,28 @@ Following methods are available:
 
 =item $string = $error->name
 
-Return the name of the error, e.g. C<TimeoutError>. [DOMPERL]
+Return the name of the error, e.g. C<TimeoutError>.  [DOMPERL]
 
 =item $string = $error->message
 
 Return a message describing the error.  This message can be used for
 debugging purpose.  Applications should not rely on the value return
-ed by this method. [DOMPERL]
+ed by this method.  [DOMPERL]
 
 =item $string = $error->file_name
 
-Return the file name of the location of the error. [DOMPERL]
+Return the file name of the location of the error.  [DOMPERL]
 
 =item $number = $error->line_number
 
-Return the line number, in the file, of the location of the
-error. [DOMPERL]
+Return the line number, in the file, of the location of the error.
+[DOMPERL]
 
 =item $string = '' . $error
 
 Stringifying the error object returns the error message with its
 location in the Perl standard format (i.e. C<Error message at
-path/to/script.pl line 123.\n>).
+path/to/script.pl line 123.\n>).  [DOMPERL]
 
 =back
 
@@ -53,7 +53,12 @@ manakai's DOM Perl Binding - Exceptions and errors
 
 =head1 SEE ALSO
 
-The class L<Web::DOM::Exception> derived from this class.
+Classes L<Web::DOM::Exception> and L<Web::DOM::TypeError> derive from
+this class.
+
+JavaScript Error object
+<http://people.mozilla.org/~jorendorff/es6-draft.html#sec-15.11>,
+<http://suika.fam.cx/~wakaba/wiki/sw/n/Error$19086>.
 
 =head1 AUTHOR
 
