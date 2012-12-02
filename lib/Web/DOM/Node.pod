@@ -12,6 +12,14 @@ subclasses such as C<Web::DOM::Element> and C<Web::DOM::Document>.
 
 =over 4
 
+=item $child = $node->append_child ($child)
+
+Append the specified node to the list of child nodes.  [DOM]
+
+=item $child = $node->insert_before ($child, $ref_child)
+
+Insert the specified node just after the specified node.  [DOM]
+
 =item $string = $node->node_name
 
 Return the name of the node.  [DOM] [DOM3] [DOMDTDEF] [MANAKAI]
