@@ -96,23 +96,41 @@ sub append_child ($$) {
     _throw Web::DOM::TypeError 'The first argument is not a Node';
   }
 
-  # appending
-  # pre-insert
-  return $_[0]->insert_before ($_[1], undef);
+  # append
+  {
+    # pre-insert
+    return $_[0]->_pre_insert ($_[1]);
+  }
 } # append_child
 
 sub insert_before ($$$) {
-  my ($parent, $node, $child) = @_;
-  
   # WebIDL
-  unless (UNIVERSAL::isa ($node, 'Web::DOM::Node')) {
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {
     _throw Web::DOM::TypeError 'The first argument is not a Node';
   }
-  if (defined $child and not UNIVERSAL::isa ($child, 'Web::DOM::Node')) {
+  if (defined $_[2] and not UNIVERSAL::isa ($_[2], 'Web::DOM::Node')) {
     _throw Web::DOM::TypeError 'The second argument is not a Node';
   }
 
-  # pre-insert
+  return $_[0]->_pre_insert ($_[1], $_[2]);
+} # insert_before
+
+sub replace_child ($$$) {
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {
+    _throw Web::DOM::TypeError 'The first argument is not a Node';
+  }
+  unless (UNIVERSAL::isa ($_[2], 'Web::DOM::Node')) {
+    _throw Web::DOM::TypeError 'The second argument is not a Node';
+  }
+
+  return $_[0]->_pre_insert ($_[1], undef, $_[2]);
+} # replace_child
+
+sub _pre_insert ($$;$$) {
+  my ($parent, $node, $child, $old_child) = @_;
+
+  # pre-insert / replace
   my $parent_nt = $$parent->[2]->{node_type};
 
   # 1.
@@ -177,36 +195,66 @@ sub insert_before ($$$) {
   if ($parent_nt == DOCUMENT_NODE) {
     if ($node_nt == ELEMENT_NODE) {
       # 6.2.
-      my $has_child;
-      for (@{$$parent->[2]->{child_nodes}}) {
-        my $data = $$parent->[0]->{data}->[$_];
-        if ($data->{node_type} == ELEMENT_NODE) {
-          _throw Web::DOM::Exception 'HierarchyRequestError',
-              'Document node cannot have two element children';
-        } elsif (defined $child and $_ == $$child->[1]) {
-          $has_child = 1;
+      if (defined $old_child) { # replace
+        my $has_child;
+        for (@{$$parent->[2]->{child_nodes}}) {
+          my $data = $$parent->[0]->{data}->[$_];
+          if ($$old_child->[0] eq $$parent->[0] and $$old_child->[1] == $_) {
+            $has_child = 1;
+          } elsif ($data->{node_type} == ELEMENT_NODE) {
+            _throw Web::DOM::Exception 'HierarchyRequestError',
+                'Document node cannot have two element children';
+          } elsif ($has_child and $data->{node_type} == DOCUMENT_TYPE_NODE) {
+            _throw Web::DOM::Exception 'HierarchyRequestError',
+                'Element cannot precede the document type';
+          }
         }
-        if ($has_child and
-            $$parent->[0]->{data}->[$_]->{node_type} == DOCUMENT_TYPE_NODE) {
-          _throw Web::DOM::Exception 'HierarchyRequestError',
-              'Element cannot precede the document type';
+      } else { # pre-insert
+        my $has_child;
+        for (@{$$parent->[2]->{child_nodes}}) {
+          my $data = $$parent->[0]->{data}->[$_];
+          if ($data->{node_type} == ELEMENT_NODE) {
+            _throw Web::DOM::Exception 'HierarchyRequestError',
+                'Document node cannot have two element children';
+          } elsif (defined $child and $_ == $$child->[1]) {
+            $has_child = 1;
+          }
+          if ($has_child and $data->{node_type} == DOCUMENT_TYPE_NODE) {
+            _throw Web::DOM::Exception 'HierarchyRequestError',
+                'Element cannot precede the document type';
+          }
         }
       }
     } elsif ($node_nt == DOCUMENT_TYPE_NODE) {
       # 6.3.
-      my $has_child;
-      my $has_element;
-      for (@{$$parent->[2]->{child_nodes}}) {
-        my $data = $$parent->[0]->{data}->[$_];
-        if (defined $child and $_ == $$child->[1]) {
-          $has_child = 1;
+      if (defined $old_child) { # replace
+        my $has_child;
+        for (@{$$parent->[2]->{child_nodes}}) {
+          my $data = $$parent->[0]->{data}->[$_];
+          if ($$old_child->[0] eq $$parent->[0] and $$old_child->[1] == $_) {
+            $has_child = 1;
+          } elsif ($data->{node_type} == DOCUMENT_TYPE_NODE) {
+            _throw Web::DOM::Exception 'HierarchyRequestError',
+                'Document node cannot have two doctype children';
+          } elsif ($data->{node_type} == ELEMENT_NODE and not $has_child) {
+            _throw Web::DOM::Exception 'HierarchyRequestError',
+                'Element cannot precede the document type';
+          }
         }
-        if ($data->{node_type} == ELEMENT_NODE and not $has_child) {
-          _throw Web::DOM::Exception 'HierarchyRequestError',
-              'Element cannot precede the document type';
-        } elsif ($data->{node_type} == DOCUMENT_TYPE_NODE) {
-          _throw Web::DOM::Exception 'HierarchyRequestError',
-              'Document node cannot have two doctype children';
+      } else { # pre-insert
+        my $has_child;
+        for (@{$$parent->[2]->{child_nodes}}) {
+          my $data = $$parent->[0]->{data}->[$_];
+          if (defined $child and $_ == $$child->[1]) {
+            $has_child = 1;
+          }
+          if ($data->{node_type} == ELEMENT_NODE and not $has_child) {
+            _throw Web::DOM::Exception 'HierarchyRequestError',
+                'Element cannot precede the document type';
+          } elsif ($data->{node_type} == DOCUMENT_TYPE_NODE) {
+            _throw Web::DOM::Exception 'HierarchyRequestError',
+                'Document node cannot have two doctype children';
+          }
         }
       }
     } elsif ($node_nt == DOCUMENT_FRAGMENT_NODE) {
@@ -228,19 +276,34 @@ sub insert_before ($$$) {
 
       # 6.1.2.
       if ($has_element) {
-        my $has_child;
-        for (@{$$parent->[2]->{child_nodes}}) {
-          my $data = $$parent->[0]->{data}->[$_];
-          if ($data->{node_type} == ELEMENT_NODE) {
-            _throw Web::DOM::Exception 'HierarchyRequestError',
-                'Document node cannot have two element children';
-          } elsif (defined $child and $_ == $$child->[1]) {
-            $has_child = 1;
+        if (defined $old_child) { # replace
+          my $has_child;
+          for (@{$$parent->[2]->{child_nodes}}) {
+            my $data = $$parent->[0]->{data}->[$_];
+            if ($$old_child->[0] eq $$parent->[0] and $$old_child->[1] == $_) {
+              $has_child = 1;
+            } elsif ($data->{node_type} == ELEMENT_NODE) {
+              _throw Web::DOM::Exception 'HierarchyRequestError',
+                  'Document node cannot have two element children';
+            } elsif ($has_child and $data->{node_type} == DOCUMENT_TYPE_NODE) {
+              _throw Web::DOM::Exception 'HierarchyRequestError',
+                  'Element cannot precede the document type';
+            }
           }
-          if ($has_child and
-              $$parent->[0]->{data}->[$_]->{node_type} == DOCUMENT_TYPE_NODE) {
-            _throw Web::DOM::Exception 'HierarchyRequestError',
-                'Element cannot precede the document type';
+        } else { # pre-insert
+          my $has_child;
+          for (@{$$parent->[2]->{child_nodes}}) {
+            my $data = $$parent->[0]->{data}->[$_];
+            if ($data->{node_type} == ELEMENT_NODE) {
+              _throw Web::DOM::Exception 'HierarchyRequestError',
+                  'Document node cannot have two element children';
+            } elsif (defined $child and $_ == $$child->[1]) {
+              $has_child = 1;
+            }
+            if ($has_child and $data->{node_type} == DOCUMENT_TYPE_NODE) {
+              _throw Web::DOM::Exception 'HierarchyRequestError',
+                  'Element cannot precede the document type';
+            }
           }
         }
       }
@@ -249,10 +312,12 @@ sub insert_before ($$$) {
 
   # 7.-8.
   my $insert_position = 0;
-  if (defined $child) {
+  if (defined $child or # pre-insert (insertBefore)
+      defined $old_child) { # replace
+    my $child_id = defined $child ? $$child->[1] : $$old_child->[1];
     for (0..$#{$$parent->[2]->{child_nodes}}) {
       my $id = $$parent->[2]->{child_nodes}->[$_];
-      if ($id == $$child->[1]) {
+      if ($id == $child_id) {
         $insert_position += $_;
         last;
       } elsif ($$node->[0] eq $$parent->[0] and $id == $$node->[1]) {
@@ -262,7 +327,7 @@ sub insert_before ($$$) {
         $insert_position--;
       }
     }
-  } else {
+  } else { # pre-insert (appendChild)
     $insert_position = @{$$parent->[2]->{child_nodes} or []};
     if ($$node->[0] eq $$parent->[0] and
         defined $$node->[2]->{parent_node} and
@@ -304,8 +369,33 @@ sub insert_before ($$$) {
     # XXX adopt
   } # adopt
 
-  # 10. insert
+  # Replace 10. remove ("suppress observers flag" set)
+  if (defined $old_child) {
+    # Remove 1.
+    #
+
+    # Remove 2.-5.
+    # XXX range
+    
+    # Remove 6.
+    #
+
+    # Remove 7.
+    # XXX mutation
+
+    # Remove 8.
+    splice @{$$parent->[2]->{child_nodes}}, $insert_position, 1, ();
+    delete $$old_child->[2]->{parent_node};
+    $$old_child->[0]->disconnect ($$old_child->[1]);
+    
+    # Remove 9.
+    #
+  } # remove
+
+  # Pre-insert 10. / Replace 11. insert
   {
+    # XXX "suppress observers flag" is set if it's replace.
+
     # Insert 1.
     #
 
@@ -366,9 +456,20 @@ sub insert_before ($$$) {
     }
   } # insert
 
-  # 11.
+  if (defined $old_child) {
+    # Replace 12.
+    # XXX $nodes = $node is df ? $node->child_nodes : $node
+    
+    # Replace 13.
+    # XXX mutation
+
+    # Replace 14.
+    # XXX node is removed / node is inserted
+  }
+
+  # Pre-insert 11. / Replace 15.
   return $node;
-} # insert_before
+} # _insert
 
 sub first_child ($) {
   my $self = shift;

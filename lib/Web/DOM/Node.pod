@@ -44,6 +44,12 @@ Return the node document, i.e. the document the node belongs to,
 except for the document node, fot which the C<undef> value is
 returned.  [DOM]
 
+=item $new_child = $node->replace_child ($new_child, $ref_child)
+
+Replace the specified child node by a new node.  The first argument is
+the new child node.  The second argument is the current child node,
+which is to be replaced.  The new child node is returned.  [DOM]
+
 =back
 
 Following methods are also available: C<prefix>, C<namespace_uri>,

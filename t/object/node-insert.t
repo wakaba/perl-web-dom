@@ -15,6 +15,20 @@ for my $method (qw(append_child insert_before)) {
     
     my $node = $doc->create_element ('el');
     dies_here_ok {
+      $node->$method (undef);
+    };
+    isa_ok $@, 'Web::DOM::TypeError';
+    is $@->message, 'The first argument is not a Node';
+    is scalar @{$node->child_nodes}, 0;
+    done $c;
+  } n => 4, name => [$method, 'child typeerror'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $node = $doc->create_element ('el');
+    dies_here_ok {
       $node->$method ('hoge');
     };
     isa_ok $@, 'Web::DOM::TypeError';
