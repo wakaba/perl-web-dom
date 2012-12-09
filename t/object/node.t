@@ -257,6 +257,202 @@ test {
   done $c;
 } name => 'destroy', n => 4;
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  is $doc->parent_node, undef;
+  is $doc->parent_element, undef;
+
+  done $c;
+} n => 2, name => 'parent_node, parent_element no parent';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  is $el->parent_node, undef;
+  is $el->parent_element, undef;
+
+  done $c;
+} n => 2, name => 'parent_node, parent_element no parent';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $doc->append_child ($el);
+
+  is $el->parent_node, $doc;
+  is $el->parent_element, undef;
+
+  done $c;
+} n => 2, name => 'parent_node, parent_element parent is doc';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  
+  $el1->append_child ($el2);
+
+  is $el2->parent_node, $el1;
+  is $el2->parent_element, $el1;
+
+  done $c;
+} n => 2, name => 'parent_node, parent_element has element parent';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  ok not $el->has_child_nodes;
+  
+  done $c;
+} n => 1, name => 'has_child_nodes empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  $el->append_child ($el2);
+  ok $el->has_child_nodes;
+  
+  done $c;
+} n => 1, name => 'has_child_nodes not empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
+  my $el = $doc->create_element ('a');
+  is $el->first_child, undef;
+  is $el->last_child, undef;
+
+  done $c;
+} n => 2, name => 'first_child/last_child no child';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_text_node ('b');
+  $el->append_child ($el2);
+
+  is $el->first_child, $el2;
+  is $el->last_child, $el2;
+
+  done $c;
+} n => 2, name => 'first_child/last_child only child';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_text_node ('b');
+  my $el3 = $doc->create_text_node ('b');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+
+  is $el->first_child, $el2;
+  is $el->last_child, $el3;
+
+  done $c;
+} n => 2, name => 'first_child/last_child two children';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_text_node ('b');
+  my $el3 = $doc->create_text_node ('b');
+  my $el4 = $doc->create_text_node ('b');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el->append_child ($el4);
+
+  is $el->first_child, $el2;
+  is $el->last_child, $el4;
+
+  done $c;
+} n => 2, name => 'first_child/last_child three children';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  is $el->previous_sibling, undef;
+  is $el->next_sibling, undef;
+  
+  done $c;
+} n => 2, name => 'previous_sibling/next_sibling no parent';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  $el->append_child ($el2);
+
+  is $el2->previous_sibling, undef;
+  is $el2->next_sibling, undef;
+  
+  done $c;
+} n => 2, name => 'previous_sibling/next_sibling only child';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  my $el3 = $doc->create_element ('b');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+
+  is $el2->previous_sibling, undef;
+  is $el2->next_sibling, $el3;
+
+  is $el3->previous_sibling, $el2;
+  is $el3->next_sibling, undef;
+  
+  done $c;
+} n => 4, name => 'previous_sibling/next_sibling one of two children';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  my $el3 = $doc->create_element ('b');
+  my $el4 = $doc->create_element ('b');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el->append_child ($el4);
+
+  is $el2->previous_sibling, undef;
+  is $el2->next_sibling, $el3;
+
+  is $el3->previous_sibling, $el2;
+  is $el3->next_sibling, $el4;
+
+  is $el4->previous_sibling, $el3;
+  is $el4->next_sibling, undef;
+  
+  done $c;
+} n => 6, name => 'previous_sibling/next_sibling one of three children';
+
 run_tests;
 
 =head1 LICENSE

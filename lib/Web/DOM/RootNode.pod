@@ -1,0 +1,58 @@
+=head1 NAME
+
+Web::DOM::RootNode - The DOM |RootNode| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::RootNode> class implements the DOM C<RootNode>
+interface.  The C<Web::DOM::RootNode> class is an abstract class.  It
+is used as subclasses such as C<Web::DOM::Element> and
+C<Web::DOM::Document>.
+
+=head1 METHODS
+
+=over 4
+
+=item $number = $node->child_element_count
+
+Return the number of child elements.  [DOM]
+
+=item $child = $node->first_element_child
+
+Return the first element child of the node.  If there is no such node,
+C<undef> is returned.  [DOM]
+
+=item $child = $node->last_element_child
+
+Return the last element child of the node.  If there is no such node,
+C<undef> is returned.  [DOM]
+
+=back
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOM
+
+DOM Living Standard <http://dom.spec.whatwg.org/#interface-rootnode>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Element>, L<Web::DOM::Document>,
+L<Web::DOM::DocumentFragment>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

@@ -82,13 +82,74 @@ sub parent_node ($) {
   return $$self->[0]->node ($pid);
 } # parent_node
 
-# XXX family methods
+sub parent_element ($) {
+  my $self = shift;
+  my $pid = $$self->[2]->{parent_node};
+  return undef unless defined $pid;
+  my $node = $$self->[0]->node ($pid);
+  return undef unless $node->node_type == ELEMENT_NODE;
+  return $node;
+} # parent_element
 
 sub child_nodes ($) {
   # XXX
   my $self = shift;
   return [map { $$self->[0]->node ($_) } @{$$self->[2]->{child_nodes}}];
 } # child_nodes
+
+sub has_child_nodes ($) {
+  return !!@{${$_[0]}->[2]->{child_nodes} or []};
+} # has_child_nodes
+
+sub first_child ($) {
+  my $self = shift;
+  my $id = $$self->[2]->{child_nodes}->[0];
+  return undef unless defined $id;
+  return $$self->[0]->node ($id);
+} # first_child
+
+sub last_child ($) {
+  my $self = shift;
+  my $id = $$self->[2]->{child_nodes}->[-1];
+  return undef unless defined $id;
+  return $$self->[0]->node ($id);
+} # last_child
+
+sub previous_sibling ($) {
+  my $self = shift;
+  my $parent_id = $$self->[2]->{parent_node};
+  return undef unless defined $parent_id;
+  my $self_id = $$self->[1];
+  my $children = $$self->[0]->{data}->[$parent_id]->{child_nodes};
+  for (0..$#$children) {
+    if ($children->[$_] == $self_id) {
+      if ($_ == 0) {
+        return undef;
+      } else {
+        return $$self->[0]->node ($children->[$_ - 1]);
+      }
+    }
+  }
+  die "This node is not a child of the parent node";
+} # previous_sibling
+
+sub next_sibling ($) {
+  my $self = shift;
+  my $parent_id = $$self->[2]->{parent_node};
+  return undef unless defined $parent_id;
+  my $self_id = $$self->[1];
+  my $children = $$self->[0]->{data}->[$parent_id]->{child_nodes};
+  for (0..$#$children) {
+    if ($children->[$_] == $self_id) {
+      if ($_ == $#$children) {
+        return undef;
+      } else {
+        return $$self->[0]->node ($children->[$_ + 1]);
+      }
+    }
+  }
+  die "This node is not a child of the parent node";
+} # next_sibling
 
 sub append_child ($$) {
   # WebIDL
@@ -470,20 +531,6 @@ sub _pre_insert ($$;$$) {
   # Pre-insert 11. / Replace 15.
   return $node;
 } # _insert
-
-sub first_child ($) {
-  my $self = shift;
-  my $id = $$self->[2]->{child_nodes}->[0];
-  return undef unless $id;
-  return $$self->[0]->node ($id);
-} # first_child
-
-sub last_child ($) {
-  my $self = shift;
-  my $id = $$self->[2]->{child_nodes}->[-1];
-  return undef unless $id;
-  return $$self->[0]->node ($id);
-} # last_child
 
 sub remove_child ($$) {
   my ($parent, $child) = @_;

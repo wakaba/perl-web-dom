@@ -3,7 +3,8 @@ use strict;
 use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
-push our @ISA, qw(Web::DOM::Node);
+use Web::DOM::RootNode;
+push our @ISA, qw(Web::DOM::Node Web::DOM::RootNode);
 use Web::DOM::Internal;
 use Web::DOM::Exception;
 use Char::Class::XML qw(

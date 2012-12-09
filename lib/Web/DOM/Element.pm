@@ -3,7 +3,9 @@ use strict;
 use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
-push our @ISA, qw(Web::DOM::Node);
+use Web::DOM::RootNode;
+use Web::DOM::ChildNode;
+push our @ISA, qw(Web::DOM::Node Web::DOM::RootNode Web::DOM::ChildNode);
 
 *node_name = \&tag_name;
 
