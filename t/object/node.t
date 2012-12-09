@@ -326,6 +326,29 @@ test {
   done $c;
 } n => 1, name => 'has_child_nodes not empty';
 
+{
+  my $doc = new Web::DOM::Document;
+  for my $node (
+    $doc,
+    $doc->create_element ('a'),
+    $doc->create_text_node ('b'),
+    $doc->create_comment ('c'),
+    $doc->create_processing_instruction ('d', 'e'),
+    $doc->implementation->create_document_type ('f', '', ''),
+    $doc->create_document_fragment,
+  ) {
+    test {
+      my $c = shift;
+
+      my $nl = $node->child_nodes;
+      isa_ok $nl, 'Web::DOM::NodeList';
+      is scalar @$nl, 0;
+      
+      done $c;
+    } n => 2, name => ['child_nodes empty', $node->node_type];
+  }
+}
+
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;

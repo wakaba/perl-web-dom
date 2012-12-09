@@ -16,6 +16,11 @@ subclasses such as C<Web::DOM::Element> and C<Web::DOM::Document>.
 
 Append the specified node to the list of child nodes.  [DOM]
 
+=item $node_list = $node->child_nodes
+
+Return the live list, i.e. L<Web::DOM::NodeList>, of the child nodes
+of the node.  [DOM]
+
 =item $child = $node->first_child
 
 Return the first child node of the node.  If there is no child,

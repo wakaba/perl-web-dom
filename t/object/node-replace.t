@@ -797,4 +797,26 @@ test {
   done $c;
 } n => 2, name => 'replace return df';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('a');
+  my $df = $doc->create_document_fragment;
+  my $el3 = $doc->create_element ('a');
+  my $el4 = $doc->create_element ('a');
+  $el1->append_child ($el2);
+  $df->append_child ($el3);
+  $df->append_child ($el4);
+
+  my $nl = $el1->child_nodes;
+  is scalar @$nl, 1;
+
+  $el1->replace_child ($df, $el2);
+
+  is scalar @$nl, 2;
+
+  done $c;
+} n => 2, name => 'replace_child parent child_nodes';
+
 run_tests;

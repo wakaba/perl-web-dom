@@ -83,25 +83,35 @@ my $NodeClassByNodeType = {
 
 sub node ($$) {
   my ($self, $id) = @_;
-  return $self->{nodes}->[$id] || do {
-    my $data = $self->{data}->[$id];
-    my $class;
-    my $nt = $data->{node_type};
-    if ($nt == 1) {
-      $class = 'Web::DOM::Element';
-      # XXX Element subclasses
-    } elsif ($nt == 9) {
-      $class = $data->{is_XMLDocument}
-          ? 'Web::DOM::XMLDocument' : 'Web::DOM::Document';
-    } else {
-      $class = $NodeClassByNodeType->{$nt};
-    }
-    eval qq{ require $class } or die $@;
-    my $node = bless \[$self, $id, $data], $class;
-    weaken ($self->{nodes}->[$id] = $node);
-    $node;
-  };
+  return $self->{nodes}->[$id] if $self->{nodes}->[$id];
+
+  my $data = $self->{data}->[$id];
+  my $class;
+  my $nt = $data->{node_type};
+  if ($nt == 1) {
+    $class = 'Web::DOM::Element';
+    # XXX Element subclasses
+  } elsif ($nt == 9) {
+    $class = $data->{is_XMLDocument}
+        ? 'Web::DOM::XMLDocument' : 'Web::DOM::Document';
+  } else {
+    $class = $NodeClassByNodeType->{$nt};
+  }
+  eval qq{ require $class } or die $@;
+  my $node = bless \[$self, $id, $data], $class;
+  weaken ($self->{nodes}->[$id] = $node);
+  return $node;
 } # node
+
+sub child_nodes ($$) {
+  my ($self, $id) = @_;
+  return $self->{child_nodes}->[$id] if $self->{child_nodes}->[$id];
+  my $node = $self->node ($id);
+  require Web::DOM::NodeList;
+  my $nl = bless \[$node], 'Web::DOM::NodeList';
+  weaken ($self->{child_nodes}->[$id] = $nl);
+  return $nl;
+} # child_nodes
 
 ## The |HTMLCollection| for ... XXX
 
@@ -168,9 +178,7 @@ sub DESTROY ($) {
   {
     local $@;
     eval { die };
-    if ($@ =~ /during global destruction/) {
-      warn "Detected (possibly) memory leak";
-    }
+    warn "Potential memory leak detected" if $@ =~ /during global destruction/;
   }
 } # DESTROY
 

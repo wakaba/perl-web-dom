@@ -1091,6 +1091,54 @@ for my $method (qw(append_child insert_before)) {
   } n => 6, name => [$method, 'df - df self'];
 }
 
+for my $method (qw(append_child insert_before)) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el1 = $doc->create_element ('a');
+    my $el2 = $doc->create_element ('a');
+    my $el3 = $doc->create_element ('a');
+    $el1->append_child ($el2);
+
+    my $nl = $el1->child_nodes;
+    is scalar @$nl, 1;
+
+    my $nl2 = $el3->child_nodes;
+    is scalar @$nl2, 0;
+
+    $el3->$method ($el2);
+
+    is scalar @$nl, 0;
+    is scalar @$nl2, 1;
+
+    done $c;
+  } n => 4, name => [$method, 'parent child_nodes'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el1 = $doc->create_element ('a');
+    my $df = $doc->create_document_fragment;
+    my $el2 = $doc->create_element ('a');
+    my $el3 = $doc->create_element ('a');
+    $df->append_child ($el2);
+    $df->append_child ($el3);
+
+    my $nl = $df->child_nodes;
+    is scalar @$nl, 2;
+
+    my $nl2 = $el1->child_nodes;
+    is scalar @$nl2, 0;
+
+    $el1->$method ($df);
+
+    is scalar @$nl, 0;
+    is scalar @$nl2, 2;
+
+    done $c;
+  } n => 4, name => [$method, 'df child_nodes'];
+}
+
 run_tests;
 
 =head1 LICENSE
