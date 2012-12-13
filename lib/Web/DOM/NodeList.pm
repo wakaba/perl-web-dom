@@ -11,6 +11,15 @@ use overload
         Internals::SvREADONLY (@$list, 1);
         $list;
       };
+      ## Strictly speaking, $obj->[$index]'s $index has to be
+      ## converted to IDL |unsigned long| value before actual |getter|
+      ## processing (or the |FETCH| method in Perl |tie| terminology).
+      ## However, Perl's builtin convertion of array index, which
+      ## clamps the value within the range of 32-bit signed long
+      ## <http://qiita.com/items/f479744bed8633338fb5>, makes
+      ## WebIDL-specific processing redundant.  (Also note that Perl
+      ## can't handle array with length greater than or equal to
+      ## 2^31.)
     },
     '""' => sub {
       return ref ($_[0]) . '=DOM(' . ${$_[0]}->[2] . ')';
@@ -34,12 +43,12 @@ sub length ($) {
 } # length
 
 sub to_a ($) {
-  my $node = ${$_[0]}->[0];
-  my $int = $$node->[0];
-  return [map { $int->node ($_) }
-          @{$int->{data}->[$$node->[1]]->{child_nodes} or []}];
+  return [$_[0]->to_list];
 } # to_a
-*as_list = \&to_a;
+
+sub as_list ($) {
+  return $_[0]->to_a;
+} # as_list
 
 sub to_list ($) {
   my $node = ${$_[0]}->[0];

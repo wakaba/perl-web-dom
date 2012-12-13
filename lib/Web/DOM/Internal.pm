@@ -48,7 +48,8 @@ sub new ($) {
     next_tree_id => 0, # tree_id
 
     ## Collections
-    # searches
+    # child_nodes
+    # XXX searches
   }, $_[0];
 } # new
 
@@ -103,13 +104,29 @@ sub node ($$) {
   return $node;
 } # node
 
+## Live collection data structure
+##
+##   0 - The root node
+##   1 - Filter
+##   2 - List of the nodes in the collection
+##
+## $self->{cols}->[$root_node_id]->
+## 
+##   - {child_nodes}                           - $node->child_nodes
+##   - {images}                                - $node->images
+##   - {children}                              - $node->children
+##   - {get_elements_by_tag_name}->{$tag_name} - get_* rooted at $node
+##   - {get_elements_by_tag_name_ns}->{$ns}->{$ln} - ditto
+##   ...
+
 sub child_nodes ($$) {
   my ($self, $id) = @_;
-  return $self->{child_nodes}->[$id] if $self->{child_nodes}->[$id];
+  return $self->{cols}->[$id]->{child_nodes}
+      if $self->{cols}->[$id]->{child_nodes};
   my $node = $self->node ($id);
   require Web::DOM::NodeList;
   my $nl = bless \[$node], 'Web::DOM::NodeList';
-  weaken ($self->{child_nodes}->[$id] = $nl);
+  weaken ($self->{cols}->[$id]->{child_nodes} = $nl);
   return $nl;
 } # child_nodes
 
