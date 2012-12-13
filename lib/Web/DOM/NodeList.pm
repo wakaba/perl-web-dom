@@ -6,7 +6,7 @@ use Carp;
 
 use overload
     '@{}' => sub {
-      return ${$_[0]}->[1] ||= do {
+      return ${$_[0]}->[2] ||= do {
         my $list = $_[0]->to_a;
         Internals::SvREADONLY (@$list, 1);
         $list;
