@@ -418,8 +418,7 @@ sub _pre_insert ($$;$$) {
       # Remove 8.
       @{$old_parent->{child_nodes}}
           = grep { $_ != $$node->[1] } @{$old_parent->{child_nodes}};
-      do { delete $$_->[2] if $_ }
-          for $$node->[0]->{cols}->[$old_parent_id]->{child_nodes};
+      $$node->[0]->children_changed ($old_parent_id);
 
       # Remove 9.
       # XXX node is removed
@@ -446,8 +445,7 @@ sub _pre_insert ($$;$$) {
 
     # Remove 8.
     splice @{$$parent->[2]->{child_nodes}}, $insert_position, 1, ();
-    do { delete $$_->[2] if $_ }
-        for $$parent->[0]->{cols}->[$$parent->[1]]->{child_nodes};
+    $$parent->[0]->children_changed ($$parent->[1]);
     delete $$old_child->[2]->{parent_node};
     $$old_child->[0]->disconnect ($$old_child->[1]);
     
@@ -488,8 +486,7 @@ sub _pre_insert ($$;$$) {
 
         # Remove 8.
         @{$$node->[2]->{child_nodes}} = ();
-        do { delete $$_->[2] if $_ }
-            for $$node->[0]->{cols}->[$$node->[1]]->{child_nodes};
+        $$node->[0]->children_changed ($$node->[1]);
         
         # Remove 9.
         #
@@ -500,8 +497,7 @@ sub _pre_insert ($$;$$) {
       
       # Insert 8.
       splice @{$$parent->[2]->{child_nodes}}, $insert_position, 0, @node;
-      do { delete $$_->[2] if $_ }
-          for $$parent->[0]->{cols}->[$$parent->[1]]->{child_nodes};
+      $$parent->[0]->children_changed ($$parent->[1]);
       for my $node_id (@node) {
         $$node->[0]->{data}->[$node_id]->{parent_node} = $$parent->[1];
         $$parent->[0]->connect ($node_id => $$parent->[1]);
@@ -515,8 +511,7 @@ sub _pre_insert ($$;$$) {
       
       # Insert 4., 8.
       splice @{$$parent->[2]->{child_nodes}}, $insert_position, 0, $$node->[1];
-      do { delete $$_->[2] if $_ }
-          for $$parent->[0]->{cols}->[$$parent->[1]]->{child_nodes};
+      $$parent->[0]->children_changed ($$parent->[1]);
       $$node->[2]->{parent_node} = $$parent->[1];
       $$parent->[0]->connect ($$node->[1] => $$parent->[1]);
 
@@ -545,8 +540,7 @@ sub remove_child ($$) {
   # XXX
   my $id = $$child->[1];
   @{$$parent->[2]->{child_nodes}} = grep { $_ ne $id } @{$$parent->[2]->{child_nodes}};
-  do { delete $$_->[2] if $_ }
-      for $$parent->[0]->{cols}->[$$parent->[1]]->{child_nodes};
+  $$parent->[0]->children_changed ($$parent->[1]);
   delete $$child->[2]->{parent_node};
   $$child->[0]->disconnect ($$child->[1]);
   return $child;

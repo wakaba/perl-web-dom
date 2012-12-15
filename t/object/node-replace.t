@@ -811,12 +811,15 @@ test {
 
   my $nl = $el1->child_nodes;
   is scalar @$nl, 1;
+  my $cl = $el1->children;
+  is scalar @$cl, 1;
 
   $el1->replace_child ($df, $el2);
 
   is scalar @$nl, 2;
+  is scalar @$cl, 2;
 
   done $c;
-} n => 2, name => 'replace_child parent child_nodes';
+} n => 4, name => 'replace_child parent child_nodes';
 
 run_tests;

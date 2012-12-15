@@ -1102,17 +1102,23 @@ for my $method (qw(append_child insert_before)) {
 
     my $nl = $el1->child_nodes;
     is scalar @$nl, 1;
+    my $cl = $el1->children;
+    is scalar @$cl, 1;
 
     my $nl2 = $el3->child_nodes;
     is scalar @$nl2, 0;
+    my $cl2 = $el3->children;
+    is scalar @$cl2, 0;
 
     $el3->$method ($el2);
 
     is scalar @$nl, 0;
     is scalar @$nl2, 1;
+    is scalar @$cl, 0;
+    is scalar @$cl2, 1;
 
     done $c;
-  } n => 4, name => [$method, 'parent child_nodes'];
+  } n => 8, name => [$method, 'parent child_nodes'];
 
   test {
     my $c = shift;
@@ -1126,17 +1132,23 @@ for my $method (qw(append_child insert_before)) {
 
     my $nl = $df->child_nodes;
     is scalar @$nl, 2;
+    my $cl = $df->children;
+    is scalar @$cl, 2;
 
     my $nl2 = $el1->child_nodes;
     is scalar @$nl2, 0;
+    my $cl2 = $el1->children;
+    is scalar @$cl2, 0;
 
     $el1->$method ($df);
 
     is scalar @$nl, 0;
     is scalar @$nl2, 2;
+    is scalar @$cl, 0;
+    is scalar @$cl2, 2;
 
     done $c;
-  } n => 4, name => [$method, 'df child_nodes'];
+  } n => 8, name => [$method, 'df child_nodes'];
 }
 
 run_tests;

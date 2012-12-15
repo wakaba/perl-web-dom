@@ -141,6 +141,13 @@ sub html_collection ($$$$) {
   return $nl;
 } # html_collection
 
+sub children_changed ($$) {
+  for ($_[0]->{cols}->[$_[1]]->{child_nodes},
+       $_[0]->{cols}->[$_[1]]->{children}) {
+    delete $$_->[2] if $_;
+  }
+} # children_changed
+
 ## The |HTMLCollection| for ... XXX
 
 sub search ($$$) {
