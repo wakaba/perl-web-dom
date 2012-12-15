@@ -2,8 +2,10 @@ use strict;
 use warnings;
 use Path::Class;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', '*', 'lib')->stringify;
+use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'lib')->stringify;
 use Test::X1;
 use Test::More;
+use Test::DOM::Exception;
 use Web::DOM::Document;
 
 test {
@@ -256,6 +258,120 @@ test {
   
   done $c;
 } name => 'destroy', n => 4;
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element_ns ('http://hoge', 'foo');
+  is $el->prefix, undef;
+
+  $el->prefix ('abc');
+  is $el->prefix, 'abc';
+
+  $el->prefix ('');
+  is $el->prefix, undef;
+
+  $el->prefix ("aaa_BAAv\x{4000}");
+  is $el->prefix, "aaa_BAAv\x{4000}";
+
+  $el->prefix (undef);
+  is $el->prefix, undef;
+
+  done $c;
+} n => 5, name => 'prefix namespaced element';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $node = $doc->create_text_node ('a');
+  dies_here_ok {
+    $node->prefix ('abc');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'Namespace prefix can only be specified for namespaced node';
+  is $node->prefix, undef;
+
+  dies_here_ok {
+    $node->prefix ('');
+  };
+  dies_here_ok {
+    $node->prefix (undef);
+  };
+
+  done $c;
+} n => 7, name => 'prefix not element';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $node = $doc->create_element_ns (undef, 'a');
+  dies_here_ok {
+    $node->prefix ('abc');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'Namespace prefix can only be specified for namespaced node';
+  is $node->prefix, undef;
+
+  dies_here_ok {
+    $node->prefix ('');
+  };
+  dies_here_ok {
+    $node->prefix (undef);
+  };
+
+  done $c;
+} n => 7, name => 'prefix not namespaced element';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $node = $doc->create_element_ns ('aaa', 'b:a');
+  dies_here_ok {
+    $node->prefix ('2140');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The prefix is not an XML Name';
+  is $node->prefix, 'b';
+  done $c;
+} n => 5, name => 'prefix not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $node = $doc->create_element_ns ('aaa', 'b:a');
+  dies_here_ok {
+    $node->prefix (':a2140');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'The prefix is not an XML NCName';
+  is $node->prefix, 'b';
+  done $c;
+} n => 5, name => 'prefix not ncname';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $node = $doc->create_element_ns ('h', 'hoge');
+  is $node->prefix, undef;
+  
+  $node->prefix ('abc');
+  is $node->prefix, 'abc';
+
+  $node->prefix ('abc');
+  is $node->prefix, 'abc';
+
+  done $c;
+} n => 3, name => 'prefix';
 
 test {
   my $c = shift;

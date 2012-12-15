@@ -7,6 +7,10 @@ use Web::DOM::Exception;
 use Carp;
 our @CARP_NOT = qw(Web::DOM::Exception Web::DOM::TypeError);
 use Exporter::Lite;
+use Char::Class::XML qw(
+  InXMLNameChar InXMLNameStartChar
+  InXMLNCNameChar InXMLNCNameStartChar
+);
 
 use overload
     '""' => sub {
@@ -56,7 +60,37 @@ sub namespace_uri ($) {
   return ${${$_[0]}->[2]->{namespace_uri} || \undef};
 } # namespace_uri
 
-sub prefix ($) {
+sub prefix ($;$) {
+  if (@_ > 1) {
+    # 1.
+    my $prefix = $_[1];
+
+    # 2.
+    unless (${$_[0]}->[2]->{namespace_uri}) {
+      _throw Web::DOM::Exception 'NamespaceError',
+          'Namespace prefix can only be specified for namespaced node';
+    }
+
+    if (defined $prefix and length $prefix) {
+      # 4.1.
+      unless ($prefix =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+        _throw Web::DOM::Exception 'InvalidCharacterError',
+            'The prefix is not an XML Name';
+      }
+
+      # 4.2.
+      unless ($prefix =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*\z/) {
+        _throw Web::DOM::Exception 'NamespaceError',
+            'The prefix is not an XML NCName';
+      }
+
+      # 5.
+      ${$_[0]}->[2]->{prefix} = Web::DOM::Internal->text ($prefix);
+    } else {
+      # 3., 5.
+      delete ${$_[0]}->[2]->{prefix};
+    }
+  } # setter
   return ${${$_[0]}->[2]->{prefix} || \undef};
 } # prefix
 

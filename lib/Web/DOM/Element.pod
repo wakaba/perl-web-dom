@@ -30,8 +30,14 @@ Return the namespace URL of the element.  [DOM]
 
 =item $prefix = $el->prefix
 
-Return the namespace prefix of the element, if any, or C<undef>.
-[DOM]
+=item $el->prefix ($prefix)
+
+If no argument is specified, return the namespace prefix of the
+element, if any, or C<undef>.  [DOM]
+
+If the argument is specified, the value is set as the namespace prefix
+of the element.  If the value is C<undef>, the namespace prefix is
+removed.  [MANAKAI]
 
 =item $name = $el->tag_name
 
@@ -39,7 +45,7 @@ Return the tag name of the element.  [DOM]
 
 =back
 
-=head1 SPECIFICATION
+=head1 SPECIFICATIONS
 
 =over 4
 
