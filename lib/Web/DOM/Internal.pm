@@ -42,14 +42,15 @@ use Scalar::Util qw(weaken);
 sub new ($) {
   return bless {
     ## Nodes
-    next_node_id => 0, # data nodes rc
+    next_node_id => 0,
+    # data nodes rc
 
     ## Trees
-    next_tree_id => 0, # tree_id
+    next_tree_id => 0,
+    # tree_id
 
     ## Collections
-    # child_nodes
-    # XXX searches
+    # cols
   }, $_[0];
 } # new
 
@@ -162,17 +163,6 @@ sub children_changed ($$$) {
   }
 } # children_changed
 
-## The |HTMLCollection| for ... XXX
-
-sub search ($$$) {
-  my ($self, $id, $local_name) = @_;
-  return $self->{searches}->{$id, $local_name} ||= do {
-    my $search = bless \[$self, $id, $local_name], 'Web::DOM::HTMLCollection';
-    weaken ($self->{searches}->{$id, $local_name} = $search);
-    $search;
-  };
-} # search
-
 sub impl ($) {
   my $self = shift;
   return $self->{impl} || do {
@@ -220,8 +210,6 @@ sub gc ($$) {
     delete $self->{rc}->[$_];
   }
 } # gc
-
-# XXX searches vs gc
 
 sub DESTROY ($) {
   {
