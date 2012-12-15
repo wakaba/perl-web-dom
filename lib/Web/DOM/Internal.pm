@@ -130,6 +130,17 @@ sub child_nodes ($$) {
   return $nl;
 } # child_nodes
 
+sub html_collection ($$$$) {
+  my ($self, $key, $root_node, $filter) = @_;
+  my $id = $$root_node->[1];
+  return $self->{cols}->[$id]->{$key}
+      if $self->{cols}->[$id]->{$key};
+  require Web::DOM::HTMLCollection;
+  my $nl = bless \[$root_node, $filter], 'Web::DOM::HTMLCollection';
+  weaken ($self->{cols}->[$id]->{$key} = $nl);
+  return $nl;
+} # html_collection
+
 ## The |HTMLCollection| for ... XXX
 
 sub search ($$$) {

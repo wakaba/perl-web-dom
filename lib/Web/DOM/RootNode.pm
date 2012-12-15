@@ -4,7 +4,12 @@ use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
 
-# XXX children
+sub children ($) {
+  my $self = shift;
+  return $$self->[0]->html_collection ('children', $self, sub {
+    return @{${$_[0]}->[0]->{data}->[${$_[0]}->[1]]->{child_nodes} or []};
+  });
+} # children
 
 sub first_element_child ($) {
   my $self = shift;

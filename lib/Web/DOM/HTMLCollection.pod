@@ -1,0 +1,80 @@
+=head1 NAME
+
+Web::DOM::HTMLCollection - The DOM |HTMLCollection| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::HTMLCollection> class implements the DOM
+C<HTMLCollection> interface.
+
+=head1 METHODS
+
+Following methods are available:
+
+=over 4
+
+=item $node = $col->[$index]
+
+=item $node = $col->item ($index)
+
+Return the node in the collection, specified by its index.  [DOM]
+[DOMPERL]
+
+Use of the C<item> method is discouraged as it doesn't support Perlish
+ways to access items, such as negative indexing, while C<< $col->[-1]
+>> works as you intended.
+
+=item $number = @$col
+
+=item $number = $col->length
+
+Return the number of the nodes in the collection.  [DOM] [DOMPERL]
+
+=item $arrayref = $col->to_a
+
+Return the new static array reference containing the nodes in the
+collection.  [DOMPERL]
+
+=item ($node1, $node2, ...) = $col->to_list
+
+=item ($node1, $node2, ...) = @$col
+
+Return the list of the nodes contained in the collection.  [DOMPERL]
+
+=back
+
+The object supports Perl standard read-only operations for array
+references, e.g. C<< exists $col->[4] >>.  [DOMPERL]
+
+=head1 SPECIFICATIONS
+
+=over 4
+
+=item DOM
+
+DOM Living Standard
+<http://dom.spec.whatwg.org/#interface-htmlcollection>.
+
+=item DOMPERL
+
+manakai's DOM Perl Binding
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding#anchor-86>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>, L<Web::DOM::NodeList>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
