@@ -7,7 +7,10 @@ use Web::DOM::Node;
 sub children ($) {
   my $self = shift;
   return $$self->[0]->html_collection ('children', $self, sub {
-    return @{${$_[0]}->[0]->{data}->[${$_[0]}->[1]]->{child_nodes} or []};
+    my $node = $_[0];
+    return grep {
+      $$node->[0]->{data}->[$_]->{node_type} == ELEMENT_NODE;
+    } @{$$node->[0]->{data}->[$$node->[1]]->{child_nodes} or []};
   });
 } # children
 

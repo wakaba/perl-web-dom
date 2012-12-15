@@ -175,6 +175,58 @@ use Web::DOM::Document;
       isa_ok $col, 'Web::DOM::HTMLCollection';
       ok not $col->isa ('Web::DOM::NodeList');
       
+      is $col->length, 1;
+      is scalar @$col, 1;
+
+      is $col->[0], $el3;
+      is $col->[1], undef;
+
+      undef $node;
+      undef $el1;
+      undef $el2;
+      undef $el3;
+      undef $el4;
+      ok not $called;
+
+      is $col->[0]->parent_node->children, $col;
+      isnt $col->[0]->parent_node->child_nodes, $col;
+
+      undef $col;
+      ok $called;
+      
+      done $c;
+    } n => 10, name => ['children has children', $node->node_type];
+  }
+}
+
+{
+  my $doc = new Web::DOM::Document;
+  for my $node (
+    $doc->create_element ('a'),
+    $doc->create_document_fragment,
+  ) {
+    test {
+      my $c = shift;
+      my $doc = new Web::DOM::Document;
+      my $node = $doc->create_element ('a');
+      my $called;
+      $node->set_user_data (destroy => bless sub {
+                              $called = 1;
+                            }, 'test::DestroyCallback');
+
+      my $el1 = $doc->create_element ('a');
+      my $el2 = $doc->create_element ('b', '');
+      my $el3 = $doc->create_element ('a');
+      my $el4 = $doc->create_element ('a');
+      $node->append_child ($el1);
+      $node->append_child ($el2);
+      $node->append_child ($el3);
+      $el3->append_child ($el4);
+
+      my $col = $node->children;
+      isa_ok $col, 'Web::DOM::HTMLCollection';
+      ok not $col->isa ('Web::DOM::NodeList');
+      
       is $col->length, 3;
       is scalar @$col, 3;
 

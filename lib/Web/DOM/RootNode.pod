@@ -13,6 +13,11 @@ C<Web::DOM::Document>.
 
 =over 4
 
+=item $col = $node->children
+
+Return the L<Web::DOM::HTMLCollection> containg the child elements of
+the node.  [DOM]
+
 =item $number = $node->child_element_count
 
 Return the number of child elements.  [DOM]
