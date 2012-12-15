@@ -39,6 +39,13 @@ sub manakai_is_html ($;$) {
       delete $$self->[2]->{compat_mode};
       delete $$self->[2]->{content_type};
     }
+    for my $cols (@{$$self->[0]->{cols} or []}) {
+      next unless $cols;
+      for my $key (keys %$cols) {
+        next unless $cols->{$key};
+        delete ${$cols->{$key}}->[2];
+      }
+    }
   }
   return $$self->[2]->{is_html};
 } # manakai_is_html

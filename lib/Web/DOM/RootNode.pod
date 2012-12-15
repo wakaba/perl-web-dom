@@ -18,6 +18,19 @@ C<Web::DOM::Document>.
 Return the L<Web::DOM::HTMLCollection> containg the child elements of
 the node.  [DOM]
 
+=item $col = $node->get_elements_by_tag_name ($local_name)
+
+Return the L<Web::DOM::HTMLCollection> containing the descendant
+elements whose local name is equal to the argument.  If the argument
+is C<*>, all descendant elements are contained.  [DOM] [MANAKAI]
+
+=item $col = $node->get_elements_by_tag_namens ($nsurl, $local_name)
+
+Return the L<Web::DOM::HTMLCollection> containing the descendant
+elements whose namespace URL and local name matching to the specified
+values.  Both namespace URL and local name arguments can be C<*>,
+which represents the wildcard.  [DOM] [MANAKAI]
+
 =item $number = $node->child_element_count
 
 Return the number of child elements.  [DOM]
@@ -34,13 +47,18 @@ C<undef> is returned.  [DOM]
 
 =back
 
-=head1 SPECIFICATION
+=head1 SPECIFICATIONS
 
 =over 4
 
 =item DOM
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-rootnode>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Node%20Extensions>.
 
 =back
 

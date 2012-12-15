@@ -112,11 +112,12 @@ sub node ($$) {
 ##
 ## $self->{cols}->[$root_node_id]->
 ## 
-##   - {child_nodes}                           - $node->child_nodes
-##   - {images}                                - $node->images
-##   - {children}                              - $node->children
-##   - {get_elements_by_tag_name}->{$tag_name} - get_* rooted at $node
-##   - {get_elements_by_tag_name_ns}->{$ns}->{$ln} - ditto
+##   - {child_nodes}         - $node->child_nodes
+##   - {children}            - $node->children
+##   - {"by_tag_name$;$ln"}  - $node->get_elements_by_tag_name ($ln)
+##   - {"by_tag_name_ns$;$ns$;$ln"} - $node->get_elements_by_tag_name_ns ($ns, $ln)
+##   - {images}              - $node->images
+##   - {by_tag_name_ns}->{$ns}->{$ln}
 ##   ...
 
 sub child_nodes ($$) {
