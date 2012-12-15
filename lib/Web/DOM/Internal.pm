@@ -141,10 +141,23 @@ sub html_collection ($$$$) {
   return $nl;
 } # html_collection
 
-sub children_changed ($$) {
-  for ($_[0]->{cols}->[$_[1]]->{child_nodes},
-       $_[0]->{cols}->[$_[1]]->{children}) {
+sub children_changed ($$$) {
+  my $cols = $_[0]->{cols};
+  for ($cols->[$_[1]]->{child_nodes},
+       $cols->[$_[1]]->{children}) {
     delete $$_->[2] if $_;
+  }
+
+  if ($_[2] == 1) { # old child node is ELEMENT_NODE
+    my @id = ($_[1]);
+    while (@id) {
+      my $id = shift @id;
+      next unless defined $id;
+      for my $key (keys %{$cols->[$id] or {}}) {
+        delete ${$cols->[$id]->{$key}}->[2] if $cols->[$id]->{$key};
+      }
+      push @id, $_[0]->{data}->[$id]->{parent_node};
+    }
   }
 } # children_changed
 

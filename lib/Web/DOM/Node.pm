@@ -418,7 +418,7 @@ sub _pre_insert ($$;$$) {
       # Remove 8.
       @{$old_parent->{child_nodes}}
           = grep { $_ != $$node->[1] } @{$old_parent->{child_nodes}};
-      $$node->[0]->children_changed ($old_parent_id);
+      $$node->[0]->children_changed ($old_parent_id, $$node->[2]->{node_type});
 
       # Remove 9.
       # XXX node is removed
@@ -445,7 +445,8 @@ sub _pre_insert ($$;$$) {
 
     # Remove 8.
     splice @{$$parent->[2]->{child_nodes}}, $insert_position, 1, ();
-    $$parent->[0]->children_changed ($$parent->[1]);
+    ## Redundant
+    #$$parent->[0]->children_changed ($$parent->[1], $$old_child->[2]->{node_type});
     delete $$old_child->[2]->{parent_node};
     $$old_child->[0]->disconnect ($$old_child->[1]);
     
@@ -486,7 +487,7 @@ sub _pre_insert ($$;$$) {
 
         # Remove 8.
         @{$$node->[2]->{child_nodes}} = ();
-        $$node->[0]->children_changed ($$node->[1]);
+        $$node->[0]->children_changed ($$node->[1], ELEMENT_NODE);
         
         # Remove 9.
         #
@@ -497,7 +498,7 @@ sub _pre_insert ($$;$$) {
       
       # Insert 8.
       splice @{$$parent->[2]->{child_nodes}}, $insert_position, 0, @node;
-      $$parent->[0]->children_changed ($$parent->[1]);
+      $$parent->[0]->children_changed ($$parent->[1], ELEMENT_NODE);
       for my $node_id (@node) {
         $$node->[0]->{data}->[$node_id]->{parent_node} = $$parent->[1];
         $$parent->[0]->connect ($node_id => $$parent->[1]);
@@ -511,7 +512,8 @@ sub _pre_insert ($$;$$) {
       
       # Insert 4., 8.
       splice @{$$parent->[2]->{child_nodes}}, $insert_position, 0, $$node->[1];
-      $$parent->[0]->children_changed ($$parent->[1]);
+      $$parent->[0]->children_changed
+          ($$parent->[1], $$node->[2]->{node_type});
       $$node->[2]->{parent_node} = $$parent->[1];
       $$parent->[0]->connect ($$node->[1] => $$parent->[1]);
 
@@ -540,7 +542,7 @@ sub remove_child ($$) {
   # XXX
   my $id = $$child->[1];
   @{$$parent->[2]->{child_nodes}} = grep { $_ ne $id } @{$$parent->[2]->{child_nodes}};
-  $$parent->[0]->children_changed ($$parent->[1]);
+  $$parent->[0]->children_changed ($$parent->[1], $$child->[2]->{node_type});
   delete $$child->[2]->{parent_node};
   $$child->[0]->disconnect ($$child->[1]);
   return $child;
@@ -562,13 +564,6 @@ sub node_value ($;$) {
 # XXX compareDocumentPosition
 
 # XXX namespace lookup
-
-# XXX
-sub get_elements_by_tag_name ($$) {
-  my ($self, $ln) = @_;
-  # XXX
-  return $$self->[0]->search ($$self->[1], $ln);
-} # get_elements_by_tag_name
 
 sub set_user_data ($$$) {
   ${$_[0]}->[2]->{user_data}->{$_[1]} = $_[2];

@@ -4,6 +4,28 @@ use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
 
+sub get_elements_by_tag_name ($$) {
+  my $self = $_[0];
+  my $ln = ''.$_[1];
+  if ($ln eq '*') {
+    return $$self->[0]->html_collection ('by_tag_name'. $; . $ln, $self, sub {
+      my $node = $_[0];
+      my $data = $$node->[0]->{data};
+      my @node_id = @{$data->[$$node->[1]]->{child_nodes} or []};
+      my @id;
+      while (@node_id) {
+        my $id = shift @node_id;
+        next unless $data->[$id]->{node_type} == ELEMENT_NODE;
+        push @id, $id;
+        unshift @node_id, @{$data->[$id]->{child_nodes} or []};
+      }
+      return @id;
+    });
+  } else {
+    die "not implemented yet";
+  }
+} # get_elements_by_tag_name
+
 sub children ($) {
   my $self = shift;
   return $$self->[0]->html_collection ('children', $self, sub {
