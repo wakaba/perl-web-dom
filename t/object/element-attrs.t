@@ -230,8 +230,72 @@ test {
   is $el->get_attribute_ns (undef, 'AAI'), undef;
   is $el->get_attribute_ns (undef, 'aAi'), undef;
 
+  ok $el->has_attribute ('aai');
+  ok $el->has_attribute ('AAI');
+  ok $el->has_attribute ('aAi');
+  ok not $el->has_attribute ("aA\x{0130}");
+  ok not $el->has_attribute ("aA\x{0131}");
+
+  ok $el->has_attribute_ns (undef, 'aai');
+  ok not $el->has_attribute_ns (undef, 'AAI');
+  ok not $el->has_attribute_ns (undef, 'aAi');
+
   done $c;
-} n => 8, name => 'get html case-insensitivity';
+} n => 16, name => 'get/has html case-insensitivity';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+
+  my $el = $doc->create_element ('hoge');
+  $el->set_attribute_ns ("bb", "d:aai" => '134 "');
+
+  is $el->get_attribute ('d:aai'), '134 "';
+  is $el->get_attribute ('d:AAI'), '134 "';
+  is $el->get_attribute ('d:aAi'), '134 "';
+  is $el->get_attribute ("d:aA\x{0130}"), undef;
+  is $el->get_attribute ("d:aA\x{0131}"), undef;
+
+  is $el->get_attribute_ns ("bb", 'aai'), '134 "';
+  is $el->get_attribute_ns ("bb", 'AAI'), undef;
+  is $el->get_attribute_ns ("bb", 'aAi'), undef;
+
+  ok $el->has_attribute ('d:aai');
+  ok $el->has_attribute ('d:AAI');
+  ok $el->has_attribute ('d:aAi');
+  ok not $el->has_attribute ("d:aA\x{0130}");
+  ok not $el->has_attribute ("d:aA\x{0131}");
+
+  ok $el->has_attribute_ns ("bb", 'aai');
+  ok not $el->has_attribute_ns ("bb", 'AAI');
+  ok not $el->has_attribute_ns ("bb", 'aAi');
+
+  done $c;
+} n => 16, name => 'get/has html case-insensitivity, local name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+
+  my $el = $doc->create_element ('hoge');
+  $el->set_attribute_ns ("bb", "aai:bb" => '134 "');
+
+  is $el->get_attribute ('aai:bb'), '134 "';
+  is $el->get_attribute ('AAI:bb'), '134 "';
+  is $el->get_attribute ('aAi:bb'), '134 "';
+  is $el->get_attribute ("aA\x{0130}:bb"), undef;
+  is $el->get_attribute ("aA\x{0131}:bb"), undef;
+
+  ok $el->get_attribute ('aai:bb');
+  ok $el->get_attribute ('AAI:bb');
+  ok $el->get_attribute ('aAi:bb');
+  ok not $el->get_attribute ("aA\x{0130}:bb");
+  ok not $el->get_attribute ("aA\x{0131}:bb");
+
+  done $c;
+} n => 10, name => 'get/has html case-insensitivity, prefix';
 
 test {
   my $c = shift;
@@ -250,8 +314,18 @@ test {
   is $el->get_attribute_ns (undef, 'AAI'), undef;
   is $el->get_attribute_ns (undef, 'aAi'), undef;
 
+  ok $el->get_attribute ('aai');
+  ok not $el->get_attribute ('AAI');
+  ok not $el->get_attribute ('aAi');
+  ok not $el->get_attribute ("aA\x{0130}");
+  ok not $el->get_attribute ("aA\x{0131}");
+
+  ok $el->get_attribute_ns (undef, 'aai');
+  ok not $el->get_attribute_ns (undef, 'AAI');
+  ok not $el->get_attribute_ns (undef, 'aAi');
+
   done $c;
-} n => 8, name => 'get xml case-insensitivity';
+} n => 16, name => 'get/has xml case-insensitivity';
 
 test {
   my $c = shift;
@@ -271,8 +345,18 @@ test {
   is $el->get_attribute_ns (undef, 'AAI'), undef;
   is $el->get_attribute_ns (undef, 'aAi'), undef;
 
+  ok $el->get_attribute ('aai');
+  ok not $el->get_attribute ('AAI');
+  ok not $el->get_attribute ('aAi');
+  ok not $el->get_attribute ("aA\x{0130}");
+  ok not $el->get_attribute ("aA\x{0131}");
+
+  ok $el->get_attribute_ns (undef, 'aai');
+  ok not $el->get_attribute_ns (undef, 'AAI');
+  ok not $el->get_attribute_ns (undef, 'aAi');
+
   done $c;
-} n => 8, name => 'get html case-insensitivity, non-HTML element';
+} n => 16, name => 'get/has html case-insensitivity, non-HTML element';
 
 for my $name (
   undef, '', '124', "\x{00}", "\x70\x{D8F0}",
@@ -352,6 +436,47 @@ test {
 
   done $c;
 } n => 4, name => 'set_attribute case-sensitivity html';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ("foo", "ab\x{0130}\x{0131}:c" => "dd");
+
+  $el->set_attribute ("AB\x{0130}\x{0131}:c" => "ABC");
+  is $el->get_attribute ("ab\x{0130}\x{0131}:c"), "ABC";
+  is $el->get_attribute ("AB\x{0130}\x{0131}:c"), "ABC";
+
+  $doc->manakai_is_html (0);
+  is $el->get_attribute ("ab\x{0130}\x{0131}:c"), "ABC";
+  is $el->get_attribute ("AB\x{0130}\x{0131}:c"), undef;
+
+  is $el->get_attribute_ns ("foo", "c"), "ABC";
+
+  done $c;
+} n => 5, name => 'set_attribute case-sensitivity html, prefix';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ("foo", "c:ab\x{0130}\x{0131}" => "dd");
+
+  $el->set_attribute ("c:AB\x{0130}\x{0131}" => "ABC");
+  is $el->get_attribute ("c:ab\x{0130}\x{0131}"), "ABC";
+  is $el->get_attribute ("c:AB\x{0130}\x{0131}"), "ABC";
+
+  $doc->manakai_is_html (0);
+  is $el->get_attribute ("c:ab\x{0130}\x{0131}"), "ABC";
+  is $el->get_attribute ("c:AB\x{0130}\x{0131}"), undef;
+
+  is $el->get_attribute_ns ("foo", "ab\x{0130}\x{0131}"), "ABC";
+  is $el->get_attribute_ns ("foo", "AB\x{0130}\x{0131}"), undef;
+
+  done $c;
+} n => 6, name => 'set_attribute case-sensitivity html, local name';
 
 test {
   my $c = shift;
@@ -594,6 +719,116 @@ test {
 
   done $c;
 } n => 1, name => 'set_attribute_ns xmlns:';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  
+  ok not $el->has_attribute ('ab');
+  ok not $el->has_attribute ('ab:foo');
+  ok not $el->has_attribute ('53333');
+  ok not $el->has_attribute ('');
+  ok not $el->has_attribute (undef);
+
+  ok not $el->has_attribute_ns (undef, 'ab');
+  ok not $el->has_attribute_ns (undef, 'ab:foo');
+  ok not $el->has_attribute_ns (undef, '53333');
+  ok not $el->has_attribute_ns (undef, '');
+  ok not $el->has_attribute_ns (undef, undef);
+  ok not $el->has_attribute_ns ('', '');
+  ok not $el->has_attribute_ns ('aab', '');
+  ok not $el->has_attribute_ns ('aab', 'fe');
+  ok not $el->has_attribute_ns ('aab', 'aa:fe');
+
+  done $c;
+} n => 14, name => 'has no attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute (hoge => 'fua');
+  
+  ok $el->has_attribute ('hoge');
+  ok not $el->has_attribute ('Hoge');
+  ok $el->has_attribute_ns (undef, 'hoge');
+  ok $el->has_attribute_ns ('', 'hoge');
+  ok not $el->has_attribute_ns ('aaa', 'hoge');
+  ok not $el->has_attribute_ns ('aaa', 'aaa:hoge');
+  ok not $el->has_attribute_ns (undef, 'aaa:hoge');
+
+  done $c;
+} n => 7, name => 'has simple attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('aa', hoge => 'fua');
+  
+  ok $el->has_attribute ('hoge');
+  ok not $el->has_attribute ('Hoge');
+  ok not $el->has_attribute_ns (undef, 'hoge');
+  ok not $el->has_attribute_ns ('', 'hoge');
+  ok $el->has_attribute_ns ('aa', 'hoge');
+  ok not $el->has_attribute_ns ('aa', 'aaa:hoge');
+  ok not $el->has_attribute_ns (undef, 'aaa:hoge');
+
+  done $c;
+} n => 7, name => 'has node attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('aa', "bb:hoge" => 'fua');
+  
+  ok not $el->has_attribute ('hoge');
+  ok not $el->has_attribute ('Hoge');
+  ok $el->has_attribute ('bb:hoge');
+  ok not $el->has_attribute_ns (undef, 'hoge');
+  ok not $el->has_attribute_ns ('', 'hoge');
+  ok $el->has_attribute_ns ('aa', 'hoge');
+  ok not $el->has_attribute_ns ('aa', 'aaa:hoge');
+  ok not $el->has_attribute_ns (undef, 'aaa:hoge');
+  ok not $el->has_attribute_ns ('bb', 'hoge');
+  ok not $el->has_attribute_ns ('aa', 'bb:hoge');
+
+  done $c;
+} n => 10, name => 'has prefixed node attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute (hoge => '');
+  ok $el->has_attribute ('hoge');
+  ok $el->has_attribute_ns ('', 'hoge');
+
+  $el->set_attribute (fuga => '0');
+  ok $el->has_attribute ('fuga');
+  ok $el->has_attribute_ns ('', 'fuga');
+
+  done $c;
+} n => 4, name => 'has false value';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('hoge', 'foo:bar' => 'aa');
+
+  ok $el->has_attribute ('foo:bar');
+  ok not $el->has_attribute ('bar');
+  ok not $el->has_attribute_ns (undef, 'foo:bar');
+  ok not $el->has_attribute_ns (undef, 'bar');
+  ok not $el->has_attribute_ns ('', 'bar');
+  ok $el->has_attribute_ns ('hoge', 'bar');
+
+  done $c;
+} n => 6, name => 'has qname';
 
 run_tests;
 

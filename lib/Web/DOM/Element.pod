@@ -26,6 +26,15 @@ Return the value of the attribute with the specified namespace URL and
 local name.  If there is no attribute with the specified name,
 C<undef> is returned.  [DOM]
 
+=item $bool = $el->has_attribute ($name)
+
+Return whether there is the specified attribute or not.  [DOM]
+
+=item $bool = $el->has_attribute_ns ($nsurl, $local_name)
+
+Return whether there is the attribute with the specified namespace URL
+and local name or not.  [DOM]
+
 =item $name = $el->local_name
 
 Return the local name of the element.  [DOM]
@@ -56,11 +65,11 @@ Set the attribute with the specified name and value.  If there is
 already the attribute with the same name, its value is replaced by the
 new one.  [DOM]
 
-=item $el->set_attribute_ns ($nsurl, $local_name => $value)
+=item $el->set_attribute_ns ($nsurl, $qname => $value)
 
-Set the attribute with the specified namespace URL, local name, and
-value.  If there is already the attribute with the same namespace URL
-/ local name pair, its value is replaced by the new one.  [DOM]
+Set the attribute with the specified namespace URL, qualified name,
+and value.  If there is already the attribute with the same namespace
+URL / local name pair, its value is replaced by the new one.  [DOM]
 
 =item $name = $el->tag_name
 

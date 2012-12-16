@@ -54,6 +54,33 @@ sub attributes ($) {
   return []; # XXX
 } # attributes
 
+sub has_attribute ($$) {
+  my $node = $_[0];
+  my $name = ''.$_[1];
+
+  # 1.
+  if (${$$node->[2]->{namespace_uri} || \''} eq HTML_NS and
+      $$node->[0]->{data}->[0]->{is_html}) {
+    $name =~ tr/A-Z/a-z/; ## ASCII lowercase
+  }
+
+  # 2.
+  return 1 if ref ($$node->[2]->{attrs}->{''}->{$name} || '');
+  for (@{$$node->[2]->{attributes} or []}) {
+    if (ref $_) {
+      return 1 if $$_ eq $name;
+    } else { # node ID
+      return 1 if $$node->[0]->node ($_)->name eq $name;
+    }
+  }
+  return 0;
+} # has_attribute
+
+sub has_attribute_ns ($$$) {
+  # WebIDL, 1., 2.
+  return defined ${$_[0]}->[2]->{attrs}->{defined $_[1] ? $_[1] : ''}->{''.$_[2]};
+} # has_attribute_ns
+
 sub get_attribute ($$) {
   my $node = $_[0];
   my $name = ''.$_[1];
