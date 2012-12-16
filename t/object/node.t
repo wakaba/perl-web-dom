@@ -327,20 +327,24 @@ test {
   done $c;
 } n => 7, name => 'prefix not namespaced element';
 
-test {
-  my $c = shift;
-  my $doc = new Web::DOM::Document;
+for my $name (
+  '1353', "\x00aa", "\x{FFFE}",
+) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
 
-  my $node = $doc->create_element_ns ('aaa', 'b:a');
-  dies_here_ok {
-    $node->prefix ('2140');
-  };
-  isa_ok $@, 'Web::DOM::Exception';
-  is $@->name, 'InvalidCharacterError';
-  is $@->message, 'The prefix is not an XML Name';
-  is $node->prefix, 'b';
-  done $c;
-} n => 5, name => 'prefix not name';
+    my $node = $doc->create_element_ns ('aaa', 'b:a');
+    dies_here_ok {
+      $node->prefix ($name);
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'InvalidCharacterError';
+    is $@->message, 'The prefix is not an XML Name';
+    is $node->prefix, 'b';
+    done $c;
+  } n => 5, name => ['prefix not name', $name];
+}
 
 test {
   my $c = shift;
@@ -362,6 +366,22 @@ test {
   my $doc = new Web::DOM::Document;
 
   my $node = $doc->create_element_ns ('h', 'hoge');
+  is $node->prefix, undef;
+  
+  $node->prefix ('abc');
+  is $node->prefix, 'abc';
+
+  $node->prefix ('abc');
+  is $node->prefix, 'abc';
+
+  done $c;
+} n => 3, name => 'prefix';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $node = $doc->create_element_ns ('0', 'hoge');
   is $node->prefix, undef;
   
   $node->prefix ('abc');

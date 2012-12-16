@@ -1,0 +1,607 @@
+use strict;
+use warnings;
+use Path::Class;
+use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', '*', 'lib')->stringify;
+use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'lib')->stringify;
+use Test::X1;
+use Test::More;
+use Test::DOM::Exception;
+use Web::DOM::Document;
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+
+  is $el->get_attribute ('hoge'), undef;
+  is $el->get_attribute ('fuga'), undef;
+  is $el->get_attribute ('12'), undef;
+  is $el->get_attribute ('xml:lang'), undef;
+  is $el->get_attribute ('abc:lang'), undef;
+
+  is $el->get_attribute_ns (undef, 'hoge'), undef;
+  is $el->get_attribute_ns ('', 'hoge'), undef;
+  is $el->get_attribute_ns ('http://hoge/', 'hoge'), undef;
+  is $el->get_attribute_ns ('http://hoge/', 'fuga:hoge'), undef;
+  is $el->get_attribute_ns ('http://hoge/', '210'), undef;
+
+  done $c;
+} n => 10, name => 'get attribute not found';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute (hoge => 'ab de');
+  is $el->get_attribute ('hoge'), 'ab de';
+  is $el->get_attribute_ns (undef, 'hoge'), 'ab de';
+  is $el->get_attribute_ns ('', 'hoge'), 'ab de';
+
+  done $c;
+} n => 3, name => 'set_attribute new attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns (undef, hoge => 'ab de');
+  is $el->get_attribute ('hoge'), 'ab de';
+  is $el->get_attribute_ns (undef, 'hoge'), 'ab de';
+  is $el->get_attribute_ns ('', 'hoge'), 'ab de';
+
+  done $c;
+} n => 3, name => 'set_attribute_ns new attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns ('http://hoge/', 'foo' => 'aa');
+  is $el->get_attribute ('foo'), 'aa';
+  is $el->get_attribute_ns ('http://hoge/', 'foo'), 'aa';
+  is $el->get_attribute_ns ('http://fuga/', 'foo'), undef;
+  is $el->get_attribute_ns (undef, 'foo'), undef;
+  is $el->get_attribute_ns ('', 'foo'), undef;
+
+  done $c;
+} n => 5, name => 'set_attribute_ns new namespaced attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns ('http://hoge/', 'hoge:foo' => 'aa');
+  is $el->get_attribute ('foo'), undef;
+  is $el->get_attribute ('hoge:foo'), 'aa';
+  is $el->get_attribute_ns ('http://hoge/', 'foo'), 'aa';
+  is $el->get_attribute_ns ('http://hoge/', 'hoge:foo'), undef;
+  is $el->get_attribute_ns ('http://fuga/', 'foo'), undef;
+  is $el->get_attribute_ns (undef, 'hoge:foo'), undef;
+  is $el->get_attribute_ns (undef, 'foo'), undef;
+  is $el->get_attribute_ns ('', 'foo'), undef;
+
+  done $c;
+} n => 8, name => 'set_attribute_ns new namespaced prefixed attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  $el->set_attribute (hoge => 'fuga');
+
+  $el->set_attribute (hoge => 'aa bb');
+  is $el->get_attribute ('hoge'), 'aa bb';
+
+  $el->set_attribute_ns (undef, 'hoge' => 'bb ee ');
+  is $el->get_attribute ('hoge'), 'bb ee ';
+
+  done $c;
+} n => 2, name => 'set change simple value';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('aa', hoge => 'fuga');
+
+  $el->set_attribute (hoge => 'aa bb');
+  is $el->get_attribute_ns ('aa', 'hoge'), 'aa bb';
+
+  $el->set_attribute_ns ('aa', 'hoge' => 'bb ee ');
+  is $el->get_attribute_ns ('aa', 'hoge'), 'bb ee ';
+
+  done $c;
+} n => 2, name => 'set change node value';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('aa', 'b:hoge' => 'fuga');
+
+  $el->set_attribute ('b:hoge' => 'aa bb');
+  is $el->get_attribute_ns ('aa', 'hoge'), 'aa bb';
+
+  $el->set_attribute_ns ('aa', 'c:hoge' => 'bb ee ');
+  is $el->get_attribute_ns ('aa', 'hoge'), 'bb ee ';
+
+  done $c;
+} n => 2, name => 'set change node value, changing prefix';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns (undef, hoge => 'fuga');
+  $el->set_attribute_ns ('http://a/', hoge => 'a b');
+
+  is $el->get_attribute ('hoge'), 'fuga';
+  is $el->get_attribute_ns (undef, 'hoge'), 'fuga';
+  is $el->get_attribute_ns ('http://a/', 'hoge'), 'a b';
+
+  $el->set_attribute ('hoge' => 'AA');
+  is $el->get_attribute_ns (undef, 'hoge'), 'AA';
+  is $el->get_attribute_ns ('http://a/', 'hoge'), 'a b';
+  
+  done $c;
+} n => 5, name => 'get/set attributes with same name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('f');
+  $el->set_attribute ('bb' => 'cc');
+  $el->set_attribute ('xx' => 'cc');
+  $el->set_attribute_ns ('undef', 'gg' => 'cc');
+
+  $el->set_attribute ('aa' => '');
+  $el->set_attribute ('bb' => '');
+  $el->set_attribute_ns (undef, 'xx' => '');
+  $el->set_attribute_ns (undef, 'yy' => '');
+  $el->set_attribute_ns ('undef', 'gg' => '');
+  $el->set_attribute_ns ('undef', 'hh' => '');
+
+  is $el->get_attribute ('aa'), '';
+  is $el->get_attribute ('bb'), '';
+  is $el->get_attribute ('xx'), '';
+  is $el->get_attribute ('yy'), '';
+  is $el->get_attribute_ns ('undef', 'gg'), '';
+  is $el->get_attribute_ns ('undef', 'hh'), '';
+
+  done $c;
+} n => 6, name => 'set empty values';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('f');
+  $el->set_attribute ('bb' => 'cc');
+  $el->set_attribute ('xx' => 'cc');
+  $el->set_attribute_ns ('undef', 'gg' => 'cc');
+
+  $el->set_attribute ('aa' => undef);
+  $el->set_attribute ('bb' => undef);
+  $el->set_attribute_ns (undef, 'xx' => undef);
+  $el->set_attribute_ns (undef, 'yy' => undef);
+  $el->set_attribute_ns ('undef', 'gg' => undef);
+  $el->set_attribute_ns ('undef', 'hh' => undef);
+
+  is $el->get_attribute ('aa'), '';
+  is $el->get_attribute ('bb'), '';
+  is $el->get_attribute ('xx'), '';
+  is $el->get_attribute ('yy'), '';
+  is $el->get_attribute_ns ('undef', 'gg'), '';
+  is $el->get_attribute_ns ('undef', 'hh'), '';
+
+  done $c;
+} n => 6, name => 'set undef values';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+
+  my $el = $doc->create_element ('hoge');
+  $el->set_attribute (aai => '134 "');
+
+  is $el->get_attribute ('aai'), '134 "';
+  is $el->get_attribute ('AAI'), '134 "';
+  is $el->get_attribute ('aAi'), '134 "';
+  is $el->get_attribute ("aA\x{0130}"), undef;
+  is $el->get_attribute ("aA\x{0131}"), undef;
+
+  is $el->get_attribute_ns (undef, 'aai'), '134 "';
+  is $el->get_attribute_ns (undef, 'AAI'), undef;
+  is $el->get_attribute_ns (undef, 'aAi'), undef;
+
+  done $c;
+} n => 8, name => 'get html case-insensitivity';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('hoge');
+  $el->set_attribute (aai => '134 "');
+
+  is $el->get_attribute ('aai'), '134 "';
+  is $el->get_attribute ('AAI'), undef;
+  is $el->get_attribute ('aAi'), undef;
+  is $el->get_attribute ("aA\x{0130}"), undef;
+  is $el->get_attribute ("aA\x{0131}"), undef;
+
+  is $el->get_attribute_ns (undef, 'aai'), '134 "';
+  is $el->get_attribute_ns (undef, 'AAI'), undef;
+  is $el->get_attribute_ns (undef, 'aAi'), undef;
+
+  done $c;
+} n => 8, name => 'get xml case-insensitivity';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+
+  my $el = $doc->create_element_ns (undef, 'hoge');
+  $el->set_attribute (aai => '134 "');
+
+  is $el->get_attribute ('aai'), '134 "';
+  is $el->get_attribute ('AAI'), undef;
+  is $el->get_attribute ('aAi'), undef;
+  is $el->get_attribute ("aA\x{0130}"), undef;
+  is $el->get_attribute ("aA\x{0131}"), undef;
+
+  is $el->get_attribute_ns (undef, 'aai'), '134 "';
+  is $el->get_attribute_ns (undef, 'AAI'), undef;
+  is $el->get_attribute_ns (undef, 'aAi'), undef;
+
+  done $c;
+} n => 8, name => 'get html case-insensitivity, non-HTML element';
+
+for my $name (
+  undef, '', '124', "\x{00}", "\x70\x{D8F0}",
+) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+
+    dies_here_ok {
+      $el->set_attribute ($name => 'abc');
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'InvalidCharacterError';
+    is $@->message, 'The name is not an XML Name';
+    
+    is $el->get_attribute ($name), undef;
+
+    done $c;
+  } n => 5, name => ['set_attribute not XML name', $name];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+
+    dies_here_ok {
+      $el->set_attribute_ns (undef, $name => 'abc');
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'InvalidCharacterError';
+    is $@->message, 'The qualified name is not an XML Name';
+    
+    is $el->get_attribute ($name), undef;
+
+    done $c;
+  } n => 5, name => ['set_attribute_ns not XML name', $name];
+}
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute ('hoge:fuga' => 'abc');
+  is $el->get_attribute ('hoge:fuga'), 'abc';
+  is $el->get_attribute_ns (undef, 'hoge:fuga'), 'abc';
+
+  done $c;
+} n => 2, name => 'set_attribute not XML NCName';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute ("AB\x{0130}\x{0131}" => "ABC");
+  is $el->get_attribute ("ab\x{0130}\x{0131}"), undef;
+  is $el->get_attribute ("AB\x{0130}\x{0131}"), "ABC";
+
+  done $c;
+} n => 2, name => 'set_attribute case-sensitivity xml';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute ("AB\x{0130}\x{0131}" => "ABC");
+  is $el->get_attribute ("ab\x{0130}\x{0131}"), "ABC";
+  is $el->get_attribute ("AB\x{0130}\x{0131}"), "ABC";
+
+  $doc->manakai_is_html (0);
+  is $el->get_attribute ("ab\x{0130}\x{0131}"), "ABC";
+  is $el->get_attribute ("AB\x{0130}\x{0131}"), undef;
+
+  done $c;
+} n => 4, name => 'set_attribute case-sensitivity html';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  my $el = $doc->create_element_ns ('hoge', 'a');
+
+  $el->set_attribute ("AB\x{0130}\x{0131}" => "ABC");
+  is $el->get_attribute ("ab\x{0130}\x{0131}"), undef;
+  is $el->get_attribute ("AB\x{0130}\x{0131}"), "ABC";
+
+  done $c;
+} n => 2, name => 'set_attribute case-sensitivity html non-html element';
+
+for my $qname (
+  ':hoge', 'fuga:', 'abc:124', ':',
+) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+
+    dies_here_ok {
+      $el->set_attribute_ns ('hpofgexs', $qname => 'hh');
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'NamespaceError';
+    is $@->message, 'The qualified name is not an XML QName';
+    
+    is $el->get_attribute_ns (undef, $qname), undef;
+    done $c;
+  } n => 5, name => ['get_attribute_ns non-qname', $qname];
+}
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('x');
+
+  dies_here_ok {
+    $el->set_attribute_ns (undef, 'hoge:fuga' => 'a');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'Namespace prefix cannot be bound to the null namespace';
+
+  is $el->get_attribute ('hoge:fuga'), undef;
+
+  done $c;
+} n => 5, name => 'get_attribute_ns prefixed null namespace';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  dies_here_ok {
+    $el->set_attribute_ns (undef, 'xml:lang' => 'en');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'Namespace prefix cannot be bound to the null namespace';
+
+  is $el->get_attribute_ns (undef, 'lang'), undef;
+  is $el->get_attribute_ns (undef, 'xml:lang'), undef;
+  is $el->get_attribute_ns ('http://www.w3.org/XML/1998/namespace', 'lang'), undef;
+
+  done $c;
+} n => 7, name => 'set_attribute_ns xml: prefix';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  dies_here_ok {
+    $el->set_attribute_ns ('hoge', 'xml:lang' => 'en');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'Prefix |xml| cannot be bound to anything other than XML namespace';
+
+  is $el->get_attribute_ns (undef, 'lang'), undef;
+  is $el->get_attribute_ns (undef, 'xml:lang'), undef;
+  is $el->get_attribute_ns ('hoge', 'lang'), undef;
+  is $el->get_attribute_ns ('hoge', 'xml:lang'), undef;
+  is $el->get_attribute_ns ('http://www.w3.org/XML/1998/namespace', 'lang'), undef;
+
+  done $c;
+} n => 9, name => 'set_attribute_ns xml: prefix';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns ('http://www.w3.org/XML/1998/namespace', 'lang', 'ss');
+  
+  is $el->get_attribute_ns ('http://www.w3.org/XML/1998/namespace', 'lang'), 'ss';
+
+  done $c;
+} n => 1, name => 'set_attribute_ns xml: namespace';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns ('http://www.w3.org/XML/1998/namespace', 'xml:lang', 'ss');
+  
+  is $el->get_attribute_ns ('http://www.w3.org/XML/1998/namespace', 'lang'), 'ss';
+
+  done $c;
+} n => 1, name => 'set_attribute_ns xml: prefix';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  dies_here_ok {
+    $el->set_attribute_ns ('hoge', 'xmlns:lang' => 'en');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'Namespace of |xmlns| or |xmlns:*| must be the XMLNS namespace';
+
+  is $el->get_attribute_ns (undef, 'lang'), undef;
+  is $el->get_attribute_ns (undef, 'xmlns:lang'), undef;
+  is $el->get_attribute_ns ('hoge', 'lang'), undef;
+  is $el->get_attribute_ns ('hoge', 'xmlns:lang'), undef;
+  is $el->get_attribute_ns ('http://www.w3.org/2000/xmlns/', 'lang'), undef;
+
+  done $c;
+} n => 9, name => 'set_attribute_ns xml: prefix';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  dies_here_ok {
+    $el->set_attribute_ns ('hoge', 'xmlns' => 'en');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'Namespace of |xmlns| or |xmlns:*| must be the XMLNS namespace';
+
+  is $el->get_attribute_ns (undef, 'xmlns'), undef;
+  is $el->get_attribute_ns (undef, 'xmlns:xmlns'), undef;
+  is $el->get_attribute_ns ('hoge', 'xmlns'), undef;
+  is $el->get_attribute_ns ('hoge', 'xmlns:xmlns'), undef;
+  is $el->get_attribute_ns ('http://www.w3.org/2000/xmlns/', 'xmlns'), undef;
+
+  done $c;
+} n => 9, name => 'set_attribute_ns xmlns';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  dies_here_ok {
+    $el->set_attribute_ns ('http://www.w3.org/2000/xmlns/', 'XMLns' => 'en');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'XMLNS namespace must be bound to |xmlns| or |xmlns:*|';
+
+  is $el->get_attribute_ns (undef, 'XMLns'), undef;
+  is $el->get_attribute_ns (undef, 'xmlns:XMLns'), undef;
+  is $el->get_attribute_ns ('hoge', 'XMLns'), undef;
+  is $el->get_attribute_ns ('hoge', 'xmlns:XMLns'), undef;
+  is $el->get_attribute_ns ('http://www.w3.org/2000/xmlns/', 'XMLns'), undef;
+
+  done $c;
+} n => 9, name => 'set_attribute_ns xmlns';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  dies_here_ok {
+    $el->set_attribute_ns ('http://www.w3.org/2000/xmlns/', 'XMLns:hoge' => 'en');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'XMLNS namespace must be bound to |xmlns| or |xmlns:*|';
+
+  is $el->get_attribute_ns (undef, 'hoge'), undef;
+  is $el->get_attribute_ns (undef, 'XMLns:hoge'), undef;
+  is $el->get_attribute_ns ('hoge', 'hoge'), undef;
+  is $el->get_attribute_ns ('hoge', 'XMLns:hoge'), undef;
+  is $el->get_attribute_ns ('http://www.w3.org/2000/xmlns/', 'hoge'), undef;
+
+  done $c;
+} n => 9, name => 'set_attribute_ns xmlns:';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns ('http://www.w3.org/2000/xmlns/', 'xmlns', 'foo');
+  is $el->get_attribute_ns ('http://www.w3.org/2000/xmlns/', 'xmlns'), 'foo';
+
+  done $c;
+} n => 1, name => 'set_attribute_ns xmlns';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns ('http://www.w3.org/2000/xmlns/', 'xmlns:hoge', 'foo');
+  is $el->get_attribute_ns ('http://www.w3.org/2000/xmlns/', 'hoge'), 'foo';
+
+  done $c;
+} n => 1, name => 'set_attribute_ns xmlns:';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns ('http://www.w3.org/2000/xmlns/', 'xmlns:xmlns', 'foo');
+  is $el->get_attribute_ns ('http://www.w3.org/2000/xmlns/', 'xmlns'), 'foo';
+
+  done $c;
+} n => 1, name => 'set_attribute_ns xmlns:xmlns';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->set_attribute_ns ('http://www.w3.org/2000/xmlns/', 'xmlns:ab', 'foo');
+  is $el->get_attribute_ns ('http://www.w3.org/2000/xmlns/', 'ab'), 'foo';
+
+  done $c;
+} n => 1, name => 'set_attribute_ns xmlns:';
+
+run_tests;
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

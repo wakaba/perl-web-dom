@@ -1,6 +1,7 @@
 package Web::DOM::Document;
 use strict;
 use warnings;
+no warnings 'utf8';
 our $VERSION = '1.0';
 use Web::DOM::Node;
 use Web::DOM::RootNode;

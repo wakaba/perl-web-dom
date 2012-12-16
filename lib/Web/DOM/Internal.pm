@@ -76,6 +76,7 @@ sub add_data ($$) {
 ## allow overloading of |@{}| and |%{}| in some kinds of nodes.
 
 my $NodeClassByNodeType = {
+  2 => 'Web::DOM::Attr',
   3 => 'Web::DOM::Text',
   7 => 'Web::DOM::ProcessingInstruction',
   8 => 'Web::DOM::Comment',

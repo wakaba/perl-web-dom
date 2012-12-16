@@ -611,6 +611,16 @@ test {
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element_ns ('http://www.w3.org/2000/xmlns/', 'xmlns:xmlns');
+  is $el->prefix, 'xmlns';
+  is $el->namespace_uri, 'http://www.w3.org/2000/xmlns/';
+  is $el->manakai_local_name, 'xmlns';
+  done $c;
+} n => 3, name => 'create_element_ns XMLNS namespace';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
   my $el = $doc->create_element_ns ('http://www.w3.org/2000/xmlns/', 'xmlns:fuga');
   is $el->prefix, 'xmlns';
   is $el->namespace_uri, 'http://www.w3.org/2000/xmlns/';
@@ -748,17 +758,21 @@ test {
   done $c;
 } n => 4, name => 'create_processing_instruction not ncname';
 
-test {
-  my $c = shift;
-  my $doc = new Web::DOM::Document;
-  dies_here_ok {
-    $doc->create_processing_instruction ('120', 'fuga');
-  };
-  isa_ok $@, 'Web::DOM::Exception';
-  is $@->name, 'InvalidCharacterError';
-  is $@->message, 'The target is not an XML Name';
-  done $c;
-} n => 4, name => 'create_processing_instruction not xml Name';
+for my $name (
+  undef, '', '1353', "\x00aa", "\x{FFFE}",
+) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    dies_here_ok {
+      $doc->create_processing_instruction ($name, 'fuga');
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'InvalidCharacterError';
+    is $@->message, 'The target is not an XML Name';
+    done $c;
+  } n => 4, name => ['create_processing_instruction not xml Name', $name];
+}
 
 test {
   my $c = shift;

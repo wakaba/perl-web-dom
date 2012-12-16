@@ -15,6 +15,17 @@ are available:
 
 =over 4
 
+=item $value = $el->get_attribute ($name)
+
+Return the value of the specified attribute.  If there is no attribute
+with the specified name, C<undef> is returned.  [DOM]
+
+=item $value = $el->get_attribute_ns ($nsurl, $local_name)
+
+Return the value of the attribute with the specified namespace URL and
+local name.  If there is no attribute with the specified name,
+C<undef> is returned.  [DOM]
+
 =item $name = $el->local_name
 
 Return the local name of the element.  [DOM]
@@ -39,6 +50,18 @@ If the argument is specified, the value is set as the namespace prefix
 of the element.  If the value is C<undef>, the namespace prefix is
 removed.  [MANAKAI]
 
+=item $el->set_attribute ($name => $value)
+
+Set the attribute with the specified name and value.  If there is
+already the attribute with the same name, its value is replaced by the
+new one.  [DOM]
+
+=item $el->set_attribute_ns ($nsurl, $local_name => $value)
+
+Set the attribute with the specified namespace URL, local name, and
+value.  If there is already the attribute with the same namespace URL
+/ local name pair, its value is replaced by the new one.  [DOM]
+
 =item $name = $el->tag_name
 
 Return the tag name of the element.  [DOM]
@@ -62,7 +85,7 @@ manakai DOM Extensions
 
 =head1 SEE ALSO
 
-L<Web::DOM::Node>.
+L<Web::DOM::Node>, L<Web::DOM::Attr>.
 
 =head1 AUTHOR
 
