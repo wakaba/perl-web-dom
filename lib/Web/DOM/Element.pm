@@ -51,8 +51,12 @@ sub tag_name ($) {
 ## null-namespace attributes in the |attrs| hashref by its local name.
 
 sub attributes ($) {
-  return []; # XXX
+  return bless [@{${$_[0]}->[2]->{attributes} or []}], 'Web::DOM::NamedNodeMap'; # XXX
 } # attributes
+
+sub has_attributes ($) {
+  return !!@{${$_[0]}->[2]->{attributes} or []};
+} # has_attributes
 
 sub has_attribute ($$) {
   my $node = $_[0];

@@ -102,13 +102,20 @@ sub manakai_local_name ($) {
 } # manakai_local_name
 
 # XXX NodeExodus
-# XXX AttrExodus
 
 # XXX baseURI
 
 sub owner_document ($) {
   return ${$_[0]}->[0]->node (0);
 } # owner_document
+
+sub attributes ($) {
+  return undef;
+} # attributes
+
+sub has_attributes ($) {
+  return 0;
+} # has_attributes
 
 sub parent_node ($) {
   my $self = shift;

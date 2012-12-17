@@ -9,6 +9,74 @@ use Test::More;
 use Test::DOM::Exception;
 use Web::DOM::Document;
 
+{
+  my $doc = new Web::DOM::Document;
+  for my $node (
+    $doc,
+    $doc->implementation->create_document_type ('a', '', ''),
+    $doc->create_text_node ('b'),
+    $doc->create_comment ('b'),
+    $doc->create_processing_instruction ('cc', ''),
+    $doc->create_document_fragment,
+  ) {
+    test {
+      my $c = shift;
+      my $attrs = $node->attributes;
+      is $attrs, undef;
+      ok not $node->has_attributes;
+      done $c;
+    } n => 2, name => ['attributes', $node->node_type];
+  }
+}
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $attrs = $el->attributes;
+  isa_ok $attrs, 'Web::DOM::NamedNodeMap';
+  is scalar @$attrs, 0;
+  ok not $el->has_attributes;
+  done $c;
+} n => 3, name => 'attributes no attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute ('hoge' => '');
+  my $attrs = $el->attributes;
+  isa_ok $attrs, 'Web::DOM::NamedNodeMap';
+  is scalar @$attrs, 1;
+  ok $el->has_attributes;
+  done $c;
+} n => 3, name => 'attributes with simple attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('aa', 'hoge' => '');
+  my $attrs = $el->attributes;
+  isa_ok $attrs, 'Web::DOM::NamedNodeMap';
+  is scalar @$attrs, 1;
+  ok $el->has_attributes;
+  done $c;
+} n => 3, name => 'attributes with node attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute ('hoge' => '');
+  $el->set_attribute_ns ('fuga', 'aaa' => 'bb');
+  my $attrs = $el->attributes;
+  isa_ok $attrs, 'Web::DOM::NamedNodeMap';
+  is scalar @$attrs, 2;
+  ok $el->has_attributes;
+  done $c;
+} n => 3, name => 'attributes with attrs';
+
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
