@@ -59,6 +59,16 @@ If the argument is specified, the value is set as the namespace prefix
 of the element.  If the value is C<undef>, the namespace prefix is
 removed.  [MANAKAI]
 
+=item $el->remove_attribute ($name)
+
+Remove the attribute with the specified name.  If no attribute is
+found, the method does nothing.  [DOM]
+
+=item $el->remove_attribute_ns ($nsurl, $local_name)
+
+Remove the attribute with the specified namespace URL and local name.
+If no attribute is found, the method does nothing.  [DOM]
+
 =item $el->set_attribute ($name => $value)
 
 Set the attribute with the specified name and value.  If there is

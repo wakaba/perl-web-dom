@@ -98,9 +98,9 @@ sub get_attribute ($$) {
         return ${$$node->[2]->{attrs}->{''}->{$name}};
       }
     } else { # node ID
-      my $node = $$node->[0]->node ($_);
-      if ($node->name eq $name) {
-        return $node->value;
+      my $attr_node = $$node->[0]->node ($_);
+      if ($attr_node->name eq $name) {
+        return $attr_node->value;
       }
     }
   }
@@ -298,7 +298,6 @@ sub set_attribute_ns ($$$$) {
   }
 } # set_attribute_ns
 
-# XXX
 sub remove_attribute ($$) {
   my $node = $_[0];
   my $name = ''.$_[1];
@@ -309,38 +308,66 @@ sub remove_attribute ($$) {
     $name =~ tr/A-Z/a-z/; ## ASCII lowercase
   }
 
-  # 2.
-  my $attr_id = $$node->[2]->{attrs}->{''}->{$name}; # XXX wrong
-  if (defined $attr_id) {
+  # 2. Remove
+  {
     # Remove 1.
     # XXX mutation
 
     # Remove 2.
-    delete $$node->[2]->{attrs}->{''}->{$name};
-    @{$$node->[2]->{attributes}} = grep { $_ != $attr_id } @{$$node->[2]->{attributes}};
+    my $found;
+    @{$$node->[2]->{attributes} or []} = map {
+      if ($found) {
+        $_;
+      } elsif (ref $_) {
+        if ($$_ eq $name) {
+          $found = 1;
+          delete $$node->[2]->{attrs}->{''}->{$name};
+          ();
+        } else {
+          $_;
+        }
+      } else { # node ID
+        my $attr_node = $$node->[0]->node ($_);
+        if ($attr_node->name eq $name) {
+          $found = 1;
+          my $nsurl = $attr_node->namespace_uri;
+          $nsurl = '' unless defined $nsurl;
+          delete $$node->[2]->{attrs}->{$nsurl}->{$attr_node->local_name};
+          $$node->[0]->disconnect ($_);
+          ();
+        } else {
+          $_;
+        }
+      }
+    } @{$$node->[2]->{attributes} or []};
 
     # Remove 3.
     # XXX attribute is removed
-
-    # XXX gc $$node->[0]->{data}->[$attr_id];
-  } else {
-    return undef;
   }
 } # remove_attribute
 
 sub remove_attribute_ns ($$$) {
   my $node = $_[0];
-  my $nsurl = defined $_[1] ? ''.$_[1] : undef;
   my $ln = ''.$_[2];
-
-# XXX
-
-  # 1., 2. / Get an attribute 1., 2.
+  
+  # 1., 2.
+  my $nsurl = $_[1];
   my $attr_id = $$node->[2]->{attrs}->{defined $nsurl ? $nsurl : ''}->{$ln};
   if (defined $attr_id) {
-    return $$node->[0]->{data}->[$attr_id]->{value};
-  } else {
-    return undef;
+    # Remove 1.
+    # XXX mutation
+
+    # Remove 2.
+    if (ref $attr_id) {
+      @{$$node->[2]->{attributes}} = grep { not ref $_ or $$_ ne $ln } @{$$node->[2]->{attributes}};
+    } else {
+      $$node->[0]->disconnect ($attr_id);
+      @{$$node->[2]->{attributes}} = grep { $_ ne $attr_id } @{$$node->[2]->{attributes}};
+    }
+    delete $$node->[2]->{attrs}->{defined $nsurl ? $nsurl : ''}->{$ln};
+
+    # Remove 3.
+    # XXX attribute is removed
   }
 } # remove_attribute_ns
 

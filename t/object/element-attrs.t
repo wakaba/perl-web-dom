@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+no warnings 'utf8';
 use Path::Class;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', '*', 'lib')->stringify;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'lib')->stringify;
@@ -829,6 +830,236 @@ test {
 
   done $c;
 } n => 6, name => 'has qname';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  $el->remove_attribute ('hoge');
+  $el->remove_attribute ('120');
+  $el->remove_attribute_ns (undef, 'hoge');
+  $el->remove_attribute_ns ('', 'hoge');
+  $el->remove_attribute_ns ('', 'hoge:fuga');
+  $el->remove_attribute_ns ('', 'hoge:120');
+  $el->remove_attribute_ns ('http://hoge', 'hoge:a120');
+  $el->remove_attribute_ns ('http://hoge', 'hoge:120');
+
+  is $el->get_attribute ('hoge'), undef;
+
+  done $c;
+} n => 1, name => 'remove no attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute ('hoge' => 'fuga');
+
+  $el->remove_attribute ('hoge');
+
+  is $el->get_attribute ('hoge'), undef;
+
+  done $c;
+} n => 1, name => 'remove_attribute null namespace';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute ('hoge' => 'fuga');
+
+  $el->remove_attribute_ns (undef, 'hoge');
+
+  is $el->get_attribute ('hoge'), undef;
+
+  done $c;
+} n => 1, name => 'remove_attribute_ns null namespace';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute ('hoge' => 'fuga');
+
+  $el->remove_attribute_ns ('', 'hoge');
+
+  is $el->get_attribute ('hoge'), undef;
+
+  done $c;
+} n => 1, name => 'remove_attribute_ns null namespace empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('htoge', 'fuga' => '');
+  
+  $el->remove_attribute ('fuga');
+
+  is $el->get_attribute ('fuga'), undef;
+  is $el->get_attribute_ns ('htoge', 'fuga'), undef;
+
+  done $c;
+} n => 2, name => 'remove_attribute namespaced unprefixed attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('htoge', 'fuga' => '');
+  
+  $el->remove_attribute_ns (undef, 'fuga');
+
+  is $el->get_attribute ('fuga'), '';
+  is $el->get_attribute_ns ('htoge', 'fuga'), '';
+
+  done $c;
+} n => 2, name => 'remove_attribute_ns namespaced unprefixed attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('htoge', 'fuga' => '');
+  
+  $el->remove_attribute_ns ('', 'fuga');
+
+  is $el->get_attribute ('fuga'), '';
+  is $el->get_attribute_ns ('htoge', 'fuga'), '';
+
+  done $c;
+} n => 2, name => 'remove_attribute_ns namespaced unprefixed attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('htoge', 'fuga' => '');
+  
+  $el->remove_attribute_ns ('htoge', 'fuga');
+
+  is $el->get_attribute ('fuga'), undef;
+  is $el->get_attribute_ns ('htoge', 'fuga'), undef;
+
+  done $c;
+} n => 2, name => 'remove_attribute_ns namespaced unprefixed attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('htoge', 'aa:fuga' => '');
+  
+  $el->remove_attribute ('fuga');
+
+  is $el->get_attribute ('fuga'), undef;
+  is $el->get_attribute_ns ('htoge', 'fuga'), '';
+
+  done $c;
+} n => 2, name => 'remove_attribute namespaced prefixed attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('htoge', 'aa:fuga' => '');
+  
+  $el->remove_attribute ('aa:fuga');
+
+  is $el->get_attribute ('fuga'), undef;
+  is $el->get_attribute ('aa:fuga'), undef;
+  is $el->get_attribute_ns ('htoge', 'fuga'), undef;
+  is $el->get_attribute_ns ('htoge', 'aa:fuga'), undef;
+
+  done $c;
+} n => 4, name => 'remove_attribute namespaced prefixed attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('htoge', 'aa:fuga' => '');
+  
+  $el->remove_attribute_ns ('htoge', 'fuga');
+
+  is $el->get_attribute ('fuga'), undef;
+  is $el->get_attribute_ns ('htoge', 'fuga'), undef;
+
+  done $c;
+} n => 2, name => 'remove_attribute_ns namespaced prefixed attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('abc', 'hoge' => 'fuga1');
+  $el->set_attribute_ns (undef, 'hoge' => 'fuga2');
+
+  $el->remove_attribute ('hoge');
+
+  is $el->get_attribute_ns (undef, 'hoge'), 'fuga2';
+  is $el->get_attribute_ns ('abc', 'hoge'), undef;
+
+  done $c;
+} n => 2, name => 'remove_attribute multiple attrs with same name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns (undef, 'hoge' => '1');
+
+  $el->remove_attribute ('HOGE');
+  is $el->get_attribute_ns (undef, 'hoge'), '1';
+
+  $el->remove_attribute ('HoGe');
+  is $el->get_attribute_ns (undef, 'hoge'), '1';
+
+  $el->remove_attribute ('hoge');
+  is $el->get_attribute_ns (undef, 'hoge'), undef;
+
+  done $c;
+} n => 3, name => 'remove_attribute case-sensitivity xml';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns (undef, 'hoge' => '1');
+
+  $el->remove_attribute ('HOGE');
+  is $el->get_attribute_ns (undef, 'hoge'), undef;
+
+  done $c;
+} n => 1, name => 'remove_attribute case-sensitivity html';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('gg', 'fuga:hoge' => '1');
+
+  $el->remove_attribute ('FuGA:HOGE');
+  is $el->get_attribute_ns ('gg', 'hoge'), undef;
+
+  done $c;
+} n => 1, name => 'remove_attribute case-sensitivity html, namespaced';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns (undef, 'hOGe' => '1');
+
+  $el->remove_attribute ('hoge');
+  is $el->get_attribute_ns (undef, 'hOGe'), '1';
+
+  done $c;
+} n => 1, name => 'remove_attribute case-sensitivity html, uppercase';
 
 run_tests;
 
