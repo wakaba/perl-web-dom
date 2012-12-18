@@ -114,47 +114,29 @@ sub node ($$) {
 ##
 ## $self->{cols}->[$root_node_id]->
 ## 
-##                             [NodeList]
 ##   - {child_nodes}         - $node->child_nodes
-##                             [NamedNodeMap]
 ##   - {attributes}          - $node->attributes
-##                             [HTMLCollection]
 ##   - {children}            - $node->children
 ##   - {"by_tag_name$;$ln"}  - $node->get_elements_by_tag_name ($ln)
 ##   - {"by_tag_name_ns$;$ns$;$ln"} - $node->get_elements_by_tag_name_ns ($ns, $ln)
 ##   - {images}              - $node->images
-sub child_nodes ($$) {
-  my ($self, $id) = @_;
-  return $self->{cols}->[$id]->{child_nodes}
-      if $self->{cols}->[$id]->{child_nodes};
-  my $node = $self->node ($id);
-  require Web::DOM::NodeList;
-  my $nl = bless \[$node], 'Web::DOM::NodeList';
-  weaken ($self->{cols}->[$id]->{child_nodes} = $nl);
-  return $nl;
-} # child_nodes
 
-sub html_collection ($$$$) {
+my $CollectionClass = {
+  child_nodes => 'Web::DOM::NodeList',
+  attributes => 'Web::DOM::NamedNodeMap',
+}; # $CollectionClass
+
+sub collection ($$$$) {
   my ($self, $key, $root_node, $filter) = @_;
   my $id = $$root_node->[1];
   return $self->{cols}->[$id]->{$key}
       if $self->{cols}->[$id]->{$key};
-  require Web::DOM::HTMLCollection;
-  my $nl = bless \[$root_node, $filter], 'Web::DOM::HTMLCollection';
+  my $class = $CollectionClass->{$key} || 'Web::DOM::HTMLCollection';
+  eval qq{ require $class } or die $@;
+  my $nl = bless \[$root_node, $filter], $class;
   weaken ($self->{cols}->[$id]->{$key} = $nl);
   return $nl;
-} # html_collection
-
-sub named_node_map ($$) {
-  my ($self, $key, $root_node, $inflator) = @_;
-  my $id = $$root_node->[1];
-  return $self->{cols}->[$id]->{$key}
-      if $self->{cols}->[$id]->{$key};
-  require Web::DOM::NamedNodeMap;
-  my $nl = bless \[$root_node, $inflator], 'Web::DOM::NamedNodeMap';
-  weaken ($self->{cols}->[$id]->{$key} = $nl);
-  return $nl;
-} # named_node_map
+} # collection
 
 sub children_changed ($$$) {
   my $cols = $_[0]->{cols};

@@ -134,7 +134,11 @@ sub parent_element ($) {
 } # parent_element
 
 sub child_nodes ($) {
-  return ${$_[0]}->[0]->child_nodes (${$_[0]}->[1]);
+  my $node = $_[0];
+  return $$node->[0]->collection ('child_nodes', $node, sub {
+    my $node = $_[0];
+    return @{$$node->[0]->{data}->[$$node->[1]]->{child_nodes} or []};
+  });
 } # child_nodes
 
 sub has_child_nodes ($) {

@@ -51,7 +51,7 @@ sub tag_name ($) {
 ## null-namespace attributes in the |attrs| hashref by its local name.
 
 sub attributes ($) {
-  return ${$_[0]}->[0]->named_node_map ('attributes', $_[0], sub {
+  return ${$_[0]}->[0]->collection ('attributes', $_[0], sub {
     my $node = $_[0];
     for (@{$$node->[2]->{attributes} or []}) {
       if (ref $_) {

@@ -8,7 +8,7 @@ use Web::DOM::Internal;
 sub get_elements_by_tag_name ($$) {
   my $self = $_[0];
   my $ln = ''.$_[1];
-  return $$self->[0]->html_collection ('by_tag_name'. $; . $ln, $self, sub {
+  return $$self->[0]->collection ('by_tag_name'. $; . $ln, $self, sub {
     my $node = $_[0];
     my $ln2 = $ln;
     my $is_html = $$self->[0]->{data}->[0]->{is_html};
@@ -45,7 +45,7 @@ sub get_elements_by_tag_name_ns ($$$) {
       $_;
     } : '';
   } $ns, $ln;
-  return $$self->[0]->html_collection ('by_tag_name_ns'. $; . $key, $self, sub {
+  return $$self->[0]->collection ('by_tag_name_ns'. $; . $key, $self, sub {
     my $node = $_[0];
     my $data = $$node->[0]->{data};
     my @node_id = @{$data->[$$node->[1]]->{child_nodes} or []};
@@ -68,7 +68,7 @@ sub get_elements_by_tag_name_ns ($$$) {
 
 sub children ($) {
   my $self = shift;
-  return $$self->[0]->html_collection ('children', $self, sub {
+  return $$self->[0]->collection ('children', $self, sub {
     my $node = $_[0];
     return grep {
       $$node->[0]->{data}->[$_]->{node_type} == ELEMENT_NODE;
