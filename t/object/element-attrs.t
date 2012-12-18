@@ -80,6 +80,56 @@ test {
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute (hoge => 'fuga');
+
+  my $attrs = $el->attributes;
+  isa_ok $attrs, 'Web::DOM::NamedNodeMap';
+  is $attrs->length, 1;
+  is scalar @$attrs, 1;
+  my $node1 = $attrs->[0];
+  isa_ok $node1, 'Web::DOM::Attr';
+  is $node1->namespace_uri, undef;
+  is $node1->prefix, undef;
+  is $node1->local_name, 'hoge';
+  is $node1->value, 'fuga';
+  is $attrs->[1], undef;
+  is $attrs->item (0), $node1;
+
+  $node1->value ('aaa');
+  is $el->get_attribute ('hoge'), 'aaa';
+
+  done $c;
+} n => 11, name => 'attributes NamedNodeMap simple attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('aa', hoge => 'fuga');
+
+  my $attrs = $el->attributes;
+  isa_ok $attrs, 'Web::DOM::NamedNodeMap';
+  is $attrs->length, 1;
+  is scalar @$attrs, 1;
+  my $node1 = $attrs->[0];
+  isa_ok $node1, 'Web::DOM::Attr';
+  is $node1->namespace_uri, 'aa';
+  is $node1->prefix, undef;
+  is $node1->local_name, 'hoge';
+  is $node1->value, 'fuga';
+  is $attrs->[1], undef;
+  is $attrs->item (0), $node1;
+
+  $node1->value ('aaa');
+  is $el->get_attribute ('hoge'), 'aaa';
+
+  done $c;
+} n => 11, name => 'attributes NamedNodeMap node attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
 
   my $el = $doc->create_element ('a');
 

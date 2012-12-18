@@ -51,7 +51,20 @@ sub tag_name ($) {
 ## null-namespace attributes in the |attrs| hashref by its local name.
 
 sub attributes ($) {
-  return bless [@{${$_[0]}->[2]->{attributes} or []}], 'Web::DOM::NamedNodeMap'; # XXX
+  return ${$_[0]}->[0]->named_node_map ('attributes', $_[0], sub {
+    my $node = $_[0];
+    for (@{$$node->[2]->{attributes} or []}) {
+      if (ref $_) {
+        my $data = {node_type => ATTRIBUTE_NODE,
+                    local_name => Web::DOM::Internal->text ($$_),
+                    value => ${$$node->[2]->{attrs}->{''}->{$$_}}};
+        my $attr_id = $$node->[0]->add_data ($data);
+        $$node->[2]->{attrs}->{''}->{$$_} = $attr_id;
+        $_ = $attr_id;
+      }
+    }
+    return @{$$node->[2]->{attributes} or []};
+  });
 } # attributes
 
 sub has_attributes ($) {

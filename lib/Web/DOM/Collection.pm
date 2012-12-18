@@ -51,7 +51,9 @@ sub as_list ($) {
 } # as_list
 
 sub to_list ($) {
-  die "|to_list| not implemented";
+  my $node = ${$_[0]}->[0];
+  my $int = $$node->[0];
+  return (map { $int->node ($_) } (${$_[0]}->[1]->($node)));
 } # to_list
 
 1;

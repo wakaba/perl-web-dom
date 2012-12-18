@@ -114,14 +114,15 @@ sub node ($$) {
 ##
 ## $self->{cols}->[$root_node_id]->
 ## 
+##                             [NodeList]
 ##   - {child_nodes}         - $node->child_nodes
+##                             [NamedNodeMap]
+##   - {attributes}          - $node->attributes
+##                             [HTMLCollection]
 ##   - {children}            - $node->children
 ##   - {"by_tag_name$;$ln"}  - $node->get_elements_by_tag_name ($ln)
 ##   - {"by_tag_name_ns$;$ns$;$ln"} - $node->get_elements_by_tag_name_ns ($ns, $ln)
 ##   - {images}              - $node->images
-##   - {by_tag_name_ns}->{$ns}->{$ln}
-##   ...
-
 sub child_nodes ($$) {
   my ($self, $id) = @_;
   return $self->{cols}->[$id]->{child_nodes}
@@ -143,6 +144,17 @@ sub html_collection ($$$$) {
   weaken ($self->{cols}->[$id]->{$key} = $nl);
   return $nl;
 } # html_collection
+
+sub named_node_map ($$) {
+  my ($self, $key, $root_node, $inflator) = @_;
+  my $id = $$root_node->[1];
+  return $self->{cols}->[$id]->{$key}
+      if $self->{cols}->[$id]->{$key};
+  require Web::DOM::NamedNodeMap;
+  my $nl = bless \[$root_node, $inflator], 'Web::DOM::NamedNodeMap';
+  weaken ($self->{cols}->[$id]->{$key} = $nl);
+  return $nl;
+} # named_node_map
 
 sub children_changed ($$$) {
   my $cols = $_[0]->{cols};

@@ -20,7 +20,7 @@ Append the specified node to the list of child nodes.  [DOM]
 
 If the node is an element, the L<Web::DOM::NamedNodeMap> object
 containing the content attributes for the element is returned.
-Otherwise, C<undef> is returned.  [DOM] [MANAKAI]
+Otherwise, C<undef> is returned.  [DOM] [DOM3CORE] [MANAKAI]
 
 =item $node_list = $node->child_nodes
 
@@ -134,6 +134,11 @@ ELEMENT_TYPE_DEFINITION_NODE ATTRIBUTE_DEFINITION_NODE [DOMDTDEF]
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-document>.
 
+=item DOM3CORE
+
+Document Object Model (DOM) Level 3 Core Specification
+<http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html#core-ID-1950641247>.
+
 =item DOMXPATH
 
 Document Object Model XPath
@@ -158,6 +163,9 @@ L<Web::DOM::DocumentType>, L<Web::DOM::DocumentFragment>,
 L<Web::DOM::CharacterData>, L<Web::DOM::Attr>, L<Web::DOM::Entity>,
 L<Web::DOM::EntityReference>, L<Web::DOM::Notation>,
 L<Web::DOM::ElementTypeDefinition>, L<Web::DOM::AttributeDefinition>.
+
+L<Web::DOM::NodeList>, L<Web::DOM::HTMLCollection>,
+L<Web::DOM::NamedNodeMap>.
 
 =head1 AUTHOR
 

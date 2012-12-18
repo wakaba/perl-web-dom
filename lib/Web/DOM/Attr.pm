@@ -19,7 +19,7 @@ sub name ($) {
 # XXX
 sub value ($;$) {
   if (@_ > 1) {
-
+    ${$_[0]}->[2]->{value} = $_[1];
   }
   return ${$_[0]}->[2]->{value};
 } # value

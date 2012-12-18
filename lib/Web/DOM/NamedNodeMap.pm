@@ -1,13 +1,11 @@
-package Web::DOM::HTMLCollection;
+package Web::DOM::NamedNodeMap;
 use strict;
 use warnings;
 use Web::DOM::Collection;
 push our @ISA, qw(Web::DOM::Collection);
 our $VERSION = '1.0';
 
-sub named_item ($$) {
-  # XXX
-} # named_item
+# XXX mutators
 
 1;
 
