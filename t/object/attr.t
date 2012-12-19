@@ -105,6 +105,52 @@ test {
   done $c;
 } n => 5, name => 'prefix';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute (hoge => 'aa');
+
+  my $attr = $el->attributes->[0];
+  my $oe = $attr->owner_element;
+  isa_ok $oe, 'Web::DOM::Element';
+  is $oe, $el;
+
+  done $c;
+} n => 2, name => 'owner_element simple attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ('aaa', hoge => 'aa');
+
+  my $attr = $el->attributes->[0];
+  my $oe = $attr->owner_element;
+  isa_ok $oe, 'Web::DOM::Element';
+  is $oe, $el;
+
+  done $c;
+} n => 2, name => 'owner_element node attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute (hoge => 12);
+  
+  my $attr = $el->attributes->[0];
+  ok $attr->specified;
+
+  $attr->specified (0);
+  ok not $attr->specified;
+
+  $attr->specified (1);
+  ok $attr->specified;
+
+  done $c;
+} n => 3, name => 'specified';
+
 run_tests;
 
 =head1 LICENSE

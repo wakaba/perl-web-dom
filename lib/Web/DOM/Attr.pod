@@ -13,26 +13,31 @@ following methods:
 
 =over 4
 
-=item $name = $el->local_name
+=item $name = $attr->local_name
 
 Return the local name of the attribute.  [DOM]
 
-=item $name = $el->manakai_local_name
+=item $name = $attr->manakai_local_name
 
 Return the local name of the attribute.  This method is deprecated in
 favor of C<local_name>. [MANAKAI]
 
-=item $url = $el->namespace_uri
+=item $url = $attr->namespace_uri
 
 Return the namespace URL of the attribute.  [DOM]
+
+=item $el = $attr->owner_element
+
+Return the element to which the attribute is set.  If there is no such
+an element, C<undef> is returned.  [DOMATTREXODUS]
 
 =item $name = $attr->name
 
 Return the attribute name.  [DOM]
 
-=item $prefix = $el->prefix
+=item $prefix = $attr->prefix
 
-=item $el->prefix ($prefix)
+=item $attr->prefix ($prefix)
 
 If no argument is specified, return the namespace prefix of the
 element, if any, or C<undef>.  [DOM]
@@ -40,6 +45,13 @@ element, if any, or C<undef>.  [DOM]
 If the argument is specified, the value is set as the namespace prefix
 of the element.  If the value is C<undef>, the namespace prefix is
 removed.  [DOMNODEEXODUS] [MANAKAI]
+
+=item $bool = $attr->specified
+
+=item $attr->specified ($bool)
+
+Return or set the "specified" flag of the attribute.  [DOMATTREXODUS]
+[MANAKAI]
 
 =item $value = $attr->value
 
@@ -57,7 +69,7 @@ Return or set the attribute value.  [DOM]
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-attr>.
 
-=item DOMATTREXODUS
+=item DOMATTREXODUS, DOMNODEEXODUS
 
 DOM Standard <view-source:http://dom.spec.whatwg.org/>.
 
@@ -70,7 +82,7 @@ manakai DOM Extensions
 
 =head1 SEE ALSO
 
-L<Web::DOM::Node>.
+L<Web::DOM::Node>, L<Web::DOM::NamedNodeMap>.
 
 =head1 AUTHOR
 

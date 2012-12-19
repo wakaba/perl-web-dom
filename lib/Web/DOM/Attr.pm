@@ -27,14 +27,23 @@ sub value ($;$) {
 *node_value = \&value;
 *text_content = \&value;
 
-# XXX compat with manakai
 sub specified ($) {
-  return 1;
+  if (@_ > 1) {
+    if ($_[1]) {
+      delete ${$_[0]}->[2]->{not_specified};
+    } else {
+      ${$_[0]}->[2]->{not_specified} = 1;
+    }
+  }
+  return not ${$_[0]}->[2]->{not_specified};
 } # specified
 
-# XXX
 sub owner_element ($) {
-
+  if (my $id = ${$_[0]}->[2]->{owner_element}) {
+    return ${$_[0]}->[0]->node ($id);
+  } else {
+    return undef;
+  }
 } # owner_element
 
 # XXX isId schemaTypeInfo

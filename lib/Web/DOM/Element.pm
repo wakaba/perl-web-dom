@@ -57,7 +57,8 @@ sub attributes ($) {
       if (ref $_) {
         my $data = {node_type => ATTRIBUTE_NODE,
                     local_name => Web::DOM::Internal->text ($$_),
-                    value => ${$$node->[2]->{attrs}->{''}->{$$_}}};
+                    value => ${$$node->[2]->{attrs}->{''}->{$$_}},
+                    owner_element => $$node->[1]};
         my $attr_id = $$node->[0]->add_data ($data);
         $$node->[2]->{attrs}->{''}->{$$_} = $attr_id;
         $_ = $attr_id;
@@ -297,7 +298,8 @@ sub set_attribute_ns ($$$$) {
                       namespace_uri => Web::DOM::Internal->text ($nsurl),
                       prefix => Web::DOM::Internal->text ($prefix),
                       local_name => Web::DOM::Internal->text ($ln),
-                      value => $value};
+                      value => $value,
+                      owner_element => $$node->[1]};
           my $attr_id = $$node->[0]->add_data ($data);
           push @{$$node->[2]->{attributes} ||= []}, $attr_id;
           $$node->[2]->{attrs}->{$nsurl}->{$ln} = $attr_id;
