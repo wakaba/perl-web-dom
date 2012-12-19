@@ -10,6 +10,8 @@ subclasses such as C<Web::DOM::Element> and C<Web::DOM::Document>.
 
 =head1 METHODS
 
+Following methods are available:
+
 =over 4
 
 =item $child = $node->append_child ($child)
@@ -20,7 +22,7 @@ Append the specified node to the list of child nodes.  [DOM]
 
 If the node is an element, the L<Web::DOM::NamedNodeMap> object
 containing the content attributes for the element is returned.
-Otherwise, C<undef> is returned.  [DOM] [DOM3CORE] [MANAKAI]
+Otherwise, C<undef> is returned.  [DOM] [DOMATTREXODUS]
 
 =item $node_list = $node->child_nodes
 
@@ -34,7 +36,8 @@ C<undef> is returned.  [DOM]
 
 =item $bool = $node->has_attributes
 
-Return whether the node has any content attribute or not.  [MANAKAI]
+Return whether the node has any content attribute or not.
+[DOMATTREXODUS]
 
 =item $child = $node->insert_before ($child, $ref_child)
 
@@ -52,16 +55,16 @@ C<undef> is returned.  [DOM]
 =item $sibling = $node->next_sibling
 
 Return the next sibing node of the node.  If there is no such node,
-C<undef> is returned.  [DOM]
+C<undef> is returned.  [DOM] [DOMATTREXODUS]
 
 =item $string = $node->node_name
 
-Return the name of the node.  [DOM] [DOM3] [DOMDTDEF] [MANAKAI]
+Return the name of the node.  [DOM] [DOMATTREXODUS] [DOMDTDEF]
 
 =item $number = $node->node_type
 
 Return the constant number representing the type of the node.  [DOM]
-[DOM3] [DOMDTDEF] [MANAKAI]
+[DOMATTREXODUS] [DOMDTDEF]
 
 =item $text = $node->node_value
 
@@ -70,7 +73,8 @@ Return the constant number representing the type of the node.  [DOM]
 Get or set the value of the node.  For L<Web::DOM::CharacterData>
 objects, this is equivalent to the C<data> method.  For
 L<Web::DOM::Attr> objects, this is equivalent to the C<value> method.
-For other kinds of nodes, this method has no effect.  [DOM] [MANAKAI]
+For other kinds of nodes, this method has no effect.  [DOM]
+[DOMATTREXODUS]
 
 =item $doc = $node->owner_document
 
@@ -86,12 +90,12 @@ C<undef> is returned.  [DOM]
 =item $parent = $node->parent_node
 
 Return the parent node of the node.  If there is no parent, C<undef>
-is returned.  [DOM]
+is returned.  [DOM] [DOMATTREXODUS]
 
 =item $sibling = $node->previous_sibling
 
 Return the previous sibling of the node.  If there is no such node,
-C<undef> is returned.  [DOM]
+C<undef> is returned.  [DOM] [DOMATTREXODUS]
 
 =item $new_child = $node->replace_child ($new_child, $ref_child)
 
@@ -118,7 +122,7 @@ Following constants are defined for the C<node_type> attribute:
 ELEMENT_NODE ATTRIBUTE_NODE TEXT_NODE CDATA_SECTION_NODE
 ENTITY_REFERENCE_NODE ENTITY_NODE PROCESSING_INSTRUCTION_NODE
 COMMENT_NODE DOCUMENT_NODE DOCUMENT_TYPE_NODE DOCUMENT_FRAGMENT_NODE
-NOTATION_NODE [DOM] [DOM3]
+NOTATION_NODE [DOM] [DOMATTREXODUS] [DOM3]
 
 XPATH_NAMESPACE_NODE [DOMXPATH]
 
@@ -126,13 +130,17 @@ ELEMENT_TYPE_DEFINITION_NODE ATTRIBUTE_DEFINITION_NODE [DOMDTDEF]
 
 =back
 
-=head1 SPECIFICATION
+=head1 SPECIFICATIONS
 
 =over 4
 
 =item DOM
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-document>.
+
+=item DOMATTREXODUS
+
+DOM Standard <view-source:http://dom.spec.whatwg.org/>.
 
 =item DOM3CORE
 

@@ -388,9 +388,9 @@ sub remove_attribute_ns ($$$) {
   }
 } # remove_attribute_ns
 
-# XXX more attr methods
+# XXX attr node methods
 
-# XXX children methods
+# XXX id / class attrs
 
 1;
 

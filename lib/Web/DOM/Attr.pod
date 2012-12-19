@@ -8,7 +8,22 @@ The C<Web::DOM::Attr> class implements the DOM C<Attr> interface.
 
 =head1 METHODS
 
-The methods of the L<Web::DOM::Node> class are available.
+The methods of the L<Web::DOM::Node> class are available, as well as
+following methods:
+
+=over 4
+
+=item $name = $attr->name
+
+Return the attribute name.  [DOM]
+
+=item $value = $attr->value
+
+=item $attr->value ($value)
+
+Return or set the attribute value.  [DOM]
+
+=back
 
 =head1 SPECIFICATIONS
 
@@ -17,6 +32,10 @@ The methods of the L<Web::DOM::Node> class are available.
 =item DOM
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-attr>.
+
+=item DOMATTREXODUS
+
+DOM Standard <view-source:http://dom.spec.whatwg.org/>.
 
 =item MANAKAI
 

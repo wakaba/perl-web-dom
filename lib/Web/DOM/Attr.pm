@@ -24,6 +24,21 @@ sub value ($;$) {
   return ${$_[0]}->[2]->{value};
 } # value
 
+*node_value = \&value;
+*text_content = \&value;
+
+# XXX compat with manakai
+sub specified ($) {
+  return 1;
+} # specified
+
+# XXX
+sub owner_element ($) {
+
+} # owner_element
+
+# XXX isId schemaTypeInfo
+
 1;
 
 =head1 LICENSE

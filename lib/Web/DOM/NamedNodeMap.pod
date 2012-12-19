@@ -17,8 +17,8 @@ Following methods are available:
 
 =item $node = $col->item ($index)
 
-Return the node in the collection, specified by its index.  [DOM3CORE]
-[DOMPERL]
+Return the node in the collection, specified by its index.
+[DOMATTREXODUS] [DOM3CORE] [DOMPERL]
 
 Use of the C<item> method is discouraged as it doesn't support Perlish
 ways to access items, such as negative indexing, while C<< $col->[-1]
@@ -28,8 +28,8 @@ ways to access items, such as negative indexing, while C<< $col->[-1]
 
 =item $number = $col->length
 
-Return the number of the nodes in the collection.  [DOM3CORE]
-[DOMPERL]
+Return the number of the nodes in the collection.  [DOMATTREXODUS]
+[DOM3CORE] [DOMPERL]
 
 =item $arrayref = $col->to_a
 
@@ -50,6 +50,10 @@ references, e.g. C<< exists $col->[4] >>.  [DOMPERL]
 =head1 SPECIFICATIONS
 
 =over 4
+
+=item DOMATTREXODUS
+
+DOM Standard <view-source:http://dom.spec.whatwg.org/>.
 
 =item DOM3CORE
 

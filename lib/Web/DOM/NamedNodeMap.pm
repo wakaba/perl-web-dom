@@ -5,7 +5,8 @@ use Web::DOM::Collection;
 push our @ISA, qw(Web::DOM::Collection);
 our $VERSION = '1.0';
 
-# XXX mutators
+# XXX getNamedItem setNamedItem removeNamedItem getNamedItemNS
+# setNamedItemNS removeNamedItemNS
 
 1;
 
