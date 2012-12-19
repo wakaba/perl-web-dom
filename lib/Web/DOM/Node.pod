@@ -106,7 +106,7 @@ which is to be replaced.  The new child node is returned.  [DOM]
 =back
 
 Following methods are also available: C<prefix>, C<namespace_uri>,
-C<local_name>, and C<manakai_local_name>.  [MANAKAI]
+C<local_name>, and C<manakai_local_name>.  [DOMNODEEXODUS]
 
 =head1 CONSTANTS
 
@@ -138,7 +138,7 @@ ELEMENT_TYPE_DEFINITION_NODE ATTRIBUTE_DEFINITION_NODE [DOMDTDEF]
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-document>.
 
-=item DOMATTREXODUS
+=item DOMATTREXODUS, DOMNODEEXODUS
 
 DOM Standard <view-source:http://dom.spec.whatwg.org/>.
 

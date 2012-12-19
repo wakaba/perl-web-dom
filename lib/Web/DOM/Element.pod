@@ -57,7 +57,7 @@ element, if any, or C<undef>.  [DOM]
 
 If the argument is specified, the value is set as the namespace prefix
 of the element.  If the value is C<undef>, the namespace prefix is
-removed.  [MANAKAI]
+removed.  [DOMNODEEXODUS] [MANAKAI]
 
 =item $el->remove_attribute ($name)
 
@@ -94,6 +94,10 @@ Return the tag name of the element.  [DOM]
 =item DOM
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-element>.
+
+=item DOMNODEEXODUS
+
+DOM Standard <view-source:http://dom.spec.whatwg.org/>.
 
 =item MANAKAI
 
