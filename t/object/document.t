@@ -293,6 +293,34 @@ test {
   done $c;
 } n => 4, name => 'create_processing_instruction undef';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  dies_here_ok {
+    $doc->create_cdata_section ("a");
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotSupportedError';
+  is $@->message, 'CDATASection is obsolete';
+  
+  done $c;
+} n => 4, name => 'create_cdata_section';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  dies_here_ok {
+    $doc->create_entity_reference ("a");
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotSupportedError';
+  is $@->message, 'EntityReference is obsolete';
+  
+  done $c;
+} n => 4, name => 'create_entity_reference';
+
 run_tests;
 
 =head1 LICENSE

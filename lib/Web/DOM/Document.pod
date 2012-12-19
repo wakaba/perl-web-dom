@@ -48,6 +48,11 @@ empty value.  [MANAKAI]
 Create a new attribute (L<Web::DOM::Attr>) with the specified
 namespace URL and qualified name.  [MANAKAI]
 
+=item $doc->create_cdata_section ($text)
+
+Throw a "NotSupportedError" exception.  The C<CDATASection> interface
+is obsolete.  [MANAKAI]
+
 =item $el = $doc->create_element ($local_name)
 
 Create a new element (L<Web::DOM::HTMLElement>) with the specified
@@ -57,6 +62,11 @@ local name in the HTML namespace.  [DOM]
 
 Create a new element (L<Web::DOM::Element>) with specified namespace
 URL and qualified name.  [DOM]
+
+=item $doc->create_entity_reference ($name)
+
+Throw a "NotSupportedError" exception.  The C<EntityReference>
+interface is obsolete.  [MANAKAI]
 
 =item $text = $doc->create_text_node ($data)
 

@@ -274,11 +274,21 @@ sub create_text_node ($) {
   return ${$_[0]}->[0]->node ($id);
 } # create_text_node
 
+sub create_cdata_section ($) {
+  _throw Web::DOM::Exception 'NotSupportedError',
+      'CDATASection is obsolete';
+} # create_cdata_section
+
 sub create_comment ($) {
   my $id = ${$_[0]}->[0]->add_data
       ({node_type => COMMENT_NODE, data => \(''.$_[1])});
   return ${$_[0]}->[0]->node ($id);
 } # create_comment
+
+sub create_entity_reference ($) {
+  _throw Web::DOM::Exception 'NotSupportedError',
+      'EntityReference is obsolete';
+} # create_entity_reference
 
 sub create_processing_instruction ($$$) {
   my $self = $_[0];
