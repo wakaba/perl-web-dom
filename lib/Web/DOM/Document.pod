@@ -38,10 +38,20 @@ C<no quirks>, C<limited quirks>, and C<quirks>.  [MANAKAI]
 
 Return the MIME type of the document.  [DOM]
 
+=item $attr = $doc->create_attribute ($local_name)
+
+Create a new attribute (L<Web::DOM::Attr>) with the specified name and
+empty value.  [MANAKAI]
+
+=item $attr = $doc->create_attribute_ns ($nsurl, $qname)
+
+Create a new attribute (L<Web::DOM::Attr>) with the specified
+namespace URL and qualified name.  [MANAKAI]
+
 =item $el = $doc->create_element ($local_name)
 
-Create a new element in the HTML namespace (L<Web::DOM::HTMLElement>).
-[DOM]
+Create a new element (L<Web::DOM::HTMLElement>) with the specified
+local name in the HTML namespace.  [DOM]
 
 =item $el = $doc->create_element_ns ($nsurl, $qname)
 
@@ -78,7 +88,7 @@ Return the URL of the document.  [DOM]
 
 =back
 
-=head1 SPECIFICATION
+=head1 SPECIFICATIONS
 
 =over 4
 
@@ -86,10 +96,10 @@ Return the URL of the document.  [DOM]
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-document>.
 
-=item manakai
+=item MANAKAI
 
-manakai's DOM Extension - C<Document> extensions
-<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Document%20Extensions>.
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai++DOM%20Extensions>.
 
 =back
 

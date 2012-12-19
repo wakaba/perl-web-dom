@@ -180,6 +180,89 @@ sub create_element_ns {
   return $$self->[0]->node ($id);
 } # create_element_ns
 
+sub create_attribute ($$) {
+  my $self = $_[0];
+  my $ln = ''.$_[1];
+
+  # XXX strictErrorChecking
+
+  # 1.
+  unless ($ln =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+    _throw Web::DOM::Exception 'InvalidCharacterError',
+        'The local name is not an XML Name';
+  }
+
+  # 2.
+  my $data = {node_type => ATTRIBUTE_NODE,
+              local_name => Web::DOM::Internal->text ($ln),
+              value => ''};
+  my $id = $$self->[0]->add_data ($data);
+  return $$self->[0]->node ($id);
+} # create_attribute
+
+sub create_attribute_ns {
+  my $self = $_[0];
+  my $qname = ''.$_[2];
+
+  # XXX DOMPERL's handling of $qname
+  # XXX strictErrorChecking
+
+  # 1.
+  my $nsurl = defined $_[1] ? length $_[1] ? ''.$_[1] : undef : undef;
+
+  # 2.
+  unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+    _throw Web::DOM::Exception 'InvalidCharacterError',
+        'The qualified name is not an XML Name';
+  }
+
+  # 3.
+  unless ($qname =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*(?::\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*)?\z/) {
+    _throw Web::DOM::Exception 'NamespaceError',
+        'The qualified name is not an XML QName';
+  }
+
+  # 4.
+  my ($prefix, $ln) = split /:/, $qname, 2;
+  ($prefix, $ln) = (undef, $prefix) unless defined $ln;
+
+  # 5.
+  if (defined $prefix and not defined $nsurl) {
+    _throw Web::DOM::Exception 'NamespaceError',
+        'Namespace prefix cannot be bound to the null namespace';
+  }
+
+  # 6.
+  if (defined $prefix and $prefix eq 'xml' and
+      (not defined $nsurl or $nsurl ne XML_NS)) {
+    _throw Web::DOM::Exception 'NamespaceError',
+        'Prefix |xml| cannot be bound to anything other than XML namespace';
+  }
+
+  # 7.
+  if (($qname eq 'xmlns' or (defined $prefix and $prefix eq 'xmlns')) and
+      (not defined $nsurl or $nsurl ne XMLNS_NS)) {
+    _throw Web::DOM::Exception 'NamespaceError',
+        'Namespace of |xmlns| or |xmlns:*| must be the XMLNS namespace';
+  }
+
+  # 8.
+  if (defined $nsurl and $nsurl eq XMLNS_NS and
+      not ($qname eq 'xmlns' or (defined $prefix and $prefix eq 'xmlns'))) {
+    _throw Web::DOM::Exception 'NamespaceError',
+        'XMLNS namespace must be bound to |xmlns| or |xmlns:*|';
+  }
+
+  # 9.
+  my $data = {node_type => ATTRIBUTE_NODE,
+              prefix => Web::DOM::Internal->text ($prefix),
+              namespace_uri => Web::DOM::Internal->text ($nsurl),
+              local_name => Web::DOM::Internal->text ($ln),
+              value => ''};
+  my $id = $$self->[0]->add_data ($data);
+  return $$self->[0]->node ($id);
+} # create_attribute_ns
+
 sub create_document_fragment ($) {
   my $id = ${$_[0]}->[0]->add_data ({node_type => DOCUMENT_FRAGMENT_NODE});
   return ${$_[0]}->[0]->node ($id);
