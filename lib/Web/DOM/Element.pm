@@ -50,19 +50,22 @@ sub tag_name ($) {
 ## attributes, contains strings and/or |Attr| objects.  Strings refer
 ## null-namespace attributes in the |attrs| hashref by its local name.
 
+my $InflateAttr = sub ($) {
+  my $node = $_[0];
+  my $data = {node_type => ATTRIBUTE_NODE,
+              local_name => Web::DOM::Internal->text ($$_),
+              value => ${$$node->[2]->{attrs}->{''}->{$$_}},
+              owner_element => $$node->[1]};
+  my $attr_id = $$node->[0]->add_data ($data);
+  $$node->[2]->{attrs}->{''}->{$$_} = $attr_id;
+  $_ = $attr_id;
+}; # $InflateAttr
+
 sub attributes ($) {
   return ${$_[0]}->[0]->collection ('attributes', $_[0], sub {
     my $node = $_[0];
     for (@{$$node->[2]->{attributes} or []}) {
-      if (ref $_) {
-        my $data = {node_type => ATTRIBUTE_NODE,
-                    local_name => Web::DOM::Internal->text ($$_),
-                    value => ${$$node->[2]->{attrs}->{''}->{$$_}},
-                    owner_element => $$node->[1]};
-        my $attr_id = $$node->[0]->add_data ($data);
-        $$node->[2]->{attrs}->{''}->{$$_} = $attr_id;
-        $_ = $attr_id;
-      }
+      $InflateAttr->($node) if ref $_; # $_
     }
     return @{$$node->[2]->{attributes} or []};
   });
@@ -142,6 +145,57 @@ sub get_attribute_ns ($$$) {
     return undef;
   }
 } # get_attribute_ns
+
+sub get_attribute_node ($$) {
+  my $node = $_[0];
+  my $name = ''.$_[1];
+
+  # 1.
+  if (${$$node->[2]->{namespace_uri} || \''} eq HTML_NS and
+      $$node->[0]->{data}->[0]->{is_html}) {
+    $name =~ tr/A-Z/a-z/; ## ASCII lowercase
+  }
+
+  # 2.
+  for (@{$$node->[2]->{attributes} or []}) {
+    if (ref $_) {
+      if ($$_ eq $name) {
+        $InflateAttr->($node);
+        return $$node->[0]->node ($_);
+      }
+    } else { # node ID
+      my $attr_node = $$node->[0]->node ($_);
+      if ($attr_node->name eq $name) {
+        return $attr_node;
+      }
+    }
+  }
+  return undef;
+} # get_attribute_node
+
+sub get_attribute_node_ns ($$$) {
+  my $node = $_[0];
+  my $nsurl = defined $_[1] ? ''.$_[1] : undef;
+  my $ln = ''.$_[2];
+
+  # 1., 2. / Get an attribute 1., 2.
+  my $attr_id = $$node->[2]->{attrs}->{defined $nsurl ? $nsurl : ''}->{$ln};
+  if (defined $attr_id) {
+    if (ref $attr_id) {
+      local $_ = \$ln;
+      $InflateAttr->($node);
+      $attr_id = $_;
+      @{$$node->[2]->{attributes}} = map {
+        ref $_ && $$_ eq $ln ? $attr_id : $_;
+      } @{$$node->[2]->{attributes}};
+      return $$node->[0]->node ($attr_id);
+    } else {
+      return $$node->[0]->node ($attr_id);
+    }
+  } else {
+    return undef;
+  }
+} # get_attribute_node_ns
 
 sub set_attribute ($$$) {
   my $node = $_[0];

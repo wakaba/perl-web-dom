@@ -1179,6 +1179,174 @@ test {
   done $c;
 } n => 1, name => 'remove_attribute case-sensitivity html, uppercase';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  
+  my $attr1 = $el->get_attribute_node ('hoge');
+  is $attr1, undef;
+
+  my $attr2 = $el->get_attribute_node_ns (undef, 'hoge');
+  is $attr2, undef;
+
+  my $attr3 = $el->get_attribute_node_ns ('fuga', 'hoge');
+  is $attr3, undef;
+
+  done $c;
+} n => 3, name => 'get node not found';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+  $el->set_attribute (hoge => 213);
+
+  my $attr1 = $el->get_attribute_node ('hoge');
+  isa_ok $attr1, 'Web::DOM::Attr';
+  is $attr1->namespace_uri, undef;
+  is $attr1->prefix, undef;
+  is $attr1->local_name, 'hoge';
+  is $attr1->value, '213';
+  ok $attr1->specified;
+  
+  done $c;
+} n => 6, name => 'get_attribute_node simple attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+  $el->set_attribute (hoge => 213);
+
+  my $attr1 = $el->get_attribute_node_ns (undef, 'hoge');
+  isa_ok $attr1, 'Web::DOM::Attr';
+  is $attr1->namespace_uri, undef;
+  is $attr1->prefix, undef;
+  is $attr1->local_name, 'hoge';
+  is $attr1->value, '213';
+  ok $attr1->specified;
+  
+  done $c;
+} n => 6, name => 'get_attribute_node_ns simple attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+  $el->set_attribute (hoge => 213);
+
+  my $attr1 = $el->get_attribute_node_ns ('', 'hoge');
+  isa_ok $attr1, 'Web::DOM::Attr';
+  is $attr1->namespace_uri, undef;
+  is $attr1->prefix, undef;
+  is $attr1->local_name, 'hoge';
+  is $attr1->value, '213';
+  ok $attr1->specified;
+  
+  done $c;
+} n => 6, name => 'get_attribute_node_ns simple attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+  $el->set_attribute_ns ('fuga', "aab:hoge" => 213);
+
+  my $attr1 = $el->get_attribute_node ('aab:hoge');
+  isa_ok $attr1, 'Web::DOM::Attr';
+  is $attr1->namespace_uri, 'fuga';
+  is $attr1->prefix, 'aab';
+  is $attr1->local_name, 'hoge';
+  is $attr1->value, '213';
+  ok $attr1->specified;
+  
+  done $c;
+} n => 6, name => 'get_attribute_node node attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+  $el->set_attribute_ns ('fuga', hoge => 213);
+
+  my $attr1 = $el->get_attribute_node_ns ('fuga', 'hoge');
+  isa_ok $attr1, 'Web::DOM::Attr';
+  is $attr1->namespace_uri, 'fuga';
+  is $attr1->prefix, undef;
+  is $attr1->local_name, 'hoge';
+  is $attr1->value, '213';
+  ok $attr1->specified;
+  
+  done $c;
+} n => 6, name => 'get_attribute_node_ns node attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+  $el->set_attribute (hoge1 => 33);
+  $el->set_attribute_ns ('aaa', 'hoge1' => 424);
+
+  my $attr1 = $el->get_attribute_node ('hoge1');
+  is $attr1->value, '33';
+
+  my $attr2 = $el->get_attribute_node_ns (undef, 'hoge1');
+  is $attr2->value, '33';
+
+  my $attr3 = $el->get_attribute_node_ns ('aaa', 'hoge1');
+  is $attr3->value, '424';
+
+  done $c;
+} n => 3, name => 'get_attribute_node duplicate';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute (hoge => 'aa');
+
+  my $attr1 = $el->get_attribute_node ('HoGe');
+  is $attr1, undef;
+
+  my $attr3 = $el->get_attribute_node_ns (undef, 'HoGe');
+  is $attr3, undef;
+
+  $doc->manakai_is_html (1);
+
+  my $attr2 = $el->get_attribute_node ('HoGe');
+  isa_ok $attr2, 'Web::DOM::Attr';
+  is $attr2->name, 'hoge';
+
+  my $attr4 = $el->get_attribute_node_ns (undef, 'HoGe');
+  is $attr4, undef;
+
+  done $c;
+} n => 5, name => 'get_attribute_node case-sensitivity';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element_ns (undef, 'a');
+  $el->set_attribute (hoge => 'aa');
+
+  my $attr1 = $el->get_attribute_node ('HoGe');
+  is $attr1, undef;
+
+  my $attr3 = $el->get_attribute_node_ns (undef, 'HoGe');
+  is $attr3, undef;
+
+  $doc->manakai_is_html (1);
+
+  my $attr2 = $el->get_attribute_node ('HoGe');
+  is $attr2, undef;
+
+  my $attr4 = $el->get_attribute_node_ns (undef, 'HoGe');
+  is $attr4, undef;
+
+  done $c;
+} n => 4, name => 'get_attribute_node case-sensitivity';
+
 run_tests;
 
 =head1 LICENSE

@@ -5,7 +5,7 @@ Web::DOM::Element - The DOM |Element| object
 =head1 DESCRIPTION
 
 The C<Web::DOM::Element> class implements the DOM C<Element>
-interface.
+interface.  It represents an element in the document.
 
 =head1 METHODS
 
@@ -25,6 +25,18 @@ with the specified name, C<undef> is returned.  [DOM]
 Return the value of the attribute with the specified namespace URL and
 local name.  If there is no attribute with the specified name,
 C<undef> is returned.  [DOM]
+
+=item $attr = $el->get_attribute_node ($name)
+
+Return the L<Web::DOM::Attr> object for the specified attribute.  If
+there is no attribute with the specified name, C<undef> is returned.
+[DOM3CORE] [MANAKAI]
+
+=item $attr = $el->get_attribute_node_ns ($nsurl, $local_name)
+
+Return the L<Web::DOM::Attr> object for the attribute with the
+specified namespace URL and local name.  If there is no attribute with
+the specified name, C<undef> is returned.  [DOM3CORE]
 
 =item $bool = $el->has_attribute ($name)
 
@@ -97,7 +109,13 @@ DOM Living Standard <http://dom.spec.whatwg.org/#interface-element>.
 
 =item DOMNODEEXODUS
 
-DOM Standard <view-source:http://dom.spec.whatwg.org/>.
+DOM Living Standard, commented out
+<view-source:http://dom.spec.whatwg.org/>.
+
+=item DOM3CORE
+
+Document Object Model (DOM) Level 3 Core Specification
+<http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html#core-ID-745549614>.
 
 =item MANAKAI
 
