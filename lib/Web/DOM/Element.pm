@@ -373,6 +373,11 @@ sub set_attribute_ns ($$$$) {
 } # set_attribute_ns
 
 sub set_attribute_node ($$) {
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Attr')) {
+    _throw Web::DOM::TypeError 'The argument is not an Attr';
+  }
+
   # 1.
   my ($node, $attr) = @_;
 
@@ -505,6 +510,11 @@ sub remove_attribute_ns ($$$) {
 } # remove_attribute_ns
 
 sub remove_attribute_node ($$) {
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Attr')) {
+    _throw Web::DOM::TypeError 'The argument is not an Attr';
+  }
+
   my ($node, $attr) = @_;
   
   if ($$node->[0] eq $$attr->[0] and

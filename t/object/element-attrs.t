@@ -10,6 +10,13 @@ use Test::DOM::Exception;
 use Web::DOM::Document;
 
 {
+  package test::DestroyCallback;
+  sub DESTROY {
+    $_[0]->();
+  }
+}
+
+{
   my $doc = new Web::DOM::Document;
   for my $node (
     $doc,
@@ -1600,14 +1607,23 @@ for my $method (qw(set_attribute_node set_attribute_node_ns)) {
 
     done $c;
   } n => 4, name => [$method, 'same element'];
-}
 
-{
-  package test::DestroyCallback;
-  sub DESTROY {
-    $_[0]->();
-  }
-}
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    my $el2 = $doc->create_element ('b');
+    
+    dies_here_ok {
+      $el->$method ($el2);
+    };
+    isa_ok $@, 'Web::DOM::TypeError';
+    is $@->name, 'TypeError';
+    is $@->message, 'The argument is not an Attr';
+
+    done $c;
+  } n => 4, name => [$method, 'not attr'];
+} # set_attribute_node / set_attribute_node_ns
 
 test {
   my $c = shift;
@@ -1758,6 +1774,44 @@ test {
 
   done $c;
 } n => 6, name => 'remove_attribute_node different doc no owner';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $doc->append_child ($el);
+
+  dies_here_ok {
+    $el->remove_attribute_node ($doc);
+  };
+  isa_ok $@, 'Web::DOM::TypeError';
+  is $@->name, 'TypeError';
+  is $@->message, 'The argument is not an Attr';
+
+  is $el->attributes->length, 0;
+  is $$doc->[0]->{tree_id}->[$$doc->[1]],
+      $$el->[0]->{tree_id}->[$$el->[1]];
+
+  done $c;
+} n => 6, name => 'remove_attribute_node not attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $doc->append_child ($el);
+
+  dies_here_ok {
+    $el->remove_attribute_node (undef);
+  };
+  isa_ok $@, 'Web::DOM::TypeError';
+  is $@->name, 'TypeError';
+  is $@->message, 'The argument is not an Attr';
+
+  is $el->attributes->length, 0;
+
+  done $c;
+} n => 5, name => 'remove_attribute_node not attr';
 
 run_tests;
 
