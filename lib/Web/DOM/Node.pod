@@ -76,6 +76,10 @@ L<Web::DOM::Attr> objects, this is equivalent to the C<value> method.
 For other kinds of nodes, this method has no effect.  [DOM]
 [DOMATTREXODUS]
 
+=item $node->normalize
+
+Normalize descendant contigious C<Text> nodes, if any.  [DOM]
+
 =item $doc = $node->owner_document
 
 Return the node document, i.e. the document the node belongs to,

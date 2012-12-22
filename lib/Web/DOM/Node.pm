@@ -602,7 +602,94 @@ sub node_value ($;$) {
 
 # XXX textContent
 
-# XXX normalize
+sub normalize ($) {
+  my $self = shift;
+  my $int = $$self->[0];
+  my $new_child_nodes = [];
+  my @text_id;
+
+  my $normalize = sub {
+    my $node_id;
+    while (@text_id) {
+      # 1.
+      $node_id = shift @text_id;
+
+      # 2.
+      my $length = length ${$int->{data}->[$node_id]->{data}};
+
+      # 3. Remove
+      if ($length == 0) {
+        # Remove 1.
+        #
+        
+        # Remove 2.-5.
+        # XXX range
+
+        # Remove 6.-7.
+        # XXX mutation
+
+        # Remove 8.
+        #$int->children_changed ($$self->[1], TEXT_NODE); # redundant
+        delete $int->{data}->[$node_id]->{parent_node};
+        $int->disconnect ($node_id);
+        # don't include $node_id to $new_child_nodes
+        
+        # Remove 9.
+        $int->node ($node_id); # for DESTROY
+        # XXX node is removed
+        return unless @text_id;
+        next;
+      } else {
+        last;
+      }
+    }
+
+    # 4., 5. Replace data (simplified)
+    # XXX mutation
+    ${$int->{data}->[$node_id]->{data}}
+        .= join '', map { ${$int->{data}->[$_]->{data}} } @text_id;
+    # XXX range
+
+    # 6.-7.
+    # XXX range
+
+    # 8. Remove (simplified)
+    push @$new_child_nodes, $node_id;
+    for (@text_id) {
+      # XXX range
+      # XXX mutation
+      #$int->children_changed ($$self->[1], TEXT_NODE); # redundant
+      delete $int->{data}->[$_]->{parent_node};
+      $int->disconnect ($_);
+      # don't include $_ to $new_child_nodes
+      # XXX node is removed
+      $int->node ($_); # for DESTROY
+    }
+  }; # normalize
+
+  for my $node_id (@{$$self->[2]->{child_nodes} or []}) {
+    my $nt = $int->{data}->[$node_id]->{node_type};
+    if ($nt == TEXT_NODE) {
+      push @text_id, $node_id;
+    } else {
+      if (@text_id) {
+        $normalize->();
+        @text_id = ();
+      }
+      if ($nt == ELEMENT_NODE) {
+        $int->node ($node_id)->normalize;
+        push @$new_child_nodes, $node_id;
+      } else {
+        push @$new_child_nodes, $node_id;
+      }
+    }
+  }
+  if (@text_id) {
+    $normalize->();
+  }
+  $int->children_changed ($$self->[1], ELEMENT_NODE);
+  @{$$self->[2]->{child_nodes} or []} = @$new_child_nodes;
+} # normalize
 
 # XXX cloneNode
 
