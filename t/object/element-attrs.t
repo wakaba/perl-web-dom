@@ -1347,6 +1347,268 @@ test {
   done $c;
 } n => 4, name => 'get_attribute_node case-sensitivity';
 
+for my $method (qw(set_attribute_node set_attribute_node_ns)) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $attr = $doc->create_attribute ('hoge');
+    $attr->value ('fuga');
+    
+    my $el = $doc->create_element ('foo');
+
+    $el->$method ($attr);
+
+    is $el->get_attribute ('hoge'), 'fuga';
+    is $el->get_attribute_ns (undef, 'hoge'), 'fuga';
+    is $attr->owner_element, $el;
+
+    is $$el->[0], $$attr->[0];
+    is $$el->[0]->{tree_id}->[$$el->[1]],
+        $$attr->[0]->{tree_id}->[$$attr->[1]];
+
+    done $c;
+  } n => 5, name => [$method, 'new attr, null namespace'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $attr = $doc->create_attribute_ns ('abc', 'a:hoge');
+    $attr->value ('fuga');
+    
+    my $el = $doc->create_element ('foo');
+
+    $el->$method ($attr);
+
+    is $el->get_attribute ('a:hoge'), 'fuga';
+    is $el->get_attribute_ns ('abc', 'hoge'), 'fuga';
+    is $attr->owner_element, $el;
+
+    is $$el->[0], $$attr->[0];
+    is $$el->[0]->{tree_id}->[$$el->[1]],
+        $$attr->[0]->{tree_id}->[$$attr->[1]];
+
+    done $c;
+  } n => 5, name => [$method, 'new attr, non-null namespace'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $attr = $doc->create_attribute ('hoge');
+    $attr->value ('fuga');
+    
+    my $el = $doc->create_element ('foo');
+    $el->set_attribute (hoge => '213');
+
+    $el->$method ($attr);
+
+    is $el->get_attribute ('hoge'), 'fuga';
+    is $el->get_attribute_ns (undef, 'hoge'), 'fuga';
+    is $attr->owner_element, $el;
+    is scalar @{$el->attributes}, 1;
+
+    is $$el->[0], $$attr->[0];
+    is $$el->[0]->{tree_id}->[$$el->[1]],
+        $$attr->[0]->{tree_id}->[$$attr->[1]];
+
+    done $c;
+  } n => 6, name => [$method, 'replace simple attr'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $attr = $doc->create_attribute_ns ('aa', 'hoge');
+    $attr->value ('fuga');
+    
+    my $el = $doc->create_element ('foo');
+    $el->set_attribute_ns ('aa', hoge => '213');
+
+    $el->$method ($attr);
+
+    is $el->get_attribute_ns ('aa', 'hoge'), 'fuga';
+    is $attr->owner_element, $el;
+    is scalar @{$el->attributes}, 1;
+
+    is $$el->[0], $$attr->[0];
+    is $$el->[0]->{tree_id}->[$$el->[1]],
+        $$attr->[0]->{tree_id}->[$$attr->[1]];
+
+    done $c;
+  } n => 5, name => [$method, 'replace node attr'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $attr = $doc->create_attribute ('hoge');
+    $attr->value ('fuga');
+    
+    my $el = $doc->create_element ('foo');
+    $el->set_attribute (hoge => '213');
+
+    my $old_attr = $el->$method ($attr);
+    isa_ok $old_attr, 'Web::DOM::Attr';
+    is $old_attr->prefix, undef;
+    is $old_attr->namespace_uri, undef;
+    is $old_attr->local_name, 'hoge';
+    is $old_attr->value, '213';
+    ok $old_attr->specified;
+    is $old_attr->owner_element, undef;
+
+    is $$el->[0], $$attr->[0];
+    is $$el->[0], $$old_attr->[0];
+    is $$el->[0]->{tree_id}->[$$el->[1]],
+        $$attr->[0]->{tree_id}->[$$attr->[1]];
+    isnt $$el->[0]->{tree_id}->[$$el->[1]],
+        $$old_attr->[0]->{tree_id}->[$$old_attr->[1]];
+
+    done $c;
+  } n => 11, name => [$method, 'replace simple attr, return'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $attr = $doc->create_attribute_ns ('aa', 'b:hoge');
+    $attr->value ('fuga');
+    
+    my $el = $doc->create_element ('foo');
+    $el->set_attribute_ns ('aa', 'c:hoge' => '213');
+
+    my $old_attr = $el->$method ($attr);
+    isa_ok $old_attr, 'Web::DOM::Attr';
+    is $old_attr->prefix, 'c';
+    is $old_attr->namespace_uri, 'aa';
+    is $old_attr->local_name, 'hoge';
+    is $old_attr->value, '213';
+    ok $old_attr->specified;
+    is $old_attr->owner_element, undef;
+
+    is $$el->[0], $$attr->[0];
+    is $$el->[0], $$old_attr->[0];
+    is $$el->[0]->{tree_id}->[$$el->[1]],
+        $$attr->[0]->{tree_id}->[$$attr->[1]];
+    isnt $$el->[0]->{tree_id}->[$$el->[1]],
+        $$old_attr->[0]->{tree_id}->[$$old_attr->[1]];
+
+    done $c;
+  } n => 11, name => [$method, 'replace node attr, return'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $attr = $doc->create_attribute_ns ('aa', 'b:hoge');
+    $attr->value ('fuga');
+    
+    my $el = $doc->create_element ('foo');
+    $el->set_attribute_ns ('aa', 'c:hoge' => '213');
+    my $called;
+    $el->get_attribute_node_ns ('aa', 'hoge')
+        ->set_user_data (destroy => bless sub {
+                           $called = 1;
+                         }, 'test::DestroyCallback');
+
+    $el->$method ($attr);
+    ok $called;
+
+    done $c;
+  } n => 1, name => [$method, 'replace node attr, destroy implicitly'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    
+    my $attr = $doc->create_attribute_ns ('aa', 'b:hoge');
+    $attr->value ('fuga');
+    
+    my $el = $doc->create_element ('foo');
+    $el->set_attribute_ns ('aa', 'c:hoge' => '213');
+    my $called;
+    $el->get_attribute_node_ns ('aa', 'hoge')
+        ->set_user_data (destroy => bless sub {
+                           $called = 1;
+                         }, 'test::DestroyCallback');
+
+    my $old = $el->$method ($attr);
+    undef $old;
+    ok $called;
+
+    done $c;
+  } n => 1, name => [$method, 'replace node attr, destroy explicitly'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    $el->set_attribute ('hoge' => 'aa');
+    my $attr = $el->get_attribute_node ('hoge');
+
+    my $el2 = $doc->create_element ('b');
+    dies_here_ok {
+      $el2->$method ($attr);
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'InUseAttributeError';
+    is $@->message, 'The specified attribute has already attached to another node';
+
+    ok $el->has_attribute ('hoge');
+    ok not $el2->has_attribute ('hoge');
+    is $attr->owner_element, $el;
+
+    done $c;
+  } n => 7, name => [$method, 'inuse'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    $el->set_attribute ('hoge' => 'aa');
+    my $attr = $el->get_attribute_node ('hoge');
+
+    my $doc2 = new Web::DOM::Document;
+    my $el2 = $doc2->create_element ('b');
+    dies_here_ok {
+      $el2->$method ($attr);
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'InUseAttributeError';
+    is $@->message, 'The specified attribute has already attached to another node';
+
+    ok $el->has_attribute ('hoge');
+    ok not $el2->has_attribute ('hoge');
+    is $attr->owner_element, $el;
+
+    done $c;
+  } n => 7, name => [$method, 'inuse, another document'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    $el->set_attribute (hoge => 4);
+
+    my $attr = $el->get_attribute_node ('hoge');
+    is $el->$method ($attr), $attr;
+
+    is $attr->owner_element, $el;
+    ok $attr->specified;
+    is $el->get_attribute ('hoge'), 4;
+
+    done $c;
+  } n => 4, name => [$method, 'same element'];
+}
+
+{
+  package test::DestroyCallback;
+  sub DESTROY {
+    $_[0]->();
+  }
+}
+
 run_tests;
 
 =head1 LICENSE

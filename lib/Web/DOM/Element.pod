@@ -93,6 +93,15 @@ Set the attribute with the specified namespace URL, qualified name,
 and value.  If there is already the attribute with the same namespace
 URL / local name pair, its value is replaced by the new one.  [DOM]
 
+=item $old_attr = $el->set_attribute_node ($new_attr)
+
+=item $old_attr = $el->set_attribute_node_ns ($new_attr)
+
+Append (or replace, if exists) the attribute node to the list of
+attributes for the element.  If there is already the attribute with
+same namespace URL / local name pair, the attribute is removed from
+the list and is returned by the method.  [MANAKAI]
+
 =item $name = $el->tag_name
 
 Return the tag name of the element.  [DOM]

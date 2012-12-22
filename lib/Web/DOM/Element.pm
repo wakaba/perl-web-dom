@@ -371,6 +371,65 @@ sub set_attribute_ns ($$$$) {
   }
 } # set_attribute_ns
 
+sub set_attribute_node ($$) {
+  # 1.
+  my ($node, $attr) = @_;
+
+  # 2.
+  if (defined $$attr->[2]->{owner_element} and
+      not ($$attr->[0] eq $$node->[0] and
+           $$attr->[2]->{owner_element} == $$node->[1])) {
+    _throw Web::DOM::Exception 'InUseAttributeError',
+        'The specified attribute has already attached to another node';
+  }
+
+  # XXX MutationObserver
+
+  # 3.
+  # XXX adopt
+
+  # 4.
+  my $nsurl = ${$$attr->[2]->{namespace_uri} || \''};
+  my $ln = ${$$attr->[2]->{local_name}};
+  my $old_attr_id = $$node->[2]->{attrs}->{$nsurl}->{$ln};
+  if (defined $old_attr_id and ref $old_attr_id and defined wantarray) {
+    local $_ = \$ln;
+    $InflateAttr->($node);
+    $old_attr_id = $_;
+  }
+  if (defined $old_attr_id and not ref $old_attr_id) {
+    delete $$node->[0]->{data}->[$old_attr_id]->{owner_element};
+    $$node->[0]->disconnect ($old_attr_id);
+  }
+
+  if (defined $old_attr_id) {
+    # 6.
+    if (ref $old_attr_id) {
+      @{$$node->[2]->{attributes}} = map {
+        ref $_ && $$_ eq $ln ? $$attr->[1] : $_;
+      } @{$$node->[2]->{attributes}};
+    } else {
+      @{$$node->[2]->{attributes}} = map {
+        $_ == $old_attr_id ? $$attr->[1] : $_;
+      } @{$$node->[2]->{attributes}};
+    }
+  } else {
+    # 5.
+    push @{$$node->[2]->{attributes} ||= []}, $$attr->[1];
+  }
+  $$node->[2]->{attrs}->{$nsurl}->{$ln} = $$attr->[1];
+
+  # 7.
+  $$attr->[2]->{owner_element} = $$node->[1];
+  $$node->[0]->connect ($$node->[1] => $$attr->[1]);
+  
+  return $$node->[0]->node ($old_attr_id)
+      if defined $old_attr_id and not ref $old_attr_id;
+  return undef;
+} # set_attribute_node
+
+*set_attribute_node_ns = \&set_attribute_node;
+
 sub remove_attribute ($$) {
   my $node = $_[0];
   my $name = ''.$_[1];

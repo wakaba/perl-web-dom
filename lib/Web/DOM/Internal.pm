@@ -176,6 +176,7 @@ sub connect ($$$) {
     my $id = shift @id;
     $self->{tree_id}->[$id] = $tree_id;
     push @id, @{$self->{data}->[$id]->{child_nodes} or []};
+    push @id, grep { not ref $_ } @{$self->{data}->[$id]->{attributes} or []};
   }
 } # connect
 
@@ -187,6 +188,7 @@ sub disconnect ($$) {
     my $id = shift @id;
     $self->{tree_id}->[$id] = $tree_id;
     push @id, @{$self->{data}->[$id]->{child_nodes} or []};
+    push @id, grep { not ref $_ } @{$self->{data}->[$id]->{attributes} or []};
   }
 } # disconnect
 
