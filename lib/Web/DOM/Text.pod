@@ -12,7 +12,14 @@ In addition to the methods of classes L<Web::DOM::Node>,
 L<Web::DOM::CharacterData>, and L<Web::DOM::ChildNode>, following
 methods are available:
 
-XXX
+=over 4
+
+=item $string = $text->whole_text
+
+Return the the concatenation of the values of the text node and any
+adjacent text nodes.  [DOM]
+
+=back
 
 =head1 SPECIFICATION
 
