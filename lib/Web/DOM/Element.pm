@@ -58,6 +58,7 @@ my $InflateAttr = sub ($) {
               owner_element => $$node->[1]};
   my $attr_id = $$node->[0]->add_data ($data);
   $$node->[2]->{attrs}->{''}->{$$_} = $attr_id;
+  $$node->[0]->connect ($$node->[1] => $attr_id);
   $_ = $attr_id;
 }; # $InflateAttr
 
@@ -503,7 +504,27 @@ sub remove_attribute_ns ($$$) {
   }
 } # remove_attribute_ns
 
-# XXX attr node methods
+sub remove_attribute_node ($$) {
+  my ($node, $attr) = @_;
+  
+  if ($$node->[0] eq $$attr->[0] and
+      defined $$attr->[2]->{owner_element} and
+      $$node->[1] == $$attr->[2]->{owner_element}) {
+    #
+  } else {
+    _throw Web::DOM::Exception 'NotFoundError',
+        'The specified attribute is not an attribute of the element';
+  }
+
+  delete $$node->[2]->{attrs}->{${$$attr->[2]->{namespace_uri} || \''}}->{${$$attr->[2]->{local_name}}};
+  @{$$node->[2]->{attributes}} = grep {
+    $_ != $$attr->[1];
+  } @{$$node->[2]->{attributes}};
+  delete $$attr->[2]->{owner_element};
+  $$node->[0]->disconnect ($$attr->[1]);
+
+  return $attr;
+} # remove_attribute_node
 
 # XXX id / class attrs
 

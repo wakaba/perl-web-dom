@@ -1609,6 +1609,156 @@ for my $method (qw(set_attribute_node set_attribute_node_ns)) {
   }
 }
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  $el->set_attribute (hoge => 4);
+
+  my $attr = $el->get_attribute_node ('hoge');
+
+  is $$el->[0], $$attr->[0];
+  is $$el->[0]->{tree_id}->[$$el->[1]],
+      $$attr->[0]->{tree_id}->[$$attr->[1]];
+
+  $el->remove_attribute_node ($attr);
+
+  is $el->get_attribute ('hoge'), undef;
+  is $el->attributes->length, 0;
+
+  is $$el->[0], $$attr->[0];
+  isnt $$el->[0]->{tree_id}->[$$el->[1]],
+      $$attr->[0]->{tree_id}->[$$attr->[1]];
+
+  done $c;
+} n => 6, name => 'remove_attribute_node null namespace';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('a');
+  $el->set_attribute_ns ("aaa", "bb:hoge" => 4);
+
+  my $attr = $el->get_attribute_node ('bb:hoge');
+
+  is $$el->[0], $$attr->[0];
+  is $$el->[0]->{tree_id}->[$$el->[1]],
+      $$attr->[0]->{tree_id}->[$$attr->[1]];
+
+  $el->remove_attribute_node ($attr);
+
+  is $el->get_attribute ('bb:hoge'), undef;
+  is $el->attributes->length, 0;
+
+  is $$el->[0], $$attr->[0];
+  isnt $$el->[0]->{tree_id}->[$$el->[1]],
+      $$attr->[0]->{tree_id}->[$$attr->[1]];
+
+  done $c;
+} n => 6, name => 'remove_attribute_node non-null namespace';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+  $el->set_attribute ('hh' => 44);
+
+  my $attr = $el->get_attribute_node ('hh');
+  my $attr2 = $el->remove_attribute_node ($attr);
+
+  is $attr2, $attr;
+  is $attr2->owner_element, undef;
+  ok $attr2->specified;
+
+  done $c;
+} n => 3, name => 'remove_attribute_node returned';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $attr = $doc->create_attribute ('b7a');
+  my $el = $doc->create_element ('aa');
+
+  dies_here_ok {
+    $el->remove_attribute_node ($attr);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The specified attribute is not an attribute of the element';
+
+  is $attr->owner_element, undef;
+  is $el->attributes->length, 0;
+
+  done $c;
+} n => 6, name => 'remove_attribute_node no owner';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $attr = $doc->create_attribute ('b7a');
+  my $el = $doc->create_element ('aa');
+  my $el2 = $doc->create_element ('aa');
+  $el2->set_attribute_node ($attr);
+
+  dies_here_ok {
+    $el->remove_attribute_node ($attr);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The specified attribute is not an attribute of the element';
+
+  is $attr->owner_element, $el2;
+  is $el->attributes->length, 0;
+  is $el2->attributes->length, 1;
+
+  done $c;
+} n => 7, name => 'remove_attribute_node different owner';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $doc2 = new Web::DOM::Document;
+  my $attr = $doc2->create_attribute ('b7a');
+  my $el = $doc->create_element ('aa');
+  my $el2 = $doc2->create_element ('aa');
+  $el2->set_attribute_node ($attr);
+
+  dies_here_ok {
+    $el->remove_attribute_node ($attr);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The specified attribute is not an attribute of the element';
+
+  is $attr->owner_element, $el2;
+  is $el->attributes->length, 0;
+  is $el2->attributes->length, 1;
+
+  done $c;
+} n => 7, name => 'remove_attribute_node different doc different owner';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $doc2 = new Web::DOM::Document;
+  my $attr = $doc2->create_attribute ('b7a');
+  my $el = $doc->create_element ('aa');
+
+  dies_here_ok {
+    $el->remove_attribute_node ($attr);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The specified attribute is not an attribute of the element';
+
+  is $attr->owner_element, undef;
+  is $el->attributes->length, 0;
+
+  done $c;
+} n => 6, name => 'remove_attribute_node different doc no owner';
+
 run_tests;
 
 =head1 LICENSE

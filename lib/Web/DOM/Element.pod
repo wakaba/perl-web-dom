@@ -81,6 +81,11 @@ found, the method does nothing.  [DOM]
 Remove the attribute with the specified namespace URL and local name.
 If no attribute is found, the method does nothing.  [DOM]
 
+=item $attr = $el->remove_attribute_node ($attr)
+
+Remove the specified attribute from the element.  The removed
+attribute is returned.  [MANAKAI]
+
 =item $el->set_attribute ($name => $value)
 
 Set the attribute with the specified name and value.  If there is
