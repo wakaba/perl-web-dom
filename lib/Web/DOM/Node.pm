@@ -693,7 +693,84 @@ sub normalize ($) {
 
 # XXX cloneNode
 
-# XXX isEqualNode
+sub is_same_node ($$) {
+  return 0 unless defined $_[1];
+
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {
+    _throw Web::DOM::TypeError 'The argument is not a Node';
+  }
+  
+  return $_[0] eq $_[1];
+} # is_same_node
+
+sub is_equal_node ($$) {
+  my ($node1, $node2) = @_;
+
+  return 0 unless defined $node2;
+
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {
+    _throw Web::DOM::TypeError 'The argument is not a Node';
+  }
+
+  my $nt1 = $node1->node_type;
+  my $nt2 = $node2->node_type;
+
+  return 0 if $nt1 != $nt2;
+
+  if ($nt1 == ELEMENT_NODE or $nt2 == ATTRIBUTE_NODE) {
+    return 0 unless $node1->local_name eq $node2->local_name;
+    my $ns1 = $node1->namespace_uri;
+    my $ns2 = $node2->namespace_uri;
+    return 0 if defined $ns1 and not defined $ns2;
+    return 0 if not defined $ns1 and defined $ns2;
+    return 0 if defined $ns1 and not $ns1 eq $ns2;
+
+    if ($nt1 == ELEMENT_NODE) {
+      my $prefix1 = $node1->prefix;
+      my $prefix2 = $node2->prefix;
+      return 0 if defined $prefix1 and not defined $prefix2;
+      return 0 if not defined $prefix1 and defined $prefix2;
+      return 0 if defined $prefix1 and not $prefix1 eq $prefix2;
+
+      my $attrs1 = $node1->attributes->to_a;
+      my $attrs2 = $node2->attributes->to_a;
+      return 0 unless @$attrs1 == @$attrs2;
+      my %attrs1;
+      for (@$attrs1) {
+        my $nsurl = $_->namespace_uri;
+        $attrs1{defined $nsurl ? $nsurl : ''}->{$_->local_name} = $_->value;
+      }
+      for (@$attrs2) {
+        my $nsurl = $_->namespace_uri;
+        my $value1 = $attrs1{defined $nsurl ? $nsurl : ''}->{$_->local_name};
+        return 0 unless defined $value1;
+        return 0 unless $value1 eq $_->value;
+      }
+    } elsif ($nt1 == ATTRIBUTE_NODE) {
+      return 0 unless $node1->value eq $node2->value;
+    }
+  } elsif ($nt1 == TEXT_NODE or $nt1 == COMMENT_NODE) {
+    return 0 unless $node1->data eq $node2->data;
+  } elsif ($nt1 == DOCUMENT_TYPE_NODE) {
+    return 0 unless $node1->name eq $node2->name;
+    return 0 unless $node1->public_id eq $node2->public_id;
+    return 0 unless $node1->system_id eq $node2->system_id;
+  } elsif ($nt1 == PROCESSING_INSTRUCTION_NODE) {
+    return 0 unless $node1->target eq $node2->target;
+    return 0 unless $node1->data eq $node2->data;
+  }
+
+  my @child1 = $node1->child_nodes->to_list;
+  my @child2 = $node2->child_nodes->to_list;
+  return 0 unless @child1 == @child2;
+  for (0..$#child1) {
+    return 0 unless $child1[$_]->is_equal_node ($child2[$_]);
+  }
+  return 1;
+} # is_equal_node
+
 # XXX compareDocumentPosition
 
 # XXX namespace lookup

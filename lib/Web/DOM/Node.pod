@@ -43,6 +43,11 @@ Return whether the node has any content attribute or not.
 
 Insert the specified node just after the specified node.  [DOM]
 
+=item $bool = $node1->is_equal_node ($node2)
+
+Return whether two nodes are equal or not.  [DOM] [DOMATTREXODUS]
+[MANAKAI]
+
 =item $bool = $node->has_child_nodes
 
 Return whether the node has children or not.  [DOM]
@@ -106,6 +111,10 @@ C<undef> is returned.  [DOM] [DOMATTREXODUS]
 Replace the specified child node by a new node.  The first argument is
 the new child node.  The second argument is the current child node,
 which is to be replaced.  The new child node is returned.  [DOM]
+
+=item $bool = $node1->is_same_node ($node2)
+
+Return whether two nodes are same or not.  [DOM3CORE] [MANAKAI]
 
 =back
 
