@@ -16,6 +16,7 @@ test {
   is $attr->node_type, $attr->ATTRIBUTE_NODE;
   is $attr->node_name, 'hoge';
   is $attr->name, 'hoge';
+  is $attr->manakai_name, 'hoge';
   is $attr->local_name, 'hoge';
   is $attr->manakai_local_name, 'hoge';
   is $attr->namespace_uri, undef;
@@ -31,7 +32,7 @@ test {
   ok $attr->specified;
 
   done $c;
-} n => 16, name => 'basic node operations';
+} n => 17, name => 'basic node operations';
 
 test {
   my $c = shift;
@@ -43,6 +44,7 @@ test {
   is $attr->node_type, $attr->ATTRIBUTE_NODE;
   is $attr->node_name, 'aa:hoge';
   is $attr->name, 'aa:hoge';
+  is $attr->manakai_name, 'aa:hoge';
   is $attr->local_name, 'hoge';
   is $attr->manakai_local_name, 'hoge';
   is $attr->namespace_uri, 'fff';
@@ -58,7 +60,7 @@ test {
   ok $attr->specified;
 
   done $c;
-} n => 16, name => 'basic node operations, namespaced';
+} n => 17, name => 'basic node operations, namespaced';
 
 test {
   my $c = shift;
@@ -95,15 +97,19 @@ test {
 
   $attr->prefix (undef);
   is $attr->name, 'gff';
+  is $attr->node_name, 'gff';
+  is $attr->manakai_name, 'gff';
 
   $attr->prefix ('aaaa');
   is $attr->name, 'aaaa:gff';
+  is $attr->node_name, 'aaaa:gff';
+  is $attr->manakai_name, 'aaaa:gff';
   is $attr->prefix, 'aaaa';
   is $attr->local_name, 'gff';
   is $attr->namespace_uri, 'aaa';
 
   done $c;
-} n => 5, name => 'prefix';
+} n => 9, name => 'prefix';
 
 test {
   my $c = shift;

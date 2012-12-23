@@ -15,16 +15,14 @@ following methods:
 
 =item $name = $attr->local_name
 
-Return the local name of the attribute.  [DOM]
+=item $name = $attr->manakai_local_name (DEPRECATED)
 
-=item $name = $attr->manakai_local_name
-
-Return the local name of the attribute.  This method is deprecated in
-favor of C<local_name>. [MANAKAI]
+Return the local name of the attribute.  [DOM] [MANAKAI]
 
 =item $url = $attr->namespace_uri
 
-Return the namespace URL of the attribute.  [DOM]
+Return the namespace URL of the attribute.  If the attribute does not
+belong to any namespace, C<undef> is returned.  [DOM]
 
 =item $el = $attr->owner_element
 
@@ -33,7 +31,9 @@ an element, C<undef> is returned.  [DOMATTREXODUS]
 
 =item $name = $attr->name
 
-Return the attribute name.  [DOM]
+=item $name = $attr->manakai_name (DEPRECATED)
+
+Return the attribute name.  [DOM] [MANAKAI]
 
 =item $prefix = $attr->prefix
 

@@ -6,8 +6,8 @@ use Web::DOM::Node;
 push our @ISA, qw(Web::DOM::Node);
 
 *node_name = \&name;
+*manakai_name = \&name;
 
-# XXX
 sub name ($) {
   if (${$_[0]}->[2]->{prefix}) {
     return ${${$_[0]}->[2]->{prefix}} . ':' . ${${$_[0]}->[2]->{local_name}};
@@ -16,9 +16,9 @@ sub name ($) {
   }
 } # name
 
-# XXX
 sub value ($;$) {
   if (@_ > 1) {
+    # XXX mutation?
     ${$_[0]}->[2]->{value} = $_[1];
   }
   return ${$_[0]}->[2]->{value};
