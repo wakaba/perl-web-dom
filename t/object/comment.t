@@ -44,6 +44,15 @@ test {
   done $c;
 } n => 22, name => 'create_comment';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $comment = $doc->create_comment ('aaa');
+  $comment->data (undef);
+  is $comment->data, '';
+  done $c;
+} n => 1, name => 'data TreatNullAs=EmptyString';
+
 run_tests;
 
 =head1 LICENSE

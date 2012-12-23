@@ -48,6 +48,15 @@ test {
   done $c;
 } n => 25, name => 'create_processing_instruction';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $pi = $doc->create_processing_instruction ('f', 'aaa');
+  $pi->data (undef);
+  is $pi->data, '';
+  done $c;
+} n => 1, name => 'data TreatNullAs=EmptyString';
+
 run_tests;
 
 =head1 LICENSE

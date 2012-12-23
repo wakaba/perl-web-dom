@@ -47,6 +47,15 @@ test {
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
+  my $text = $doc->create_text_node ('aaa');
+  $text->data (undef);
+  is $text->data, '';
+  done $c;
+} n => 1, name => 'data TreatNullAs=EmptyString';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
   my $text = $doc->create_text_node ('');
   is $text->whole_text, '';
   done $c;

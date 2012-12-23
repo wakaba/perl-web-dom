@@ -13,7 +13,7 @@ sub data ($;$) {
   if (@_ > 1) {
     ## "Replace data" steps (simplified)
     # XXX mutation record
-    ${${$_[0]}->[2]->{data}} = ''.$_[1];
+    ${${$_[0]}->[2]->{data}} = defined $_[1] ? ''.$_[1] : ''; # WebIDL
     # XXX range
   }
   return ${${$_[0]}->[2]->{data}} if defined wantarray;
