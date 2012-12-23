@@ -192,6 +192,75 @@ sub disconnect ($$) {
   }
 } # disconnect
 
+## Move a node, with its descendants and their related objects, from
+## the document to another (this) document.  Please note that this
+## method is not enough for the "adopt" operation as defined in the
+## DOM Standard; that operation requires more than this method does,
+## including removal of the parent node of the node.  This method
+## assumes that $node has no parent or owner.
+sub adopt ($$) {
+  my ($new_int, $node) = @_;
+  my $old_int = $$node->[0];
+  return if $old_int eq $new_int;
+
+  my @old_id = ($$node->[1]);
+  my $new_tree_id = $new_int->{next_tree_id}++;
+  my %id_map;
+  my @data;
+  while (@old_id) {
+    my $old_id = shift @old_id;
+    my $new_id = $new_int->{next_node_id}++;
+    $id_map{$old_id} = $new_id;
+
+    my $data = $new_int->{data}->[$new_id]
+        = delete $old_int->{data}->[$old_id];
+    push @data, $data;
+
+    delete $old_int->{tree_id}->[$old_id];
+    $new_int->{tree_id}->[$new_id] = $new_tree_id;
+
+    push @old_id, @{$data->{child_nodes} or []};
+    push @old_id, grep { not ref $_ } @{$data->{attributes} or []};
+
+    if (my $node = delete $old_int->{nodes}->[$old_id]) {
+      weaken ($new_int->{nodes}->[$new_id] = $node);
+      $$node->[0] = $new_int;
+      $$node->[1] = $new_id;
+    }
+
+    if (my $cols = delete $old_int->{cols}->[$old_id]) {
+      $new_int->{cols}->[$new_id] = $cols;
+      for (values %$cols) {
+        delete $$_->[2] if defined $_;
+      }
+    }
+
+    $new_int->{rc}->[$new_id] = delete $old_int->{rc}->[$old_id]
+        if $old_int->{rc}->[$old_id];
+  }
+  
+  for my $data (@data) {
+    @{$data->{child_nodes}} = map { $id_map{$_} } @{$data->{child_nodes}}
+        if $data->{child_nodes};
+    @{$data->{attributes}} = map {
+      ref $_ ? $_ : $id_map{$_};
+    } @{$data->{attributes}} if $data->{attributes};
+    for (values %{$data->{attrs} or {}}) {
+      for my $ln (keys %$_) {
+        if (defined $_->{$ln} and not ref $_->{$ln}) {
+          $_->{$ln} = $id_map{$_->{$ln}};
+        }
+      }
+    }
+    for (qw(parent_node owner_element)) {
+      $data->{$_} = $id_map{$data->{$_}} if defined $data->{$_};
+    }
+  }
+} # adopt
+
+# XXX should we drop the "rc" concept and hard code that the node ID
+# "0" can't be freed until the nodes within the document has been
+# freed?
 sub gc ($$) {
   my ($self, $id) = @_;
   delete $self->{nodes}->[$id];
@@ -205,6 +274,7 @@ sub gc ($$) {
     delete $self->{data}->[$_];
     delete $self->{tree_id}->[$_];
     delete $self->{rc}->[$_];
+    delete $self->{cols}->[$_];
   }
 } # gc
 

@@ -1623,6 +1623,24 @@ for my $method (qw(set_attribute_node set_attribute_node_ns)) {
 
     done $c;
   } n => 4, name => [$method, 'not attr'];
+
+  test {
+    my $c = shift;
+    my $doc1 = new Web::DOM::Document;
+    my $doc2 = new Web::DOM::Document;
+
+    my $el1 = $doc1->create_element ('a');
+    my $attr2 = $doc2->create_attribute ('hoge');
+    $attr2->value ('fuga');
+
+    $el1->$method ($attr2);
+
+    is $el1->owner_document, $doc1;
+    is $attr2->owner_document, $doc1;
+    is $el1->get_attribute ('hoge'), 'fuga';
+
+    done $c;
+  } n => 3, name => [$method, 'from different document'];
 } # set_attribute_node / set_attribute_node_ns
 
 test {

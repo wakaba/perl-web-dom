@@ -259,9 +259,9 @@ sub _pre_insert ($$;$$) {
   }
   
   # 3.
-  if (defined $child) {
-    if ($$parent->[0] eq $$child->[0]) {
-      my $rc_parent = $$child->[2]->{parent_node};
+  if (defined $child or defined $old_child) {
+    if ($$parent->[0] eq ${$child || $old_child}->[0]) {
+      my $rc_parent = ${$child || $old_child}->[2]->{parent_node};
       if (not defined $rc_parent or $rc_parent != $$parent->[1]) {
         _throw Web::DOM::Exception 'NotFoundError',
             'The reference child is not a child of the parent node';
@@ -445,12 +445,7 @@ sub _pre_insert ($$;$$) {
   
   # 9. adopt
   {
-    # Adopt 1.
-    if ($$node->[2]->{node_type} == ELEMENT_NODE) {
-      # XXX affected by a base URL change.
-    }
-
-    # Adopt 2. Remove
+    # Adopt 1. Remove
     if (defined (my $old_parent_id = $$node->[2]->{parent_node})) {
       # Remove 1.
       my $old_parent = $$node->[0]->{data}->[$old_parent_id];
@@ -470,9 +465,13 @@ sub _pre_insert ($$;$$) {
       # XXX node is removed
     }
 
+    # Adopt 2.
+    $$parent->[0]->adopt ($node);
+
     # Adopt 3.
-    # ownerDocument
-    # XXX adopt
+    if ($$node->[2]->{node_type} == ELEMENT_NODE) {
+      # XXX affected by a base URL change.
+    }
   } # adopt
 
   # Replace 10. remove ("suppress observers flag" set)

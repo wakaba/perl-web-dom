@@ -321,7 +321,40 @@ sub create_processing_instruction ($$$) {
 
 # XXX importNode
 
-# XXX adoptNode
+sub adopt_node ($$) {
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {
+    _throw Web::DOM::TypeError 'The argument is not a Node';
+  }
+  
+  # 1.
+  my $node = $_[1];
+  if ($node->node_type == DOCUMENT_NODE) {
+    _throw Web::DOM::Exception 'NotSupportedError',
+        'Cannot adopt document node';
+  }
+
+  # 2. Adopt
+  {
+    # Adopt 1. Remove
+    if (defined $$node->[2]->{parent_node}) {
+      $node->parent_node->remove_child ($node);
+    } elsif (defined $$node->[2]->{owner_element}) {
+      $node->owner_element->remove_attribute_node ($node);
+    }
+
+    # Adopt 2.
+    ${$_[0]}->[0]->adopt ($node);
+
+    # Adopt 3.
+    if ($$node->[2]->{node_type} == ELEMENT_NODE) {
+      # XXX affected by a base URL change.
+    }
+  }
+
+  # 3.
+  return $node;
+} # adopt_node
 
 # XXX createEvent
 

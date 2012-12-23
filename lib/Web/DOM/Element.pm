@@ -391,8 +391,8 @@ sub set_attribute_node ($$) {
 
   # XXX MutationObserver
 
-  # 3.
-  # XXX adopt
+  # 3. Adopt (simplified)
+  $$node->[0]->adopt ($attr);
 
   # 4.
   my $nsurl = ${$$attr->[2]->{namespace_uri} || \''};

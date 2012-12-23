@@ -1149,7 +1149,80 @@ for my $method (qw(append_child insert_before)) {
 
     done $c;
   } n => 8, name => [$method, 'df child_nodes'];
+
+  test {
+    my $c = shift;
+    my $doc1 = new Web::DOM::Document;
+    my $doc2 = new Web::DOM::Document;
+    $doc2->create_text_node ('a') for 1..rand 10;
+
+    my $el1 = $doc1->create_element ('aa');
+    my $el2 = $doc2->create_element ('aa');
+
+    my $el3 = $el1->$method ($el2);
+    is $el3, $el2;
+
+    is $el1->first_child, $el2;
+    is $el2->parent_node, $el1;
+
+    is $el1->owner_document, $doc1;
+    is $el2->owner_document, $doc1;
+    
+    done $c;
+  } n => 5, name => [$method, 'different document'];
 }
+
+test {
+  my $c = shift;
+  my $doc1 = new Web::DOM::Document;
+  my $doc2 = new Web::DOM::Document;
+
+  my $el1 = $doc1->create_element ('a');
+  my $el2 = $doc1->create_element ('a');
+  my $el3 = $doc2->create_element ('a');
+
+  dies_here_ok {
+    $el1->insert_before ($el2, $el3);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The reference child is not a child of the parent node';
+
+  is $el1->child_nodes->length, 0;
+  is $el2->parent_node, undef;
+
+  is $el1->owner_document, $doc1;
+  is $el2->owner_document, $doc1;
+  is $el3->owner_document, $doc2;
+  
+  done $c;
+} n => 9, name => 'insert_before refchild is different doc';
+
+test {
+  my $c = shift;
+  my $doc1 = new Web::DOM::Document;
+  my $doc2 = new Web::DOM::Document;
+  $doc2->create_text_node ('a') for 1..rand 10;
+
+  my $el1 = $doc1->create_element ('a');
+  my $el2 = $doc1->create_element ('a');
+  my $el3 = $doc2->create_element ('a');
+  $el1->append_child ($el2);
+
+  my $el4 = $el1->insert_before ($el3, $el2);
+  is $el4, $el3;
+
+  is $el1->first_child, $el3;
+  is $el1->last_child, $el2;
+  is $el3->parent_node, $el1;
+  is $el2->parent_node, $el1;
+
+  is $el1->owner_document, $doc1;
+  is $el2->owner_document, $doc1;
+  is $el3->owner_document, $doc1;
+
+  done $c;
+} n => 8, name => 'insert_before diferent document';
 
 run_tests;
 

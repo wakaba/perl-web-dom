@@ -822,4 +822,105 @@ test {
   done $c;
 } n => 4, name => 'replace_child parent child_nodes';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el1 = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('a');
+  my $el3 = $doc->create_element ('a');
+  my $el4 = $doc->create_element ('a');
+  $el1->append_child ($el2);
+  $el4->append_child ($el3);
+
+  dies_here_ok {
+    $el1->replace_child ($el2, $el3);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The reference child is not a child of the parent node';
+  
+  is $el1->first_child, $el2;
+  is $el1->last_child, $el2;
+  is $el2->parent_node, $el1;
+  is $el3->parent_node, $el4;
+  
+  done $c;
+} n => 8, name => 'replace_child ref child not found';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el1 = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('a');
+  my $el3 = $doc->create_element ('a');
+
+  dies_here_ok {
+    $el1->replace_child ($el2, $el3);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The reference child is not a child of the parent node';
+  
+  is $el1->first_child, undef;
+  is $el2->parent_node, undef;
+  is $el3->parent_node, undef;
+  
+  done $c;
+} n => 7, name => 'replace_child ref child no parent';
+
+test {
+  my $c = shift;
+  my $doc1 = new Web::DOM::Document;
+  my $doc2 = new Web::DOM::Document;
+  $doc2->create_text_node ('a') for 1..rand 10;
+
+  my $el1 = $doc1->create_element ('a');
+  my $el2 = $doc1->create_element ('a');
+  my $el3 = $doc2->create_element ('a');
+  $el1->append_child ($el2);
+
+  my $el4 = $el1->replace_child ($el3, $el2);
+  is $el4, $el3;
+
+  is $el1->first_child, $el3;
+  is $el3->parent_node, $el1;
+  is $el2->parent_node, undef;
+
+  is $el1->owner_document, $doc1;
+  is $el2->owner_document, $doc1;
+  is $el3->owner_document, $doc1;
+
+  done $c;
+} n => 7, name => 'replace_child diferent document';
+
+test {
+  my $c = shift;
+  my $doc1 = new Web::DOM::Document;
+  my $doc2 = new Web::DOM::Document;
+  $doc2->create_text_node ('a') for 1..rand 10;
+
+  my $el1 = $doc1->create_element ('a');
+  my $el2 = $doc1->create_element ('a');
+  my $el3 = $doc2->create_element ('a');
+
+  dies_here_ok {
+    $el1->replace_child ($el2, $el3);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The reference child is not a child of the parent node';
+
+  is $el1->first_child, undef;
+  is $el3->parent_node, undef;
+  is $el2->parent_node, undef;
+
+  is $el1->owner_document, $doc1;
+  is $el2->owner_document, $doc1;
+  is $el3->owner_document, $doc2;
+
+  done $c;
+} n => 10, name => 'replace_child ref is diferent document';
+
 run_tests;
