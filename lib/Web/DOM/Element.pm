@@ -31,6 +31,17 @@ sub tag_name ($) {
   return $qname;
 } # tag_name
 
+sub manakai_tag_name ($) {
+  my $data = ${$_[0]}->[2];
+  my $qname;
+  if (defined $data->{prefix}) {
+    $qname = ${$data->{prefix}} . ':' . ${$data->{local_name}};
+  } else {
+    $qname = ${$data->{local_name}};
+  }
+  return $qname;
+} # manakai_tag_name
+
 ## Attributes
 ##
 ## An attribute is represented as either:

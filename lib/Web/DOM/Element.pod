@@ -111,6 +111,12 @@ the list and is returned by the method.  [MANAKAI]
 
 Return the tag name of the element.  [DOM]
 
+=item $name = $el->manakai_tag_name
+
+Return the tag name of the element.  Even when the element is an HTML
+element in the HTML document, this method returns the "real" tag name,
+without case folding.  [MANAKAI]
+
 =back
 
 =head1 SPECIFICATIONS

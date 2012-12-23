@@ -19,6 +19,7 @@ test {
   is $el->namespace_uri, 'http://www.w3.org/1999/xhtml';
   is $el->prefix, undef;
   is $el->tag_name, 'el';
+  is $el->manakai_tag_name, 'el';
   is $el->node_name, $el->tag_name;
 
   is $el->node_value, undef;
@@ -26,7 +27,7 @@ test {
   is $el->node_value, undef;
 
   done $c;
-} name => 'basic / XHTML', n => 10;
+} name => 'basic / XHTML', n => 11;
 
 test {
   my $c = shift;
@@ -38,9 +39,10 @@ test {
   is $el->prefix, undef;
   is $el->namespace_uri, 'http://www.w3.org/1999/xhtml';
   is $el->tag_name, 'ABC';
+  is $el->manakai_tag_name, 'abc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / HTML';
+} n => 7, name => 'names / HTML';
 
 test {
   my $c = shift;
@@ -52,9 +54,10 @@ test {
   is $el->prefix, undef;
   is $el->namespace_uri, undef;
   is $el->tag_name, 'abc';
+  is $el->manakai_tag_name, 'abc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / null in HTML';
+} n => 7, name => 'names / null in HTML';
 
 test {
   my $c = shift;
@@ -67,9 +70,10 @@ test {
   is $el->prefix, 'HoGe';
   is $el->namespace_uri, 'http://www.w3.org/1999/xhtml';
   is $el->tag_name, 'HOGE:ABC';
+  is $el->manakai_tag_name, 'HoGe:aBc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / HTML prefixed in HTML';
+} n => 7, name => 'names / HTML prefixed in HTML';
 
 test {
   my $c = shift;
@@ -81,9 +85,10 @@ test {
   is $el->prefix, undef;
   is $el->namespace_uri, 'http://hoge';
   is $el->tag_name, 'aBc';
+  is $el->manakai_tag_name, 'aBc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / XML in HTML';
+} n => 7, name => 'names / XML in HTML';
 
 test {
   my $c = shift;
@@ -95,9 +100,10 @@ test {
   is $el->prefix, 'AA';
   is $el->namespace_uri, 'http://hoge';
   is $el->tag_name, 'AA:aBc';
+  is $el->manakai_tag_name, 'AA:aBc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / XML prefixed in HTML';
+} n => 7, name => 'names / XML prefixed in HTML';
 
 test {
   my $c = shift;
@@ -108,9 +114,10 @@ test {
   is $el->prefix, undef;
   is $el->namespace_uri, undef;
   is $el->tag_name, 'aBc';
+  is $el->manakai_tag_name, 'aBc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / null in XML';
+} n => 7, name => 'names / null in XML';
 
 test {
   my $c = shift;
@@ -121,9 +128,10 @@ test {
   is $el->prefix, undef;
   is $el->namespace_uri, 'http://www.w3.org/1999/xhtml';
   is $el->tag_name, 'aBc';
+  is $el->manakai_tag_name, 'aBc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / HTML in XML';
+} n => 7, name => 'names / HTML in XML';
 
 test {
   my $c = shift;
@@ -134,9 +142,10 @@ test {
   is $el->prefix, undef;
   is $el->namespace_uri, 'http://hoge';
   is $el->tag_name, 'aBc';
+  is $el->manakai_tag_name, 'aBc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / XML in XML';
+} n => 7, name => 'names / XML in XML';
 
 test {
   my $c = shift;
@@ -147,9 +156,10 @@ test {
   is $el->prefix, 'AA';
   is $el->namespace_uri, 'http://hoge';
   is $el->tag_name, 'AA:aBc';
+  is $el->manakai_tag_name, 'AA:aBc';
   is $el->node_name, $el->tag_name;
   done $c;
-} n => 6, name => 'names / XML prefixed in XML';
+} n => 7, name => 'names / XML prefixed in XML';
 
 run_tests;
 

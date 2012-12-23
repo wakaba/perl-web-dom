@@ -319,7 +319,21 @@ sub create_processing_instruction ($$$) {
   return $$self->[0]->node ($id);
 } # create_processing_instruction
 
-# XXX importNode
+sub import_node ($$;$) {
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {
+    _throw Web::DOM::TypeError 'The argument is not a Node';
+  }
+
+  # 1.
+  if ($_[1]->node_type == DOCUMENT_NODE) {
+    _throw Web::DOM::Exception 'NotSupportedError',
+        'Cannot import document node';
+  }
+
+  # 2.
+  return $_[1]->_clone ($_[0], $_[2]);
+} # import_node
 
 sub adopt_node ($$) {
   # WebIDL

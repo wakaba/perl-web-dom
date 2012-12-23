@@ -721,7 +721,63 @@ sub normalize ($) {
   @{$$self->[2]->{child_nodes} or []} = @$new_child_nodes;
 } # normalize
 
-# XXX cloneNode
+sub clone_node ($;$) {
+  return $_[0]->_clone ($_[0]->owner_document || $_[0], $_[1]);
+} # clone_node
+
+sub _clone {
+  # 1.
+  my ($node, $od, $deep) = @_;
+  
+  # 2.-4.
+  my $copy;
+  my $nt = $node->node_type;
+  # XXX strictErrorChecking
+  if ($nt == ELEMENT_NODE) {
+    $copy = $od->create_element_ns
+        ($node->namespace_uri, $node->manakai_tag_name);
+    for ($node->attributes->to_list) {
+      $copy->set_attribute_ns ($_->namespace_uri, $_->name, $_->value);
+    }
+  } elsif ($nt == TEXT_NODE) {
+    $copy = $od->create_text_node ($node->data);
+  } elsif ($nt == COMMENT_NODE) {
+    $copy = $od->create_comment ($node->data);
+  } elsif ($nt == PROCESSING_INSTRUCTION_NODE) {
+    $copy = $od->create_processing_instruction ($node->target, $node->data);
+  } elsif ($nt == DOCUMENT_TYPE_NODE) {
+    $copy = $od->implementation->create_document_type
+        ($node->name, $node->public_id, $node->system_id);
+  } elsif ($nt == ATTRIBUTE_NODE) {
+    $copy = $od->create_attribute_ns ($node->namespace_uri, $node->name);
+    $copy->value ($node->value);
+  } elsif ($nt == DOCUMENT_NODE) {
+    if ($node->isa ('Web::DOM::XMLDocument')) {
+      $copy = Web::DOM::Document->new->implementation->create_document;
+    } else {
+      $copy = Web::DOM::Document->new;
+    }
+    $od = $copy;
+  } elsif ($nt == DOCUMENT_FRAGMENT_NODE) {
+    $copy = $od->create_document_fragment;
+  } else {
+    die "Unknown node type $nt";
+  }
+
+  # 5.
+  # XXX cloning steps
+
+  # 6.
+  if ($deep) {
+    for ($node->child_nodes->to_list) {
+      # XXX strictErrorChecking
+      $copy->append_child ($_->_clone ($od, 1));
+    }
+  }
+
+  # 7.
+  return $copy;
+} # _clone
 
 sub is_same_node ($$) {
   return 0 unless defined $_[1];

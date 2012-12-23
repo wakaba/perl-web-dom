@@ -29,6 +29,12 @@ Otherwise, C<undef> is returned.  [DOM] [DOMATTREXODUS]
 Return the live list, i.e. L<Web::DOM::NodeList>, of the child nodes
 of the node.  [DOM]
 
+=item $node2 = $node->clone_node ($deep)
+
+Return the newly-created clone of the node.  If the argument is set to
+the true value, any descendant nodes are also cloned.  [DOM]
+[DOMATTREXODUS] [MANAKAI]
+
 =item $child = $node->first_child
 
 Return the first child node of the node.  If there is no child,
