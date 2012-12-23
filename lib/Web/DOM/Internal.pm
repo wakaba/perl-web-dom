@@ -111,6 +111,7 @@ sub node ($$) {
 ##   0 - The root node
 ##   1 - Filter
 ##   2 - List of the nodes in the collection
+##   3 - Collection key
 ##
 ## $self->{cols}->[$root_node_id]->
 ## 
@@ -133,7 +134,7 @@ sub collection ($$$$) {
       if $self->{cols}->[$id]->{$key};
   my $class = $CollectionClass->{$key} || 'Web::DOM::HTMLCollection';
   eval qq{ require $class } or die $@;
-  my $nl = bless \[$root_node, $filter], $class;
+  my $nl = bless \[$root_node, $filter, undef, $key], $class;
   weaken ($self->{cols}->[$id]->{$key} = $nl);
   return $nl;
 } # collection

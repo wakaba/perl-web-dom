@@ -409,7 +409,8 @@ sub set_attribute_node ($$) {
   my $nsurl = ${$$attr->[2]->{namespace_uri} || \''};
   my $ln = ${$$attr->[2]->{local_name}};
   my $old_attr_id = $$node->[2]->{attrs}->{$nsurl}->{$ln};
-  if (defined $old_attr_id and ref $old_attr_id and defined wantarray) {
+  my $old_attr_id_ref = (defined $old_attr_id and ref $old_attr_id);
+  if ($old_attr_id_ref and defined wantarray) {
     local $_ = \$ln;
     $InflateAttr->($node);
     $old_attr_id = $_;
@@ -421,13 +422,13 @@ sub set_attribute_node ($$) {
 
   if (defined $old_attr_id) {
     # 6.
-    if (ref $old_attr_id) {
+    if ($old_attr_id_ref) {
       @{$$node->[2]->{attributes}} = map {
-        ref $_ && $$_ eq $ln ? $$attr->[1] : $_;
+        (ref $_ && $$_ eq $ln) ? $$attr->[1] : $_;
       } @{$$node->[2]->{attributes}};
     } else {
       @{$$node->[2]->{attributes}} = map {
-        $_ == $old_attr_id ? $$attr->[1] : $_;
+        (not ref $_ && $_ == $old_attr_id) ? $$attr->[1] : $_;
       } @{$$node->[2]->{attributes}};
     }
   } else {

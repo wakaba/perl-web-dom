@@ -119,7 +119,7 @@ test {
 
   my $nl2 = $node->attributes;
   my $nl2_s = $nl2 . '';
-  
+
   ok $nl2_s eq $nl_s;
   ok not $nl2_s ne $nl_s;
   ok not $nl2 eq $nl_s;
@@ -297,6 +297,254 @@ test {
 
   done $c;
 } n => 14, name => 'attributes perl binding not empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $col = $el->attributes;
+  is $col->get_named_item ('hoge'), undef;
+  is $col->get_named_item ('120'), undef;
+  is $col->get_named_item_ns (undef, 'hoge'), undef;
+  is $col->get_named_item_ns ('abc', 'hoge'), undef;
+  done $c;
+} n => 4, name => 'get not found';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $col = $el->attributes;
+  $el->set_attribute ('hoge' => 112);
+  $el->set_attribute_ns ('aaa', 'fuga:aa', "aa");
+
+  my $attr1 = $col->get_named_item ('hoge');
+  isa_ok $attr1, 'Web::DOM::Attr';
+  is $attr1->name, 'hoge';
+  is $attr1->value, '112';
+
+  my $attr2 = $col->get_named_item ('fuga:aa');
+  is $attr2->value, 'aa';
+  
+  my $attr3 = $col->get_named_item_ns (undef, 'hoge');
+  is $attr3, $attr1;
+  
+  my $attr4 = $col->get_named_item_ns ('aaa', 'aa');
+  is $attr4, $attr2;
+  
+  done $c;
+} n => 6, name => 'get found';
+
+for my $method (qw(set_named_item set_named_item_ns)) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    my $attr = $doc->create_attribute ('b');
+    my $col = $el->attributes;
+    
+    is $col->$method ($attr), undef;
+    is $el->get_attribute ('b'), '';
+    
+    done $c;
+  } n => 2, name => [$method, 'new'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    my $attr = $doc->create_attribute ('b');
+    my $col = $el->attributes;
+    $el->set_attribute (b => 21);
+
+    my $attr2 = $col->$method ($attr), undef;
+    is $el->get_attribute ('b'), '';
+    isa_ok $attr2, 'Web::DOM::Attr';
+    is $attr2->owner_element, undef;
+    is $attr2->name, 'b';
+    is $attr2->value, '21';
+
+    done $c;
+  } n => 5, name => [$method, 'replace'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    $el->set_attribute ('fuga' => 'abc');
+    my $col = $el->attributes;
+
+    my $attr = $col->$method ($col->[0]);
+    is $attr->node_type, $attr->ATTRIBUTE_NODE;
+    is $attr->owner_element, $el;
+    is $attr->name, 'fuga';
+    is $attr->value, 'abc';
+    is $el->get_attribute ('fuga'), 'abc';
+
+    done $c;
+  } n => 5, name => [$method, 'self'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    $el->set_attribute ('fuga' => 'abc');
+    my $el2 = $doc->create_element ('a');
+    my $col = $el2->attributes;
+
+    dies_here_ok {
+      $col->$method ($el->attributes->[0]);
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'InUseAttributeError';
+    is $@->message, 'The specified attribute has already attached to another node';
+    
+    is $el->attributes->[0]->owner_element, $el;
+    is $el->get_attribute ('fuga'), 'abc';
+    
+    done $c;
+  } n => 6, name => [$method, 'self'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    my $el2 = $doc->create_element ('a');
+    my $col = $el->attributes;
+
+    dies_here_ok {
+      $col->$method ($el2);
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'HierarchyRequestError';
+    is $@->message, 'Specified type of node cannot be set';
+    
+    is $el->attributes->length, 0;
+    is $el2->parent_node, undef;
+    
+    done $c;
+  } n => 6, name => [$method, 'not attr'];
+
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    my $col = $el->attributes;
+
+    dies_here_ok {
+      $col->$method (undef);
+    };
+    isa_ok $@, 'Web::DOM::TypeError';
+    is $@->name, 'TypeError';
+    is $@->message, 'The argument is not a Node';
+    
+    is $el->attributes->length, 0;
+    
+    done $c;
+  } n => 5, name => [$method, 'not node'];
+}
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $col = $el->attributes;
+
+  dies_here_ok {
+    $col->remove_named_item ('hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'Specified node not found';
+
+  is $col->length, 0;
+  done $c;
+} n => 5, name => 'remove_named_item not found';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $col = $el->attributes;
+
+  dies_here_ok {
+    $col->remove_named_item_ns (undef, 'hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'Specified node not found';
+
+  is $col->length, 0;
+  done $c;
+} n => 5, name => 'remove_named_item not found';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $col = $el->attributes;
+  $el->set_attribute (hoge => 'abc');
+
+  my $node = $col->remove_named_item ('hoge');
+  isa_ok $node, 'Web::DOM::Attr';
+  is $node->name, 'hoge';
+  is $node->value, 'abc';
+  is $node->owner_element, undef;
+  is $el->get_attribute ('hoge'), undef;
+
+  done $c;
+} n => 5, name => 'remove_named_item simple attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $col = $el->attributes;
+  $el->set_attribute (hoge => 'abc');
+
+  my $node = $col->remove_named_item_ns ('', 'hoge');
+  isa_ok $node, 'Web::DOM::Attr';
+  is $node->name, 'hoge';
+  is $node->value, 'abc';
+  is $node->owner_element, undef;
+  is $el->get_attribute ('hoge'), undef;
+
+  done $c;
+} n => 5, name => 'remove_named_item_ns simple attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $col = $el->attributes;
+  $el->set_attribute_ns ('aa', hoge => 'abc');
+
+  my $node = $col->remove_named_item ('hoge');
+  isa_ok $node, 'Web::DOM::Attr';
+  is $node->name, 'hoge';
+  is $node->value, 'abc';
+  is $node->owner_element, undef;
+  is $el->get_attribute_ns ('aa', 'hoge'), undef;
+
+  done $c;
+} n => 5, name => 'remove_named_item node attr';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $col = $el->attributes;
+  $el->set_attribute_ns ('aa', hoge => 'abc');
+
+  my $node = $col->remove_named_item_ns ('aa', 'hoge');
+  isa_ok $node, 'Web::DOM::Attr';
+  is $node->name, 'hoge';
+  is $node->value, 'abc';
+  is $node->owner_element, undef;
+  is $el->get_attribute_ns ('aa', 'hoge'), undef;
+
+  done $c;
+} n => 5, name => 'remove_named_item_ns node attr';
 
 run_tests;
 
