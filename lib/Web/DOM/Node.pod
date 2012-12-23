@@ -110,6 +110,10 @@ is returned.  [DOM] [DOMATTREXODUS]
 Return the previous sibling of the node.  If there is no such node,
 C<undef> is returned.  [DOM] [DOMATTREXODUS]
 
+=item $old_child = $node->remove_child ($old_child)
+
+Remove a node from the list of child nodes of the node.  [DOM]
+
 =item $new_child = $node->replace_child ($new_child, $ref_child)
 
 Replace the specified child node by a new node.  The first argument is

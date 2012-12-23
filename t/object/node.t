@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+no warnings 'utf8';
 use Path::Class;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', '*', 'lib')->stringify;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'lib')->stringify;
@@ -611,6 +612,214 @@ test {
   
   done $c;
 } n => 6, name => 'previous_sibling/next_sibling one of three children';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
+  my $el = $doc->create_element ('a');
+  $el->text_content ('hoge');
+
+  dies_here_ok {
+    $el->remove_child (undef);
+  };
+  isa_ok $@, 'Web::DOM::TypeError';
+  is $@->name, 'TypeError';
+  is $@->message, 'The argument is not a Node';
+
+  is $el->child_nodes->length, 1;
+  
+  done $c;
+} n => 5, name => 'remove_child null';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
+  my $el = $doc->create_element ('a');
+  $el->text_content ('hoge');
+  
+  my $el2 = $doc->create_element ('a');
+
+  dies_here_ok {
+    $el->remove_child ($el2);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The specified node is not a child of this node';
+
+  is $el->child_nodes->length, 1;
+  isnt $el->first_child, $el2;
+  is $el2->parent_node, undef;
+  
+  done $c;
+} n => 7, name => 'remove_child not child';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
+  my $el = $doc->create_element ('a');
+  $el->text_content ('hoge');
+  
+  dies_here_ok {
+    $el->remove_child ($el);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The specified node is not a child of this node';
+
+  is $el->child_nodes->length, 1;
+  isnt $el->first_child, $el;
+  is $el->parent_node, undef;
+  
+  done $c;
+} n => 7, name => 'remove_child self';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $doc2 = new Web::DOM::Document;
+  
+  my $el = $doc->create_element ('a');
+  $el->text_content ('hoge');
+
+  my $el2 = $doc->create_element ('a');
+  $el2->text_content ('hoge');
+  my $text = $el2->first_child;
+  
+  dies_here_ok {
+    $el->remove_child ($text);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'The specified node is not a child of this node';
+
+  is $el->child_nodes->length, 1;
+  isnt $el->first_child, $el;
+  is $el2->child_nodes->length, 1;
+  is $el2->first_child, $text;
+  is $text->parent_node, $el2;
+  
+  done $c;
+} n => 9, name => 'remove_child different doc';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  $el->append_child ($el2);
+
+  $el->remove_child ($el2);
+
+  is $el->child_nodes->length, 0;
+  is $el2->parent_node, undef;
+
+  isnt $$el->[0]->{tree_id}->[$$el->[1]],
+      $$el2->[0]->{tree_id}->[$$el2->[1]];
+  
+  done $c;
+} n => 3, name => 'remove_child removed only child';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  my $el3 = $doc->create_element ('b');
+  my $el4 = $doc->create_element ('b');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el->append_child ($el4);
+
+  $el->remove_child ($el2);
+
+  is $el->child_nodes->length, 2;
+  is $el->first_child, $el3;
+  is $el->last_child, $el4;
+  is $el2->parent_node, undef;
+
+  isnt $$el->[0]->{tree_id}->[$$el->[1]],
+      $$el2->[0]->{tree_id}->[$$el2->[1]];
+  
+  done $c;
+} n => 5, name => 'remove_child removed a child';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  my $el3 = $doc->create_element ('b');
+  my $el4 = $doc->create_element ('b');
+  $el->append_child ($el3);
+  $el->append_child ($el2);
+  $el->append_child ($el4);
+
+  $el->remove_child ($el2);
+
+  is $el->child_nodes->length, 2;
+  is $el->first_child, $el3;
+  is $el->last_child, $el4;
+  is $el2->parent_node, undef;
+
+  isnt $$el->[0]->{tree_id}->[$$el->[1]],
+      $$el2->[0]->{tree_id}->[$$el2->[1]];
+  
+  done $c;
+} n => 5, name => 'remove_child removed a child';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  $el->append_child ($el2);
+
+  my $el3 = $el->remove_child ($el2);
+
+  is $el3, $el2;
+  
+  done $c;
+} n => 1, name => 'remove_child return';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  $el->append_child ($el2);
+
+  my $called;
+  $el2->set_user_data (destroy => bless sub {
+                         $called = 1;
+                       }, 'test::DestroyCallback');
+  undef $el2;
+
+  $el->remove_child ($el->first_child);
+
+  ok $called;
+  
+  done $c;
+} n => 1, name => 'remove_child return';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  $el->append_child ($el2);
+  
+  my $col = $el->get_elements_by_tag_name ('*');
+  is $col->length, 1;
+
+  $el->remove_child ($el->first_child);
+
+  is $col->length, 0;
+  
+  done $c;
+} n => 2, name => 'remove_child list';
 
 run_tests;
 
