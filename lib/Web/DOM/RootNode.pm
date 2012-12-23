@@ -66,6 +66,69 @@ sub get_elements_by_tag_name_ns ($$$) {
 
 # XXX get_elements_by_class_name
 
+sub text_content ($;$) {
+  if (@_ > 1) {
+    my $self = $_[0];
+
+    # 1.-2.
+    my $node;
+    $node = $_[0]->owner_document->create_text_node ($_[1]) if length $_[1];
+    my $int = $$self->[0];
+
+    # 3. Replace all
+    my @replaced;
+    {
+      # Replace 1.
+      # adopt
+
+      # Replace 2. Remove
+      for my $node_id (@{$$self->[2]->{child_nodes} or []}) {
+        # XXX range
+        # XXX mutation
+        #$int->children_changed ($$self->[1], ???_NODE); # redundant
+        delete $int->{data}->[$node_id]->{parent_node};
+        $int->disconnect ($node_id);
+        # don't include $node_id to new child_nodes
+      }
+      @replaced = map { $int->node ($_) } @{$$self->[2]->{child_nodes} or []};
+
+      # Replace 3. Insert (simplified)
+      if (defined $node) {
+        # XXX range
+        $$node->[2]->{parent_node} = $$self->[1];
+        @{$$self->[2]->{child_nodes} ||= []} = $$node->[1];
+        $int->connect ($$self->[1] => $$node->[1]);
+        #$int->children_changed ($$self->[1], TEXT_NODE); # redundant
+      } else {
+        @{$$self->[2]->{child_nodes} ||= []} = ();
+        #$int->children_changed ($$self->[1], TEXT_NODE); # redundant
+      }
+    }
+
+    # 4.-5.
+    # XXXmutation
+
+    # 6.
+    $int->children_changed ($$self->[1], ELEMENT_NODE);
+    # XXX node is removed
+
+    return unless defined wantarray;
+  } # setter
+
+  my @text;
+  my @node = $_[0]->child_nodes->to_list;
+  while (@node) {
+    my $node = shift @node;
+    my $nt = $node->node_type;
+    if ($nt == TEXT_NODE) {
+      push @text, $node;
+    } elsif ($nt == ELEMENT_NODE) {
+      unshift @node, $node->child_nodes->to_list;
+    }
+  }
+  return join '', map { $_->data } @text;
+} # text_content
+
 sub children ($) {
   my $self = shift;
   return $$self->[0]->collection ('children', $self, sub {

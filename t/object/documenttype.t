@@ -27,11 +27,18 @@ test {
   is $dt->first_child, undef;
 
   is $dt->node_value, undef;
+  is $dt->text_content, undef;
+
   $dt->node_value ('hoge');
   is $dt->node_value, undef;
+  is $dt->text_content, undef;
+
+  $dt->text_content ('hoge');
+  is $dt->node_value, undef;
+  is $dt->text_content, undef;
 
   done $c;
-} n => 14, name => 'document type attributes - empty ids';
+} n => 18, name => 'document type attributes - empty ids';
 
 test {
   my $c = shift;

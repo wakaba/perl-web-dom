@@ -24,15 +24,25 @@ test {
 
   is $text->data, 'hoge';
   is $text->node_value, 'hoge';
+  is $text->text_content, 'hoge';
+
   $text->node_value ('fuga');
   is $text->node_value, 'fuga';
   is $text->data, 'fuga';
+  is $text->text_content, 'fuga';
+
   $text->data ('abc');
   is $text->node_value, 'abc';
   is $text->data, 'abc';
+  is $text->text_content, 'abc';
+
+  $text->text_content ('abc');
+  is $text->node_value, 'abc';
+  is $text->data, 'abc';
+  is $text->text_content, 'abc';
 
   done $c;
-} n => 16, name => 'create_text_node';
+} n => 22, name => 'create_text_node';
 
 test {
   my $c = shift;

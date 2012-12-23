@@ -7,6 +7,7 @@ use Web::DOM::ChildNode;
 push our @ISA, qw(Web::DOM::Node Web::DOM::ChildNode);
 
 *node_value = \&data;
+*text_content = \&data;
 
 sub data ($;$) {
   if (@_ > 1) {

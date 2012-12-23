@@ -4,7 +4,7 @@ use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
 use Web::DOM::RootNode;
-push our @ISA, qw(Web::DOM::Node Web::DOM::RootNode);
+push our @ISA, qw(Web::DOM::RootNode Web::DOM::Node);
 
 sub node_name ($) {
   return '#document-fragment';

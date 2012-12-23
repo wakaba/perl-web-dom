@@ -7,7 +7,7 @@ use Web::DOM::Internal;
 use Web::DOM::Node;
 use Web::DOM::RootNode;
 use Web::DOM::ChildNode;
-push our @ISA, qw(Web::DOM::Node Web::DOM::RootNode Web::DOM::ChildNode);
+push our @ISA, qw(Web::DOM::RootNode Web::DOM::ChildNode Web::DOM::Node);
 use Char::Class::XML qw(
   InXMLNameChar InXMLNameStartChar
   InXMLNCNameChar InXMLNCNameStartChar

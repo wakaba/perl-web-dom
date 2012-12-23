@@ -79,6 +79,15 @@ Create a new processing instruction node
 (L<Web::DOM::ProcessingInstruction>) with the specified target and
 data.  [DOM]
 
+=item $dt = $doc->doctype
+
+Return the L<Web::DOM::DocumentType> node of the document, if any.
+[DOM]
+
+=item $el = $doc->document_element
+
+Return the document element of the document, if any.  [DOM]
+
 =item $impl = $doc->implementation
 
 Return the L<Web::DOM::Implementation> object associated to the

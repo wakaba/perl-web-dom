@@ -28,15 +28,25 @@ test {
 
   is $pi->data, 'fuga';
   is $pi->node_value, 'fuga';
+  is $pi->text_content, 'fuga';
+
   $pi->node_value ('fuga2');
   is $pi->node_value, 'fuga2';
   is $pi->data, 'fuga2';
+  is $pi->text_content, 'fuga2';
+
   $pi->data ('abc');
   is $pi->node_value, 'abc';
   is $pi->data, 'abc';
+  is $pi->text_content, 'abc';
+
+  $pi->text_content ('abc');
+  is $pi->node_value, 'abc';
+  is $pi->data, 'abc';
+  is $pi->text_content, 'abc';
 
   done $c;
-} n => 19, name => 'create_processing_instruction';
+} n => 25, name => 'create_processing_instruction';
 
 run_tests;
 

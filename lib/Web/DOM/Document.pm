@@ -5,7 +5,7 @@ no warnings 'utf8';
 our $VERSION = '1.0';
 use Web::DOM::Node;
 use Web::DOM::RootNode;
-push our @ISA, qw(Web::DOM::Node Web::DOM::RootNode);
+push our @ISA, qw(Web::DOM::RootNode Web::DOM::Node);
 use Web::DOM::Internal;
 use Web::DOM::Exception;
 use Char::Class::XML qw(
@@ -18,6 +18,7 @@ sub new ($) {
   my $objs = Web::DOM::Internal::Objects->new;
   my $id = $objs->add_data ($data);
   $objs->{rc}->[$id]++;
+  # XXX origin
   return $objs->node ($id);
 } # new
 
@@ -28,6 +29,10 @@ sub node_name ($) {
 sub owner_document ($) {
   return undef;
 } # owner_document
+
+sub text_content ($;$) {
+  return undef;
+} # text_content
 
 sub manakai_is_html ($;$) {
   my $self = $_[0];
@@ -326,9 +331,25 @@ sub create_processing_instruction ($$$) {
 
 # XXX createTreeWalker
 
-# XXX get*
-# XXX doctype
-# XXX documentElement
+sub doctype ($) {
+  for ($_[0]->child_nodes->to_list) {
+    if ($_->node_type == DOCUMENT_TYPE_NODE) {
+      return $_;
+    }
+  }
+  return undef;
+} # doctype
+
+sub document_element ($) {
+  for ($_[0]->child_nodes->to_list) {
+    if ($_->node_type == ELEMENT_NODE) {
+      return $_;
+    }
+  }
+  return undef;
+} # document_element
+
+# XXX getElementById
 
 1;
 

@@ -34,8 +34,12 @@ test {
   $doc->node_value ('hoge');
   is $doc->node_value, undef;
 
+  is $doc->text_content, undef;
+  $doc->text_content ('hoge');
+  is $doc->text_content, undef;
+
   done $c;
-} name => 'constructor', n => 17;
+} name => 'constructor', n => 19;
 
 test {
   my $c = shift;
@@ -134,6 +138,50 @@ test {
   is $doc->content_type, 'text/html';
   done $c;
 } n => 4, name => 'content_type vs manakai_is_html';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  is $doc->doctype, undef;
+  is $doc->document_element, undef;
+  done $c;
+} n => 2, name => 'empty document child accessors';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('a', '', '');
+  $doc->append_child ($dt);
+  is $doc->doctype, $dt;
+  is $doc->document_element, undef;
+  done $c;
+} n => 2, name => 'document child accessors, with doctype';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $comment = $doc->create_comment ('gg');
+  $doc->append_child ($comment);
+  my $el = $doc->create_element ('f');
+  $doc->append_child ($el);
+  is $doc->doctype, undef;
+  is $doc->document_element, $el;
+  done $c;
+} n => 2, name => 'document child accessors, with document element';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('a', '', '');
+  $doc->append_child ($dt);
+  my $comment = $doc->create_comment ('gg');
+  $doc->append_child ($comment);
+  my $el = $doc->create_element ('f');
+  $doc->append_child ($el);
+  is $doc->doctype, $dt;
+  is $doc->document_element, $el;
+  done $c;
+} n => 2, name => 'document child accessors, with doctype, document element';
 
 run_tests;
 

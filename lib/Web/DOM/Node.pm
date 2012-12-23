@@ -600,7 +600,9 @@ sub node_value ($;$) {
   return undef;
 } # node_value
 
-# XXX textContent
+sub text_content ($;$) {
+  return undef;
+} # text_content
 
 sub normalize ($) {
   my $self = shift;
@@ -771,7 +773,7 @@ sub is_equal_node ($$) {
   return 1;
 } # is_equal_node
 
-# XXX compareDocumentPosition
+# XXX compareDocumentPosition contains
 
 # XXX namespace lookup
 

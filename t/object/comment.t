@@ -24,15 +24,25 @@ test {
 
   is $comment->data, 'hoge';
   is $comment->node_value, 'hoge';
+  is $comment->text_content, 'hoge';
+
   $comment->node_value ('fuga');
   is $comment->node_value, 'fuga';
   is $comment->data, 'fuga';
+  is $comment->text_content, 'fuga';
+
   $comment->data ('abc');
   is $comment->node_value, 'abc';
   is $comment->data, 'abc';
+  is $comment->text_content, 'abc';
+
+  $comment->text_content ('abc');
+  is $comment->node_value, 'abc';
+  is $comment->data, 'abc';
+  is $comment->text_content, 'abc';
 
   done $c;
-} n => 16, name => 'create_comment';
+} n => 22, name => 'create_comment';
 
 run_tests;
 
