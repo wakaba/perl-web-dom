@@ -22,7 +22,6 @@ Create a new document object. [DOM]
 
 Change the node document (i.e. the C<owner_document> attribute value)
 of the specified node and its descendant nodes to the document.  [DOM]
-[DOMATTREXODUS] [MANAKAI]
 
 =item $string = $doc->character_set
 
