@@ -5,6 +5,7 @@ no warnings 'utf8';
 our $VERSION = '1.0';
 use Web::DOM::TypeError;
 use Web::DOM::Exception;
+use Web::DOM::Internal;
 use Carp;
 our @CARP_NOT = qw(Web::DOM::Exception Web::DOM::TypeError);
 use Exporter::Lite;
@@ -860,7 +861,164 @@ sub is_equal_node ($$) {
 
 # XXX compareDocumentPosition contains
 
-# XXX namespace lookup
+sub lookup_prefix ($$) {
+  my $self = $_[0];
+
+  # 1.
+  if (not defined $_[1] or not length $_[1]) {
+    return undef;
+  }
+
+  # 2.
+  my $nt = $self->node_type;
+  if ($nt == ELEMENT_NODE) {
+    return $self->_locate_prefix ($_[1]);
+  } elsif ($nt == DOCUMENT_NODE) {
+    my $de = $self->document_element;
+    if ($de) {
+      return $de->_locate_prefix ($_[1]);
+    } else {
+      return undef;
+    }
+  } elsif ($nt == DOCUMENT_TYPE_NODE or $nt == DOCUMENT_FRAGMENT_NODE) {
+    return undef;
+  } elsif ($nt == ATTRIBUTE_NODE) {
+    my $oe = $self->owner_element;
+    if ($oe) {
+      return $oe->_locate_prefix ($_[1]);
+    } else {
+      return undef;
+    }
+  } else {
+    my $pe = $self->parent_element;
+    if ($pe) {
+      return $pe->_locate_prefix ($_[1]);
+    } else {
+      return undef;
+    }
+  }
+} # lookup_prefix
+
+sub _locate_prefix ($$) {
+  my $self = $_[0];
+  my $nsurl = ''.$_[1];
+
+  # Locate a namespace prefix
+
+  # 1.
+  my $node_nsurl = $self->namespace_uri;
+  $node_nsurl = '' if not defined $node_nsurl;
+  if ($node_nsurl eq $nsurl) {
+    my $prefix = $self->prefix;
+    if (defined $prefix) {
+      return $prefix;
+    }
+  }
+
+  # 2.
+  for my $attr ($self->attributes->to_list) {
+    if (($attr->prefix || '') eq 'xmlns' and
+        $attr->value eq $nsurl) {
+      my $ln = $attr->local_name;
+      my $lookup_url = $self->lookup_namespace_uri ($ln);
+      $lookup_url = '' unless defined $lookup_url;
+      if ($lookup_url eq $nsurl) { # DOM3 vs DOM4
+        return $ln;
+      }
+    }
+  }
+  
+  # 3.
+  my $pe = $self->parent_element;
+  if ($pe) {
+    return $pe->_locate_prefix ($nsurl);
+  } else {
+    return undef;
+  }
+} # _locate_prefix
+
+sub lookup_namespace_uri ($$) {
+  my $self = $_[0];
+  my $prefix = defined $_[1] ? ''.$_[1] : '';
+
+  # Locate a namespace
+  my $nt = $self->node_type;
+  if ($nt == ELEMENT_NODE) {
+    # 1.
+    my $nsurl = $self->namespace_uri;
+    my $node_prefix = $self->prefix;
+    $node_prefix = '' unless defined $node_prefix;
+    if (defined $nsurl and $prefix eq $node_prefix) {
+      return $nsurl;
+    }
+
+    # 2.
+    if ($prefix eq '') {
+      my $attr = $self->get_attribute_node_ns (XMLNS_NS, 'xmlns');
+      if ($attr and not defined $attr->prefix) {
+        # 1.-2.
+        my $value = $attr->value;
+        return length $value ? $value : undef;
+      }
+    } else {
+      my $attr = $self->get_attribute_node_ns (XMLNS_NS, $prefix);
+      if ($attr and ($attr->prefix || '') eq 'xmlns') {
+        # 1.-2.
+        my $value = $attr->value;
+        return length $value ? $value : undef;
+      }
+    }
+
+    # 3.-4.
+    my $pe = $self->parent_element;
+    if ($pe) {
+      return $pe->lookup_namespace_uri ($prefix);
+    } else {
+      return undef;
+    }
+  } elsif ($nt == DOCUMENT_NODE) {
+    # 1.-2.
+    my $de = $self->document_element;
+    if (defined $de) {
+      return $de->lookup_namespace_uri ($prefix);
+    } else {
+      return undef;
+    }
+  } elsif ($nt == DOCUMENT_TYPE_NODE or $nt == DOCUMENT_FRAGMENT_NODE) {
+    return undef;
+  } elsif ($nt == ATTRIBUTE_NODE) {
+    # 1.-2.
+    my $oe = $self->owner_element;
+    if (defined $oe) {
+      return $oe->lookup_namespace_uri ($prefix);
+    } else {
+      return undef;
+    }
+  } else {
+    # 1.-2.
+    my $pe = $self->parent_element;
+    if (defined $pe) {
+      return $pe->lookup_namespace_uri ($prefix);
+    } else {
+      return undef;
+    }
+  }
+} # lookup_namespace_uri
+
+sub is_default_namespace ($$) {
+  # 2.
+  my $default = $_[0]->lookup_namespace_uri (undef);
+
+  # 1., 3.
+  my $nsurl = defined $_[1] ? ''.$_[1] : '';
+  if (defined $default and length $nsurl and $default eq $nsurl) {
+    return 1;
+  } elsif (not defined $default and $nsurl eq '') {
+    return 1;
+  } else {
+    return 0;
+  }
+} # is_default_namespace
 
 sub set_user_data ($$$) {
   ${$_[0]}->[2]->{user_data}->{$_[1]} = $_[2];

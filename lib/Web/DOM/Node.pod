@@ -43,6 +43,11 @@ Return whether the node has any content attribute or not.
 
 Insert the specified node just after the specified node.  [DOM]
 
+=item $bool = $node->is_default_namespace ($nsurl)
+
+Return whether the specified namespace URL is the default namespace or
+not.  [DOM]
+
 =item $bool = $node1->is_equal_node ($node2)
 
 Return whether two nodes are equal or not.  [DOM] [DOMATTREXODUS]
@@ -60,6 +65,17 @@ Return whether two nodes are same or not.  [DOM3CORE] [MANAKAI]
 
 Return the last child node of the node.  If there is no child,
 C<undef> is returned.  [DOM]
+
+=item $url = $node->lookup_namespace_uri ($prefix)
+
+Return the namespace URL which might be associated with the specified
+prefix.  The C<undef> value can be specified for the default
+namespace.  [DOM] [DOMATTREXODUS] [DOM3CORE]
+
+=item $prefix = $node->lookup_prefix ($nsurl)
+
+Return the namespace prefix which might be associated with the
+specified namespace URL.  [DOM] [DOMATTREXODUS] [DOM3CORE]
 
 =item $sibling = $node->next_sibling
 
