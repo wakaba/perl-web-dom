@@ -2,8 +2,10 @@ use strict;
 use warnings;
 use Path::Class;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', '*', 'lib')->stringify;
+use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'lib')->stringify;
 use Test::X1;
 use Test::More;
+use Test::DOM::Exception;
 use Web::DOM::Document;
 
 test {
@@ -120,6 +122,172 @@ test {
   is $text5->whole_text, '';
   done $c;
 } n => 5, name => 'whole_text only child';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('aa');
+  my $text = $doc->create_text_node ('hoge');
+  $el->append_child ($text);
+
+  my $text2 = $text->split_text (3);
+  isa_ok $text2, 'Web::DOM::Text';
+  is $text2->node_type, $text2->TEXT_NODE;
+  is $text->data, 'hog';
+  is $text2->data, 'e';
+  is $text2->owner_document, $doc;
+  is $text->parent_node, $el;
+  is $text2->parent_node, $el;
+  is $el->child_nodes->length, 2;
+  is $el->text_content, 'hoge';
+  done $c;
+} n => 9, name => 'split_text has_parent';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('aa');
+  my $text = $doc->create_text_node ('hoge');
+  $el->append_child ($text);
+
+  my $text2 = $text->split_text (4);
+  isa_ok $text2, 'Web::DOM::Text';
+  is $text2->node_type, $text2->TEXT_NODE;
+  is $text->data, 'hoge';
+  is $text2->data, '';
+  is $text2->owner_document, $doc;
+  is $text->parent_node, $el;
+  is $text2->parent_node, $el;
+  is $el->child_nodes->length, 2;
+  is $el->text_content, 'hoge';
+  done $c;
+} n => 9, name => 'split_text has_parent new text is empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('aa');
+  my $text = $doc->create_text_node ('hoge');
+  $el->append_child ($text);
+
+  my $text2 = $text->split_text (0);
+  isa_ok $text2, 'Web::DOM::Text';
+  is $text2->node_type, $text2->TEXT_NODE;
+  is $text->data, '';
+  is $text2->data, 'hoge';
+  is $text2->owner_document, $doc;
+  is $text->parent_node, $el;
+  is $text2->parent_node, $el;
+  is $el->child_nodes->length, 2;
+  is $el->text_content, 'hoge';
+  done $c;
+} n => 9, name => 'split_text has_parent old text is empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('aa');
+  my $text = $doc->create_text_node ('hoge');
+  $el->append_child ($text);
+
+  my $text2 = $text->split_text (2**32 + 3);
+  isa_ok $text2, 'Web::DOM::Text';
+  is $text2->node_type, $text2->TEXT_NODE;
+  is $text->data, 'hog';
+  is $text2->data, 'e';
+  is $text2->owner_document, $doc;
+  is $text->parent_node, $el;
+  is $text2->parent_node, $el;
+  is $el->child_nodes->length, 2;
+  is $el->text_content, 'hoge';
+  done $c;
+} n => 9, name => 'split_text int';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('aa');
+  my $text = $doc->create_text_node ('hoge');
+  $el->append_child ($text);
+
+  my $text2 = $text->split_text (-2**32 + 3);
+  isa_ok $text2, 'Web::DOM::Text';
+  is $text2->node_type, $text2->TEXT_NODE;
+  is $text->data, 'hog';
+  is $text2->data, 'e';
+  is $text2->owner_document, $doc;
+  is $text->parent_node, $el;
+  is $text2->parent_node, $el;
+  is $el->child_nodes->length, 2;
+  is $el->text_content, 'hoge';
+  done $c;
+} n => 9, name => 'split_text int';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('aa');
+  my $text = $doc->create_text_node ('hoge');
+  $el->append_child ($text);
+
+  dies_here_ok {
+    $text->split_text (5);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'IndexSizeError';
+  is $@->message, 'Offset is greater than the length';
+
+  is $text->data, 'hoge';
+  is $text->parent_node, $el;
+  is $el->child_nodes->length, 1;
+
+  done $c;
+} n => 7, name => 'split_text out of range';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('aa');
+  my $text = $doc->create_text_node ("ho\x{10004}a");
+  $el->append_child ($text);
+
+  my $text2 = $text->split_text (3);
+  isa_ok $text2, 'Web::DOM::Text';
+  is $text2->node_type, $text2->TEXT_NODE;
+  is $text->data, "ho\x{D800}";
+  is $text2->data, "\x{DC04}a";
+  is $text2->owner_document, $doc;
+  is $text->parent_node, $el;
+  is $text2->parent_node, $el;
+  is $el->child_nodes->length, 2;
+  is $el->text_content, "ho\x{D800}\x{DC04}a";
+  done $c;
+} n => 9, name => 'split_text has_parent';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $text = $doc->create_text_node ('hoge');
+
+  my $text2 = $text->split_text (3);
+  isa_ok $text2, 'Web::DOM::Text';
+  is $text2->node_type, $text2->TEXT_NODE;
+  is $text->data, 'hog';
+  is $text2->data, 'e';
+  is $text2->owner_document, $doc;
+  is $text->parent_node, undef;
+  is $text2->parent_node, undef;
+
+  done $c;
+} n => 7, name => 'split_text no parent';
 
 run_tests;
 
