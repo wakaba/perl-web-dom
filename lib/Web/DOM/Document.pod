@@ -157,6 +157,11 @@ XML document.  [DOM3CORE]
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-document>.
 
+=item DOM3CORE
+
+Document Object Model (DOM) Level 3 Core Specification
+<http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html>.
+
 =item MANAKAI
 
 manakai DOM Extensions

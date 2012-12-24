@@ -45,10 +45,19 @@ the context node or not.  [DOM]
 Return the first child node of the node.  If there is no child,
 C<undef> is returned.  [DOM]
 
+=item $data = $node->get_user_data ($key)
+
+Return the user data associated to the node with the specified key, if
+any, or C<undef>.  [DOM3CORE]
+
 =item $bool = $node->has_attributes
 
 Return whether the node has any content attribute or not.
 [DOMATTREXODUS]
+
+=item $bool = $node->has_child_nodes
+
+Return whether the node has children or not.  [DOM]
 
 =item $child = $node->insert_before ($child, $ref_child)
 
@@ -64,13 +73,13 @@ not.  [DOM]
 Return whether two nodes are equal or not.  [DOM] [DOMATTREXODUS]
 [MANAKAI]
 
-=item $bool = $node->has_child_nodes
-
-Return whether the node has children or not.  [DOM]
-
 =item $bool = $node1->is_same_node ($node2)
 
 Return whether two nodes are same or not.  [DOM3CORE] [MANAKAI]
+
+=item $bool = $node->is_supported ($feature, $version)
+
+Return true.  [MANAKAI]
 
 =item $child = $node->last_child
 
@@ -146,6 +155,14 @@ Remove a node from the list of child nodes of the node.  [DOM]
 Replace the specified child node by a new node.  The first argument is
 the new child node.  The second argument is the current child node,
 which is to be replaced.  The new child node is returned.  [DOM]
+
+=item $node->set_user_data ($key, $value, $handler)
+
+Set the specified key-value pair as one of user data of the node.
+[DOM3CORE]
+
+Note that this implementation does not support user data handler.  The
+third argument cannot be specified.
 
 =item $string = $node->text_content
 

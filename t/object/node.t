@@ -821,6 +821,60 @@ test {
   done $c;
 } n => 2, name => 'remove_child list';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+
+  ok $el->is_supported ('core');
+  ok $el->is_supported ('core', '2.0');
+  ok $el->is_supported ('hoge');
+
+  done $c;
+} n => 3, name => 'is_supported';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('aa');
+
+  is $node->get_user_data ('hoge'), undef;
+  is $node->get_user_data ('120'), undef;
+
+  $node->set_user_data (foo => '123');
+  is $node->get_user_data ('foo'), 123;
+
+  $node->set_user_data (foo => '0');
+  is $node->get_user_data ('foo'), 0;
+
+  $node->set_user_data (foo => undef);
+  is $node->get_user_data ('foo'), undef;
+
+  $node->set_user_data (foo => '');
+  $node->set_user_data (bar => '1234');
+  is $node->get_user_data ('foo'), '';
+  is $node->get_user_data ('bar'), 1234;
+
+  done $c;
+} n => 7, name => 'user data';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('a');
+  $node->set_user_data (hoge => 521);
+  
+  dies_here_ok {
+    $node->set_user_data (hoge => 12, sub { });
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotSupportedError';
+  is $@->message, 'UserDataHandler is not supported';
+
+  is $node->get_user_data ('hoge'), 521;
+  done $c;
+} n => 5, name => 'user_data UserDataHandler';
+
 run_tests;
 
 =head1 LICENSE

@@ -1148,8 +1148,25 @@ sub is_default_namespace ($$) {
   }
 } # is_default_namespace
 
-sub set_user_data ($$$) {
-  ${$_[0]}->[2]->{user_data}->{$_[1]} = $_[2];
+sub is_supported ($$;$) {
+  return 1;
+} # is_supported
+
+sub get_user_data ($$) {
+  return ${$_[0]}->[2]->{user_data}->{$_[1]};
+} # get_user_data
+
+sub set_user_data ($$;$$) {
+  if (defined $_[3]) {
+    _throw Web::DOM::Exception 'NotSupportedError',
+        'UserDataHandler is not supported';
+  }
+  if (defined $_[2]) {
+    ${$_[0]}->[2]->{user_data}->{$_[1]} = $_[2];
+  } else {
+    delete ${$_[0]}->[2]->{user_data}->{$_[1]};
+  }
+  return;
 } # set_user_data
 
 sub DESTROY ($) {
