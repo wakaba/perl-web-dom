@@ -18,11 +18,26 @@ L<Web::DOM::ChildNode>, following methods are available:
 
 Append the specified character string to the data of the node.  [DOM]
 
+=item $node->delete_data ($offset, $count)
+
+Delete the substring of the data of the node, specified by offset and
+length.  Offset and length are interpreted as numbers of UTF-16 code
+units.  [DOM]
+
+Use of this method is discouraged.
+
 =item $text = $node->data
 
 =item $node->data ($text)
 
 Return or set the text data of the node.  [DOM]
+
+=item $node->insert_data ($offset, $data)
+
+Insert a string at the specified location in the data of the node.
+Offset is interpreted as numbers of UTF-16 code units.  [DOM]
+
+Use of this method is discouraged.
 
 =item $number = $node->length
 
@@ -31,11 +46,19 @@ Return the number of UTF-16 code units in the data of the node.  [DOM]
 Use of this method is discouraged in favor of C<< length $node->data
 >>.
 
+=item $node->replace_data ($offset, $count, $data)
+
+Replace the substring of the data of the node, specified by offset and
+length by another string.  Offset and length are interpreted as
+numbers of UTF-16 code units.  [DOM]
+
+Use of this method is discouraged.
+
 =item $text = $node->substring_data ($offset, $count)
 
 Return the substring of the data of the node, identified by the
 specified offset and length.  Offset and length are interpreted as
-number of UTF-16 code units.  [DOM]
+numbers of UTF-16 code units.  [DOM]
 
 Use of this method is discouraged in favor of C<< substr $node->data,
 $offset, $count >>.

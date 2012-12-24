@@ -145,7 +145,8 @@ use Web::DOM::Document;
       my $c = shift;
 
       $node->append_data ("\x{DC04}h\xFEo\x{D8C5}\x{DC91}ge");
-      is $node->data, "\x{11FFFF}abc\x{41404}h\x{00FE}o\x{D8C5}\x{DC91}ge";
+      #is $node->data, "\x{11FFFF}abc\x{41404}h\x{00FE}o\x{D8C5}\x{DC91}ge";
+      is $node->data, "\x{11FFFF}abc\x{D8C5}\x{DC04}h\x{00FE}o\x{D8C5}\x{DC91}ge";
 
       done $c;
     } n => 1, name => 'append_data surrogate boundary';
@@ -402,6 +403,112 @@ use Web::DOM::Document;
         }
         done $c;
       } n => 26 + 4*5, name => 'substring_data surrogate, non Unicode';
+    }
+  }
+
+  for my $data ("ho\x{4e00}foo\x{10003}a\x{FEFF00}\x{54212}aa") {
+    for my $test (
+      [[0, 0, 'aa'] => "aaho\x{4e00}foo\x{10003}a\x{FEFF00}\x{54212}aa"],
+      [[13, 0, 'aa'] => "ho\x{4e00}foo\x{10003}a\x{FEFF00}\x{54212}aaaa"],
+      [[5, 0, ''] => "ho\x{4e00}foo\x{10003}a\x{FEFF00}\x{54212}aa"],
+      [[5, 0, 'fuga'] => "ho\x{4e00}fofugao\x{10003}a\x{FEFF00}\x{54212}aa"],
+      [[5, 6, ''] => "ho\x{4e00}fo\x{DE12}aa"],
+      [[5, 5, 'hoge'] => "ho\x{4e00}fohoge\x{54212}aa"],
+      [[5, 6, 'hoge'] => "ho\x{4e00}fohoge\x{DE12}aa"],
+      [[5.1, 6.4, 'hoge'] => "ho\x{4e00}fohoge\x{DE12}aa"],
+      [[6, 5, 'hoge'] => "ho\x{4e00}foohoge\x{DE12}aa"],
+      [[7, 4, 'hoge'] => "ho\x{4e00}foo\x{D800}hoge\x{DE12}aa"],
+      [[8, 3, 'hoge'] => "ho\x{4e00}foo\x{10003}hoge\x{DE12}aa"],
+      [[8+2**32, 3+2**32, 'hoge'] => "ho\x{4e00}foo\x{10003}hoge\x{DE12}aa"],
+      [[8, -1, 'hoge'] => "ho\x{4e00}foo\x{10003}hoge"],
+      [[6, 1, 'aa'] => "ho\x{4e00}fooaa\x{DC03}a\x{FEFF00}\x{54212}aa"],
+      [[7, 1, 'aa'] => "ho\x{4e00}foo\x{D800}aaa\x{FEFF00}\x{54212}aa"],
+    ) {
+      for my $node (
+        $doc->create_text_node ($data),
+        $doc->create_comment ($data),
+        $doc->create_processing_instruction ('hoge', $data),
+      ) {
+        test {
+          my $c = shift;
+          $node->replace_data (@{$test->[0]});
+          is $node->data, $test->[1];
+          done $c;
+        } n => 1, name => ['replace_data', @{$test->[0]}];
+      }
+      if ($test->[0]->[1] == 0) {
+        for my $node (
+          $doc->create_text_node ($data),
+          $doc->create_comment ($data),
+          $doc->create_processing_instruction ('hoge', $data),
+        ) {
+          test {
+            my $c = shift;
+            $node->insert_data ($test->[0]->[0], $test->[0]->[2]);
+            is $node->data, $test->[1];
+            done $c;
+          } n => 1, name => ['insert_data', @{$test->[0]}];
+        }
+      }
+      if ($test->[0]->[2] eq '') {
+        for my $node (
+          $doc->create_text_node ($data),
+          $doc->create_comment ($data),
+          $doc->create_processing_instruction ('hoge', $data),
+        ) {
+          test {
+            my $c = shift;
+            $node->delete_data ($test->[0]->[0], $test->[0]->[1]);
+            is $node->data, $test->[1];
+            done $c;
+          } n => 1, name => ['delete_data', @{$test->[0]}];
+        }
+      }
+    }
+  }
+
+  for my $data ("ho\x{4e00}foo\x{10003}a\x{FEFF00}\x{54212}aa") {
+    for my $node (
+      $doc->create_text_node ($data),
+      $doc->create_comment ($data),
+      $doc->create_processing_instruction ('hoge', $data),
+    ) {
+      test {
+        my $c = shift;
+        for (
+          [15, 0, ''],
+          [15, 1, ''],
+          [20, 1, 'aa'],
+          [-1, 1, 'ba'],
+          [2**32-1, 2**32, 'aaa'],
+          [2**32-1, 1, 'aaa'],
+        ) {
+          dies_here_ok {
+            $node->replace_data (@$_);
+          };
+          isa_ok $@, 'Web::DOM::Exception';
+          is $@->name, 'IndexSizeError';
+          is $@->message, 'Offset is greater than the length';
+          is $node->data, $data;
+
+          dies_here_ok {
+            $node->delete_data ($_->[0], $_->[1]);
+          };
+          isa_ok $@, 'Web::DOM::Exception';
+          is $@->name, 'IndexSizeError';
+          is $@->message, 'Offset is greater than the length';
+          is $node->data, $data;
+
+          dies_here_ok {
+            $node->insert_data ($_->[0], $_->[2]);
+          };
+          isa_ok $@, 'Web::DOM::Exception';
+          is $@->name, 'IndexSizeError';
+          is $@->message, 'Offset is greater than the length';
+          is $node->data, $data;
+        }
+        done $c;
+      } n => 5*6*3, name => 'replace_data, delete_data, insert_data';
     }
   }
 }
