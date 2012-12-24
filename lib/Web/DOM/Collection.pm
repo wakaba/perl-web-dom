@@ -33,7 +33,7 @@ use overload
     fallback => 1;
 
 sub item ($$) {
-  # unsigned long
+  # WebIDL: unsigned long
   return undef if $_[1] % 2**32 >= 2**31;
   return $_[0]->[$_[1] % 2**32]; # or undef
 } # item
