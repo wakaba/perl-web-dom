@@ -859,7 +859,135 @@ sub is_equal_node ($$) {
   return 1;
 } # is_equal_node
 
-# XXX compareDocumentPosition contains
+sub DOCUMENT_POSITION_DISCONNECTED () { 0x01 }
+sub DOCUMENT_POSITION_PRECEDING () { 0x02 }
+sub DOCUMENT_POSITION_FOLLOWING () { 0x04 }
+sub DOCUMENT_POSITION_CONTAINS () { 0x08 }
+sub DOCUMENT_POSITION_CONTAINED_BY () { 0x10 }
+sub DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC () { 0x20 }
+
+push @EXPORT, qw(
+  DOCUMENT_POSITION_DISCONNECTED DOCUMENT_POSITION_PRECEDING
+  DOCUMENT_POSITION_FOLLOWING DOCUMENT_POSITION_CONTAINS
+  DOCUMENT_POSITION_CONTAINED_BY DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+);
+
+sub compare_document_position ($$) {
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {
+    _throw Web::DOM::TypeError 'The argument is not a Node';
+  }
+
+  # 1.
+  my $ref = $_[0];
+  my $other = $_[1];
+
+  # 2.
+  return 0 if $ref eq $other;
+
+  # 3.
+  if (not $$ref->[0] eq $$other->[0]) {
+    return DOCUMENT_POSITION_DISCONNECTED |
+           DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC |
+           ($$ref->[0] < $$other->[0] ? DOCUMENT_POSITION_PRECEDING
+                                       : DOCUMENT_POSITION_FOLLOWING);
+  } elsif (not $$ref->[0]->{tree_id}->[$$ref->[1]] ==
+               $$other->[0]->{tree_id}->[$$other->[1]]) {
+    return DOCUMENT_POSITION_DISCONNECTED |
+           DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC |
+           ($$ref->[0]->{tree_id}->[$$ref->[1]] <
+            $$other->[0]->{tree_id}->[$$other->[1]]
+               ? DOCUMENT_POSITION_PRECEDING
+               : DOCUMENT_POSITION_FOLLOWING);
+  }
+
+  if ($ref->node_type == ATTRIBUTE_NODE and
+      $other->node_type == ATTRIBUTE_NODE) {
+    my $ref_oe = $ref->owner_element;
+    my $other_oe = $other->owner_element;
+    if ($ref_oe and $other_oe and $ref_oe eq $other_oe) {
+      for ($other_oe->attributes->to_list) {
+        if ($_ eq $other) {
+          return DOCUMENT_POSITION_PRECEDING |
+              DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+        } elsif ($_ eq $ref) {
+          return DOCUMENT_POSITION_FOLLOWING |
+              DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+        }
+      }
+    }
+  }
+
+  # 4.
+  my @ref = ();
+  my $ref_p = $ref;
+  if ($ref_p->node_type == ATTRIBUTE_NODE) {
+    $ref_p = $ref_p->owner_element;
+    unshift @ref, -1;
+  }
+  while ($ref_p and my $pn = $ref_p->parent_node) {
+    my $i = 0;
+    for ($pn->child_nodes->to_list) {
+      last if $_ eq $ref_p;
+      $i++;
+    }
+    unshift @ref, $i;
+    $ref_p = $pn;
+  }
+  unshift @ref, 0;
+  my @other = ();
+  my $other_p = $other;
+  if ($other_p->node_type == ATTRIBUTE_NODE) {
+    $other_p = $other_p->owner_element;
+    unshift @other, -1;
+  }
+  while ($other_p and my $pn = $other_p->parent_node) {
+    my $i = 0;
+    for ($pn->child_nodes->to_list) {
+      last if $_ eq $other_p;
+      $i++;
+    }
+    unshift @other, $i;
+    $other_p = $pn;
+  }
+  unshift @other, 0;
+
+  while (@other) {
+    if ($other[0] < $ref[0]) {
+      return DOCUMENT_POSITION_PRECEDING;
+    } elsif ($ref[0] < $other[0]) {
+      return DOCUMENT_POSITION_FOLLOWING;
+    } else {
+      shift @other;
+      shift @ref;
+      return DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS
+          unless @other;
+      return DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY
+          unless @ref;
+    }
+  }
+
+  die "Unknown document position";
+} # compare_document_position
+
+sub contains ($$) {
+  return 0 if not defined $_[1];
+
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {
+    _throw Web::DOM::TypeError 'The argument is not a Node';
+  }
+
+  my $node = $_[0];
+  my $other = $_[1];
+  while ($other) {
+    if ($node eq $other) {
+      return 1;
+    }
+    $other = $other->parent_node;
+  }
+  return 0;
+} # contains
 
 sub lookup_prefix ($$) {
   my $self = $_[0];

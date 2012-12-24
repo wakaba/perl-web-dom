@@ -97,7 +97,7 @@ sub text_content ($;$) {
         # XXX range
         $$node->[2]->{parent_node} = $$self->[1];
         @{$$self->[2]->{child_nodes} ||= []} = $$node->[1];
-        $int->connect ($$self->[1] => $$node->[1]);
+        $int->connect ($$node->[1] => $$self->[1]);
         #$int->children_changed ($$self->[1], TEXT_NODE); # redundant
       } else {
         @{$$self->[2]->{child_nodes} ||= []} = ();

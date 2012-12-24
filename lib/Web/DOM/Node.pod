@@ -29,6 +29,17 @@ Return the newly-created clone of the node.  If the argument is set to
 the true value, any descendant nodes are also cloned.  [DOM]
 [DOMATTREXODUS] [MANAKAI]
 
+=item $value = $node1->compare_document_position ($node2)
+
+Return the result of comparison of document positions of two nodes.
+The result is represented as the bitmask of constants listed in the
+later section.  [DOM] [DOM3CORE]
+
+=item $bool = $node1->contains ($node2)
+
+Return whether the node specified as the argument is the descendant of
+the context node or not.  [DOM]
+
 =item $child = $node->first_child
 
 Return the first child node of the node.  If there is no child,
@@ -178,6 +189,16 @@ NOTATION_NODE [DOM] [DOMATTREXODUS] [DOM3]
 XPATH_NAMESPACE_NODE [DOMXPATH]
 
 ELEMENT_TYPE_DEFINITION_NODE ATTRIBUTE_DEFINITION_NODE [DOMDTDEF]
+
+=item Document position constants
+
+Following constants are defined for the C<compare_document_position>
+method:
+
+DOCUMENT_POSITION_DISCONNECTED DOCUMENT_POSITION_PRECEDING
+DOCUMENT_POSITION_FOLLOWING DOCUMENT_POSITION_CONTAINS
+DOCUMENT_POSITION_CONTAINED_BY
+DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC [DOM]
 
 =back
 

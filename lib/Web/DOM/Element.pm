@@ -69,7 +69,7 @@ my $InflateAttr = sub ($) {
               owner_element => $$node->[1]};
   my $attr_id = $$node->[0]->add_data ($data);
   $$node->[2]->{attrs}->{''}->{$$_} = $attr_id;
-  $$node->[0]->connect ($$node->[1] => $attr_id);
+  $$node->[0]->connect ($attr_id => $$node->[1]);
   $_ = $attr_id;
 }; # $InflateAttr
 
@@ -441,7 +441,7 @@ sub set_attribute_node ($$) {
 
   # 7.
   $$attr->[2]->{owner_element} = $$node->[1];
-  $$node->[0]->connect ($$node->[1] => $$attr->[1]);
+  $$node->[0]->connect ($$attr->[1] => $$node->[1]);
   
   return $$node->[0]->node ($old_attr_id)
       if defined $old_attr_id and not ref $old_attr_id;
