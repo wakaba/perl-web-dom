@@ -25,7 +25,11 @@ of the specified node and its descendant nodes to the document.  [DOM]
 
 =item $string = $doc->character_set
 
-Return the encoding of the document.  [DOM]
+=item $string = $doc->charset
+
+=item $string = $doc->input_encoding
+
+Return the encoding of the document.  [DOM] [MANAKAI]
 
 =item $string = $doc->compat_mode
 
@@ -115,6 +119,33 @@ Get or set whether the document is an HTML document or not.  [MANAKAI]
 =item $string = $doc->document_uri
 
 Return the URL of the document.  [DOM]
+
+=item $string = $doc->xml_encoding
+
+=item $doc->xml_encoding ($string)
+
+Return or set the C<encoding> pseudo-attribute value of the XML
+declaration of the document, if it is an XML document.  The C<undef>
+value represents omission of the pseudo-attribute.  [DOM3CORE]
+[MANAKAI]
+
+=item $bool = $doc->xml_standalone
+
+=item $doc->xml_standalone ($bool)
+
+Return or set the C<standalone> pseudo-attribute value of the XML
+declaration of the document, if it is an XML document.  The true value
+represents the C<true> attribute value, while the false value
+represents the C<false> attribute value.  [DOM3CORE]
+
+=item $string = $doc->xml_version
+
+=item $doc->xml_version ($string)
+
+Return or set the XML version of the document.  The value must be
+C<1.0> or C<1.1>.  This is the value of the C<version>
+pseudo-attribute of the XML declaration of the document, if it is an
+XML document.  [DOM3CORE]
 
 =back
 

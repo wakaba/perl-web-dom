@@ -43,6 +43,60 @@ test {
 
 test {
   my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  is $doc->character_set, 'utf-8';
+  is $doc->charset, 'utf-8';
+  is $doc->input_encoding, 'utf-8';
+
+  done $c;
+} n => 3, name => 'charset';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  is $doc->xml_version, '1.0';
+  is $doc->xml_encoding, undef;
+  ok not $doc->xml_standalone;
+
+  $doc->xml_version (1.1);
+  is $doc->xml_version, 1.1;
+
+  $doc->xml_encoding ('utf-8');
+  is $doc->xml_encoding, 'utf-8';
+
+  $doc->xml_encoding (undef);
+  is $doc->xml_encoding, undef;
+
+  $doc->xml_standalone (1);
+  ok $doc->xml_standalone;
+
+  $doc->xml_standalone (undef);
+  ok not $doc->xml_standalone;
+  
+  done $c;
+} n => 8, name => 'xml_*';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  for my $version (1.2, 1, 'hoge', '') {
+    dies_here_ok {
+      $doc->xml_version ($version);
+    };
+    isa_ok $@, 'Web::DOM::Exception';
+    is $@->name, 'NotSupportedError';
+    is $@->message, 'Specified XML version is not supported';
+  }
+
+  is $doc->xml_version, '1.0';
+  done $c;
+} n => 4*4 + 1, name => 'xml_version error';
+
+test {
+  my $c = shift;
 
   my $doc = new Web::DOM::Document;
 

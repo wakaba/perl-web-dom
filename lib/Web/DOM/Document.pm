@@ -64,6 +64,15 @@ sub character_set ($) {
   return ${$_[0]}->[2]->{encoding} || 'utf-8';
 } # character_set
 
+*charset = \&character_set;
+
+sub input_encoding ($;$) {
+  if (@_ > 1) {
+    # XXX if an Encoding encoding name, set it.
+  }
+  return $_[0]->character_set;
+} # input_encoding
+
 sub url ($) {
   return ${$_[0]}->[2]->{url} || 'about:blank';
 } # url
@@ -377,6 +386,42 @@ sub adopt_node ($$) {
 # XXX createNodeIterator
 
 # XXX createTreeWalker
+
+sub xml_version ($;$) {
+  if (@_ > 1) {
+    my $version = ''.$_[1];
+    if ($version eq '1.0' or $version eq '1.1') {
+      ${$_[0]}->[2]->{xml_version} = $_[1];
+    } else {
+      _throw Web::DOM::Exception 'NotSupportedError',
+          'Specified XML version is not supported';
+    }
+  }
+  return defined ${$_[0]}->[2]->{xml_version}
+      ? ${$_[0]}->[2]->{xml_version} : '1.0';
+} # xml_version
+
+sub xml_encoding ($;$) {
+  if (@_ > 1) {
+    if (defined $_[1]) {
+      ${$_[0]}->[2]->{xml_encoding} = ''.$_[1];
+    } else {
+      delete ${$_[0]}->[2]->{xml_encoding};
+    }
+  }
+  return ${$_[0]}->[2]->{xml_encoding};
+} # xml_encoding
+
+sub xml_standalone ($;$) {
+  if (@_ > 1) {
+    if ($_[1]) {
+      ${$_[0]}->[2]->{xml_standalone} = 1;
+    } else {
+      delete ${$_[0]}->[2]->{xml_standalone};
+    }
+  }
+  return ${$_[0]}->[2]->{xml_standalone};
+} # xml_standalone
 
 sub doctype ($) {
   for ($_[0]->child_nodes->to_list) {
