@@ -50,7 +50,7 @@ sub create_document ($;$$$) {
   # 2.
   my $el;
 
-  # 3.
+  # WebIDL, 3.
   if (defined $qn and length $qn) {
     $el = $doc->create_element_ns ($ns, $qn); # or throw
   }
@@ -62,6 +62,9 @@ sub create_document ($;$$$) {
   $doc->append_child ($el) if defined $el;
 
   # 6.
+  # XXX origin
+
+  # 7.
   return $doc;
 } # create_document
 
@@ -70,22 +73,22 @@ sub create_html_document ($;$) {
   require Web::DOM::Document;
   my $doc = Web::DOM::Document->new;
 
-  # 2., 3.
+  # 2.
   $doc->manakai_is_html (1);
 
-  # 4.
+  # 3.
   my $dt = $doc->implementation->create_document_type ('html', '', '');
   $doc->append_child ($dt);
 
-  # 5.
+  # 4.
   my $html = $doc->create_element ('html');
   $doc->append_child ($html);
 
-  # 6.
+  # 5.
   my $head = $doc->create_element ('head');
   $html->append_child ($head);
 
-  # 7.
+  # 6.
   if (defined $_[1]) {
     # 1.
     my $title = $doc->create_element ('title');
@@ -96,10 +99,13 @@ sub create_html_document ($;$) {
     $title->append_child ($text);
   }
 
-  # 8.
+  # 7.
   my $body = $doc->create_element ('body');
   $html->append_child ($body);
   
+  # 8.
+  # XXX origin
+
   # 9.
   return $doc;
 } # create_html_document
@@ -137,7 +143,7 @@ sub has_feature ($$;$) {
   if ($feature =~ m{\Ahttp://www\.w3\.org/tr/svg} or
       $feature =~ m{\Aorg\.w3c\.dom\.svg} or
       $feature =~ m{\Aorg\.w3c\.svg}) {
-    # 1.
+    # WebIDL, 1.
     my $version = defined $_[2] ? ''.$_[2] : '';
     if ($version eq '') {
       # 1.

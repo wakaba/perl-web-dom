@@ -277,6 +277,7 @@ sub set_attribute ($$$) {
     # Append 3.
     # XXX attribute is set, attribute is added
   }
+  return;
 } # set_attribute
 
 sub set_attribute_ns ($$$$) {
@@ -381,6 +382,7 @@ sub set_attribute_ns ($$$$) {
       }
     }
   }
+  return;
 } # set_attribute_ns
 
 sub set_attribute_node ($$) {
@@ -494,6 +496,7 @@ sub remove_attribute ($$) {
     # Remove 3.
     # XXX attribute is removed
   }
+  return;
 } # remove_attribute
 
 sub remove_attribute_ns ($$$) {
@@ -519,6 +522,7 @@ sub remove_attribute_ns ($$$) {
     # Remove 3.
     # XXX attribute is removed
   }
+  return;
 } # remove_attribute_ns
 
 sub remove_attribute_node ($$) {

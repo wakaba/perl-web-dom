@@ -15,6 +15,11 @@ are available:
 
 =over 4
 
+=item $map = $el->attributes
+
+Return the L<Web::DOM::NamedNodeMap> object containing the content
+attributes for the element.  [DOM] [DOMATTREXODUS]
+
 =item $value = $el->get_attribute ($name)
 
 Return the value of the specified attribute.  If there is no attribute

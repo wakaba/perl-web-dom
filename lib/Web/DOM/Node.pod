@@ -18,12 +18,6 @@ Following methods are available:
 
 Append the specified node to the list of child nodes.  [DOM]
 
-=item $map = $node->attributes
-
-If the node is an element, the L<Web::DOM::NamedNodeMap> object
-containing the content attributes for the element is returned.
-Otherwise, C<undef> is returned.  [DOM] [DOMATTREXODUS]
-
 =item $node_list = $node->child_nodes
 
 Return the live list, i.e. L<Web::DOM::NodeList>, of the child nodes
@@ -145,8 +139,9 @@ Otherwise, the method returns C<undef> and the setter has no effect.
 
 =back
 
-Following methods are also available: C<prefix>, C<namespace_uri>,
-C<local_name>, and C<manakai_local_name>.  [DOMNODEEXODUS]
+Following methods are also available: C<attributes>, C<prefix>,
+C<namespace_uri>, C<local_name>, and C<manakai_local_name>.
+[DOMATTREXODUS] [DOMNODEEXODUS] [MANAKAI]
 
 =head1 CONSTANTS
 

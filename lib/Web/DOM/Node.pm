@@ -719,6 +719,7 @@ sub normalize ($) {
   }
   $int->children_changed ($$self->[1], ELEMENT_NODE);
   @{$$self->[2]->{child_nodes} or []} = @$new_child_nodes;
+  return;
 } # normalize
 
 sub clone_node ($;$) {
