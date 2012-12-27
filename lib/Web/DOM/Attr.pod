@@ -48,10 +48,7 @@ removed.  [DOMNODEEXODUS] [MANAKAI]
 
 =item $bool = $attr->specified
 
-=item $attr->specified ($bool)
-
-Return or set the "specified" flag of the attribute.  [DOMATTREXODUS]
-[MANAKAI]
+Return true.  [DOMATTREXODUS] [MANAKAI]
 
 =item $value = $attr->value
 

@@ -149,7 +149,7 @@ test {
   ok $attr->specified;
 
   $attr->specified (0);
-  ok not $attr->specified;
+  ok $attr->specified;
 
   $attr->specified (1);
   ok $attr->specified;

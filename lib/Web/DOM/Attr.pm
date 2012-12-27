@@ -27,16 +27,7 @@ sub value ($;$) {
 *node_value = \&value;
 *text_content = \&value;
 
-sub specified ($) {
-  if (@_ > 1) {
-    if ($_[1]) {
-      delete ${$_[0]}->[2]->{not_specified};
-    } else {
-      ${$_[0]}->[2]->{not_specified} = 1;
-    }
-  }
-  return not ${$_[0]}->[2]->{not_specified};
-} # specified
+sub specified ($) { 1 }
 
 sub owner_element ($) {
   if (my $id = ${$_[0]}->[2]->{owner_element}) {
