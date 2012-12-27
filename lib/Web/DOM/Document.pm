@@ -107,6 +107,10 @@ sub implementation ($) {
   return ${$_[0]}->[0]->impl;
 } # implementation
 
+sub dom_config ($) {
+  return ${$_[0]}->[0]->config;
+} # dom_config
+
 sub create_element ($$) {
   my $self = $_[0];
   my $ln = ''.$_[1];
@@ -442,6 +446,17 @@ sub document_element ($) {
 } # document_element
 
 # XXX getElementById
+
+sub strict_error_checking ($;$) {
+  if (@_ > 1) {
+    if ($_[1]) {
+      delete ${$_[0]}->[2]->{no_strict_error_checking};
+    } else {
+      ${$_[0]}->[2]->{no_strict_error_checking} = 1;
+    }
+  }
+  return not ${$_[0]}->[2]->{no_strict_error_checking};
+} # strict_error_checking
 
 1;
 

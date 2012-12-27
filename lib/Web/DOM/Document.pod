@@ -97,6 +97,11 @@ Return the L<Web::DOM::DocumentType> node of the document, if any.
 
 Return the document element of the document, if any.  [DOM]
 
+=item $config = $doc->dom_config
+
+Return the L<Web::DOM::Configuration> object for the document.
+[DOM3CORE] [MANAKAI]
+
 =item $impl = $doc->implementation
 
 Return the L<Web::DOM::Implementation> object associated to the
@@ -112,7 +117,15 @@ descendant nodes are also cloned.  [DOM] [DOMATTREXODUS] [MANAKAI]
 
 =item $doc->manakai_is_html ($bool)
 
-Get or set whether the document is an HTML document or not.  [MANAKAI]
+Return or set whether the document is an HTML document or not.
+[MANAKAI]
+
+=item $bool = $doc->strict_error_checking
+
+=item $doc->strict_error_checking ($bool)
+
+Return or set whether some error checks should be skipped or not.
+[DOM3CORE] [MANAKAI]
 
 =item $string = $doc->url
 

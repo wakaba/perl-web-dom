@@ -110,6 +110,19 @@ test {
 
 test {
   my $c = shift;
+
+  my $doc = new Web::DOM::Document;
+
+  my $config = $doc->dom_config;
+  isa_ok $config, 'Web::DOM::Configuration';
+
+  is $doc->dom_config, $config;
+
+  done $c;
+} name => 'dom_config', n => 2;
+
+test {
+  my $c = shift;
   
   my $doc = new Web::DOM::Document;
 
@@ -236,6 +249,20 @@ test {
   is $doc->document_element, $el;
   done $c;
 } n => 2, name => 'document child accessors, with doctype, document element';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  ok $doc->strict_error_checking;
+  
+  $doc->strict_error_checking (0);
+  ok not $doc->strict_error_checking;
+
+  $doc->strict_error_checking (1);
+  ok $doc->strict_error_checking;
+
+  done $c;
+} n => 3, name => 'strict_error_checking';
 
 run_tests;
 

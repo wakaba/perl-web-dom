@@ -51,6 +51,10 @@ sub new ($) {
 
     ## Collections
     # cols
+
+    ## Other objects
+    # impl
+    # config config_obj config_hashref config_names
   }, $_[0];
 } # new
 
@@ -168,6 +172,26 @@ sub impl ($) {
     $impl;
   };
 } # impl
+
+sub config ($) {
+  my $self = shift;
+  return $self->{config_obj} || do {
+    require Web::DOM::Configuration;
+    my $config = bless \[$self], 'Web::DOM::Configuration';
+    weaken ($self->{config_obj} = $config);
+    $config;
+  };
+} # config
+
+sub config_hashref ($) {
+  my $self = shift;
+  my $config = $self->config;
+  return $$config->[1] ||= do {
+    require Web::DOM::Configuration;
+    tie my %config, 'Web::DOM::Configuration::Hash', $self;
+    \%config;
+  };
+} # config_hashref
 
 sub connect ($$$) {
   my ($self, $id => $parent_id) = @_;

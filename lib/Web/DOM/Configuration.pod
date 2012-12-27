@@ -1,0 +1,123 @@
+=head1 NAME
+
+Web::DOM::Configuration - The DOM |DOMConfiguration| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Configuration> class implements the DOM
+C<DOMConfiguration> interface.  The C<DOMConfiguration> object of the
+document can be obtained by the C<dom_config> method of the document.
+
+=head1 METHODS
+
+Following methods are available:
+
+=over 4
+
+=item $value = $config->{$perl_param_name}
+
+=item $config->{$perl_param_name} = $value
+
+Return or set the parameter value, using the Perl-style parameter name
+(underscored_parameter_name).  [DOMPERL]
+
+=item delete $config->{$perl_param_name}
+
+Reset the parameter value to the default.  [DOMPERL]
+
+=item @list = keys %$config
+
+Return the list of Perl-style parameter names
+(underscored_parameter_names).  [DOMPERL]
+
+=item $value = $config->get_parameter ($dom_param_name)
+
+Return the parameter value, using the DOM-style parameter name
+(hyphened-parameter-name).  [DOM3CORE]
+
+=item $config->set_parameter ($dom_param_name, $value)
+
+Set the parameter value, using the DOM-style parameter name
+(hyphened-parameter-name).  If the value is C<undef>, the parameter is
+unset such that the default value is set.  [DOM3CORE] [MANAKAI]
+
+=item $config->can_set_parameter ($dom_param_name, $value)
+
+Return whether the specified parameter name/value pair can be set or
+not, using the DOM-style parameter name (hyphened-parameter-name).
+[DOM3CORE]
+
+=item $list = keys $config->parameter_names
+
+Return the array reference of DOM-style parameter names
+(hyphened-parameter-names).  [DOM3CORE] [MANAKAI]
+
+=back
+
+The object also supports the other Perl standard operations for hash
+references, e.g. C<< exists $config->{$perl_param_name} >>.  [DOMPERL]
+
+=head1 PARAMETERS
+
+Following parameters are supported:
+
+=over 4
+
+=item manakai_create_child_element (DOM: manakai-create-child-element)
+
+Specifies whether "element reflecting" methods of the Atom DOM objects
+should create child elements if not found.  The default value is
+false.  [MANAKAI] [ATOMDOM]
+
+=item manakai_strict_document_children (DOM: manakai-strict-document-children)
+
+Specifies whether the strict rules for document chidlren's node types
+apply or not for the document.  The default value is true.  If the
+value is true, the rules defined by the DOM Standard is strictly
+followed.  Otherwise, any combination of C<Element>, C<DocumentType>,
+C<Text>, C<Comment>, and C<ProcessingInstruction> nodes are allowed as
+children of the C<Document>.  [MANAKAI]
+
+=back
+
+=head1 SPECIFICATIONS
+
+=over 4
+
+=item DOM3CORE
+
+Document Object Model (DOM) Level 3 Core Specification
+<http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Extensions>.
+
+=item DOMPERL
+
+manakai's DOM Perl Binding
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding>.
+
+=item ATOMDOM
+
+Atom DOM <http://suika.fam.cx/~wakaba/wiki/sw/n/Atom%20DOM>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Document>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
