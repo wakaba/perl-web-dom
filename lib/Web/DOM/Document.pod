@@ -23,6 +23,13 @@ Create a new document object. [DOM]
 Change the node document (i.e. the C<owner_document> attribute value)
 of the specified node and its descendant nodes to the document.  [DOM]
 
+=item $bool = $doc->all_declarations_processed
+
+=item $doc->all_declarations_processed ($bool)
+
+Return or set the [all declarations processed] property value of the
+document.  [MANAKAI]
+
 =item $string = $doc->character_set
 
 =item $string = $doc->charset
@@ -30,6 +37,13 @@ of the specified node and its descendant nodes to the document.  [DOM]
 =item $string = $doc->input_encoding
 
 Return the encoding of the document.  [DOM] [MANAKAI]
+
+=item $string = $doc->manakai_charset
+
+=item $doc->manakai_charset ($string)
+
+Return or set the C<charset> parameter value of the C<Content-Type>
+metadata.  [MANAKAI]
 
 =item $string = $doc->compat_mode
 
@@ -102,6 +116,13 @@ Return the document element of the document, if any.  [DOM]
 Return the L<Web::DOM::Configuration> object for the document.
 [DOM3CORE] [MANAKAI]
 
+=item $bool = $doc->manakai_has_bom
+
+=item $doc->manakai_has_bom ($bool)
+
+Return or set whether the byte representation of the document has the
+BOM or not.  [MANAKAI]
+
 =item $impl = $doc->implementation
 
 Return the L<Web::DOM::Implementation> object associated to the
@@ -119,6 +140,13 @@ descendant nodes are also cloned.  [DOM] [DOMATTREXODUS] [MANAKAI]
 
 Return or set whether the document is an HTML document or not.
 [MANAKAI]
+
+=item $bool = $doc->manakai_is_srcdoc
+
+=item $doc->manakai_is_srcdoc ($bool)
+
+Return or set whether the document is an C<iframe> C<srcdoc> document
+or not.  [MANAKAI]
 
 =item $bool = $doc->strict_error_checking
 

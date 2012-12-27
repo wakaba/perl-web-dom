@@ -40,6 +40,11 @@ later section.  [DOM] [DOM3CORE]
 Return whether the node specified as the argument is the descendant of
 the context node or not.  [DOM]
 
+=item $url = $node->manakai_expanded_uri
+
+Return the expanded URL of the element or attribute, i.e. the
+namespace URL followed by the local name.  [MANAKAI]
+
 =item $child = $node->first_child
 
 Return the first child node of the node.  If there is no child,
@@ -133,8 +138,10 @@ returned.  [DOM]
 
 =item $parent = $node->parent_element
 
+=item $parent = $node->manakai_parent_element
+
 Return the parent element of the node.  If there is no parent element,
-C<undef> is returned.  [DOM]
+C<undef> is returned.  [DOM] [MANAKAI]
 
 =item $parent = $node->parent_node
 

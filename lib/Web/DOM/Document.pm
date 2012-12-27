@@ -73,6 +73,28 @@ sub input_encoding ($;$) {
   return $_[0]->character_set;
 } # input_encoding
 
+sub manakai_charset ($;$) {
+  if (@_ > 1) {
+    if (defined $_[1]) {
+      ${$_[0]}->[2]->{manakai_charset} = ''.$_[1];
+    } else {
+      delete ${$_[0]}->[2]->{manakai_charset};
+    }
+  }
+  return ${$_[0]}->[2]->{manakai_charset};
+} # manakai_charset
+
+sub manakai_has_bom ($;$) {
+  if (@_ > 1) {
+    if ($_[1]) {
+      ${$_[0]}->[2]->{manakai_has_bom} = 1;
+    } else {
+      delete ${$_[0]}->[2]->{manakai_has_bom};
+    }
+  }
+  return ${$_[0]}->[2]->{manakai_has_bom};
+} # manakai_has_bom
+
 sub url ($) {
   return ${$_[0]}->[2]->{url} || 'about:blank';
 } # url
@@ -457,6 +479,30 @@ sub strict_error_checking ($;$) {
   }
   return not ${$_[0]}->[2]->{no_strict_error_checking};
 } # strict_error_checking
+
+# XXX manakai_entity_base_uri
+
+sub all_declarations_processed ($;$) {
+  if (@_ > 1) {
+    if ($_[1]) {
+      ${$_[0]}->[2]->{all_declarations_processed} = 1;
+    } else {
+      delete ${$_[0]}->[2]->{all_declarations_processed};
+    }
+  }
+  return ${$_[0]}->[2]->{all_declarations_processed};
+} # all_declarations_processed
+
+sub manakai_is_srcdoc ($;$) {
+  if (@_ > 1) {
+    if ($_[1]) {
+      ${$_[0]}->[2]->{is_srcdoc} = 1;
+    } else {
+      delete ${$_[0]}->[2]->{is_srcdoc};
+    }
+  }
+  return ${$_[0]}->[2]->{is_srcdoc};
+} # manakai_is_srcdoc
 
 1;
 

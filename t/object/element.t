@@ -161,6 +161,55 @@ test {
   done $c;
 } n => 7, name => 'names / XML prefixed in XML';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('hoGe');
+  ok $el->manakai_element_type_match
+      ('http://www.w3.org/1999/xhtml', 'hoGe');
+  ok not $el->manakai_element_type_match
+      ('http://www.w3.org/1999/xhtml', 'hoge');
+  ok not $el->manakai_element_type_match (undef, 'hoGe');
+  ok not $el->manakai_element_type_match ('', 'hoGe');
+
+  done $c;
+} n => 4, name => 'manakai_element_type_match';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element_ns (undef, 'hoGe');
+  ok not $el->manakai_element_type_match
+      ('http://www.w3.org/1999/xhtml', 'hoGe');
+  ok not $el->manakai_element_type_match
+      ('http://www.w3.org/1999/xhtml', 'hoge');
+  ok $el->manakai_element_type_match (undef, 'hoGe');
+  ok $el->manakai_element_type_match ('', 'hoGe');
+
+  done $c;
+} n => 4, name => 'manakai_element_type_match';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  
+  is $el->manakai_base_uri, undef;
+
+  $el->manakai_base_uri ('http://foo/');
+  is $el->manakai_base_uri, 'http://foo/';
+
+  $el->manakai_base_uri ('0');
+  is $el->manakai_base_uri, '0';
+
+  $el->manakai_base_uri (undef);
+  is $el->manakai_base_uri, undef;
+
+  done $c;
+} n => 4, name => 'manakai_base_uri';
+
 run_tests;
 
 =head1 LICENSE

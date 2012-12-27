@@ -57,6 +57,25 @@ test {
   done $c;
 } n => 1, name => 'data TreatNullAs=EmptyString';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $pi = $doc->create_processing_instruction ('hoge', 'foo');
+  
+  is $pi->manakai_base_uri, undef;
+
+  $pi->manakai_base_uri ('http://foo/');
+  is $pi->manakai_base_uri, 'http://foo/';
+
+  $pi->manakai_base_uri ('0');
+  is $pi->manakai_base_uri, '0';
+
+  $pi->manakai_base_uri (undef);
+  is $pi->manakai_base_uri, undef;
+
+  done $c;
+} n => 4, name => 'manakai_base_uri';
+
 run_tests;
 
 =head1 LICENSE

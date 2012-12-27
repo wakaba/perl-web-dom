@@ -5,6 +5,7 @@ use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', 
 use Test::X1;
 use Test::More;
 use Web::DOM::Document;
+use Web::DOM::Attr;
 
 test {
   my $c = shift;
@@ -172,6 +173,82 @@ test {
 
   done $c;
 } n => 3, name => 'is_id';
+
+test {
+  my $c = shift;
+  is NO_TYPE_ATTR, 0;
+  ok CDATA_ATTR;
+  ok ID_ATTR;
+  ok IDREF_ATTR;
+  ok IDREFS_ATTR;
+  ok ENTITY_ATTR;
+  ok ENTITIES_ATTR;
+  ok NMTOKEN_ATTR;
+  ok NMTOKENS_ATTR;
+  ok NOTATION_ATTR;
+  ok ENUMERATION_ATTR;
+  ok UNKNOWN_ATTR;
+  done $c;
+} n => 12, name => 'declared type';
+
+test {
+  my $c = shift;
+  is +Web::DOM::Attr->NO_TYPE_ATTR, 0;
+  ok +Web::DOM::Attr->CDATA_ATTR;
+  ok +Web::DOM::Attr->ID_ATTR;
+  ok +Web::DOM::Attr->IDREF_ATTR;
+  ok +Web::DOM::Attr->IDREFS_ATTR;
+  ok +Web::DOM::Attr->ENTITY_ATTR;
+  ok +Web::DOM::Attr->ENTITIES_ATTR;
+  ok +Web::DOM::Attr->NMTOKEN_ATTR;
+  ok +Web::DOM::Attr->NMTOKENS_ATTR;
+  ok +Web::DOM::Attr->NOTATION_ATTR;
+  ok +Web::DOM::Attr->ENUMERATION_ATTR;
+  ok +Web::DOM::Attr->UNKNOWN_ATTR;
+  done $c;
+} n => 12, name => 'declared type';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $attr = $doc->create_attribute ('hoge');
+  is $attr->NO_TYPE_ATTR, 0;
+  ok $attr->CDATA_ATTR;
+  ok $attr->ID_ATTR;
+  ok $attr->IDREF_ATTR;
+  ok $attr->IDREFS_ATTR;
+  ok $attr->ENTITY_ATTR;
+  ok $attr->ENTITIES_ATTR;
+  ok $attr->NMTOKEN_ATTR;
+  ok $attr->NMTOKENS_ATTR;
+  ok $attr->NOTATION_ATTR;
+  ok $attr->ENUMERATION_ATTR;
+  ok $attr->UNKNOWN_ATTR;
+  done $c;
+} n => 12, name => 'declared type';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $attr = $doc->create_attribute ('hoge');
+
+  is $attr->manakai_attribute_type, 0;
+  is $attr->manakai_attribute_type, $attr->NO_TYPE_ATTR;
+
+  $attr->manakai_attribute_type (12);
+  is $attr->manakai_attribute_type, 12;
+
+  $attr->manakai_attribute_type (0);
+  is $attr->manakai_attribute_type, 0;
+
+  $attr->manakai_attribute_type (2**16 + 6);
+  is $attr->manakai_attribute_type, 6;
+
+  $attr->manakai_attribute_type (-8);
+  is $attr->manakai_attribute_type, 2**16 - 8;
+
+  done $c;
+} n => 6, name => 'manakai_attribute_type';
 
 run_tests;
 

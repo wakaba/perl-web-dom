@@ -42,6 +42,26 @@ sub manakai_tag_name ($) {
   return $qname;
 } # manakai_tag_name
 
+sub manakai_element_type_match ($$$) {
+  my ($self, $nsuri, $ln) = @_;
+  $nsuri = ''.$nsuri if defined $nsuri;
+  if (defined $nsuri and length $nsuri) {
+    my $self_nsurl = $self->namespace_uri;
+    if (defined $self_nsurl and $nsuri eq $self_nsurl) {
+      return $ln eq $self->local_name;
+    } else {
+      return 0;
+    }
+  } else {
+    if (not defined $self->namespace_uri) {
+      return $ln eq $self->local_name;
+    } else {
+      return 0;
+    }
+  }
+} # manakai_element_type_match
+
+
 ## Attributes
 ##
 ## An attribute is represented as either:
@@ -558,6 +578,17 @@ sub manakai_ids ($) {
   my $id = $_[0]->get_attribute ('id');
   return defined $id ? [$id] : [];
 } # manakai_ids
+
+sub manakai_base_uri ($;$) {
+  if (@_ > 1) {
+    if (defined $_[1]) {
+      ${$_[0]}->[2]->{manakai_base_uri} = ''.$_[1];
+    } else {
+      delete ${$_[0]}->[2]->{manakai_base_uri}
+    }
+  }
+  return ${$_[0]}->[2]->{manakai_base_uri};
+} # manakai_base_uri
 
 1;
 

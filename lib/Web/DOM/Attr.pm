@@ -4,6 +4,7 @@ use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
 push our @ISA, qw(Web::DOM::Node);
+use Exporter::Lite;
 
 *node_name = \&name;
 *manakai_name = \&name;
@@ -41,6 +42,33 @@ sub owner_element ($) {
     return undef;
   }
 } # owner_element
+
+## |DeclaredValueType|
+sub NO_TYPE_ATTR () { 0 }
+sub CDATA_ATTR () { 1 }
+sub ID_ATTR () { 2 }
+sub IDREF_ATTR () { 3 }
+sub IDREFS_ATTR () { 4 }
+sub ENTITY_ATTR () { 5 }
+sub ENTITIES_ATTR () { 6 }
+sub NMTOKEN_ATTR () { 7 }
+sub NMTOKENS_ATTR () { 8 }
+sub NOTATION_ATTR () { 9 }
+sub ENUMERATION_ATTR () { 10 }
+sub UNKNOWN_ATTR () { 11 }
+
+our @EXPORT = qw(
+  NO_TYPE_ATTR CDATA_ATTR ID_ATTR IDREF_ATTR IDREFS_ATTR ENTITY_ATTR
+  ENTITIES_ATTR NMTOKEN_ATTR NMTOKENS_ATTR NOTATION_ATTR ENUMERATION_ATTR
+  UNKNOWN_ATTR
+);
+
+sub manakai_attribute_type ($;$) {
+  if (@_ > 1) {
+    ${$_[0]}->[2]->{attribute_type} = $_[1] % 2**16;
+  }
+  return ${$_[0]}->[2]->{attribute_type} || 0;
+} # manakai_attribute_type
 
 # XXX schemaTypeInfo
 

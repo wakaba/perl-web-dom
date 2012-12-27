@@ -102,7 +102,20 @@ sub manakai_local_name ($) {
   return ${${$_[0]}->[2]->{local_name} || \undef};
 } # manakai_local_name
 
-# XXX NodeExodus
+sub manakai_expanded_uri ($) {
+  my $self = shift;
+  my $ln = $self->local_name;
+  if (defined $ln) {
+    my $nsuri = $self->namespace_uri;
+    if (defined $nsuri) {
+      return $nsuri . $ln;
+    } else {
+      return $ln;
+    }
+  } else {
+    return undef;
+  }
+} # manakai_expanded_uri
 
 # XXX baseURI
 
@@ -133,6 +146,8 @@ sub parent_element ($) {
   return undef unless $node->node_type == ELEMENT_NODE;
   return $node;
 } # parent_element
+
+*manakai_parent_element = \&parent_element;
 
 sub child_nodes ($) {
   my $node = $_[0];
@@ -624,6 +639,8 @@ sub remove_child ($$) {
 } # remove_child
 
 # XXX mutators
+
+# XXX manakai_append_text
 
 sub node_value ($;$) {
   return undef;
@@ -1148,6 +1165,8 @@ sub is_default_namespace ($$) {
   }
 } # is_default_namespace
 
+# XXX manakai_get_child_namespace_uri
+
 sub is_supported ($$;$) {
   return 1;
 } # is_supported
@@ -1178,7 +1197,7 @@ sub DESTROY ($) {
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2007-2012 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

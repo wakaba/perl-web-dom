@@ -13,6 +13,12 @@ following methods:
 
 =over 4
 
+=item $code = $attr->manakai_attribute_type
+
+=item $attr->manakai_attribute_type ($code)
+
+Return or set the DTD attribute type for the attribute.  [MANAKAI]
+
 =item $bool = $attr->is_id
 
 Return whether the attribute is C<id> or not.  [MANAKAI]
@@ -61,6 +67,18 @@ Return true.  [DOMATTREXODUS] [MANAKAI]
 Return or set the attribute value.  [DOM]
 
 =back
+
+=head1 CONSTANTS
+
+Constants are exported from the L<Web::DOM::Attr> module by default.
+In addition, they are accessible as methods of C<Attr> objects.
+
+Following declared type constants used by the
+C<manakai_attribute_type> attribute are exported:
+
+NO_TYPE_ATTR CDATA_ATTR ID_ATTR IDREF_ATTR IDREFS_ATTR ENTITY_ATTR
+ENTITIES_ATTR NMTOKEN_ATTR NMTOKENS_ATTR NOTATION_ATTR
+ENUMERATION_ATTR UNKNOWN_ATTR
 
 =head1 SPECIFICATIONS
 

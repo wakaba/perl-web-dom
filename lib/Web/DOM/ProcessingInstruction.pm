@@ -11,6 +11,17 @@ sub target ($) {
   return ${${$_[0]}->[2]->{target}};
 } # target
 
+sub manakai_base_uri ($;$) {
+  if (@_ > 1) {
+    if (defined $_[1]) {
+      ${$_[0]}->[2]->{manakai_base_uri} = ''.$_[1];
+    } else {
+      delete ${$_[0]}->[2]->{manakai_base_uri}
+    }
+  }
+  return ${$_[0]}->[2]->{manakai_base_uri};
+} # manakai_base_uri
+
 1;
 
 =head1 LICENSE

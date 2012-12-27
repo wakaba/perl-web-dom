@@ -13,12 +13,20 @@ sub name ($) {
 } # name
 
 sub public_id ($) {
+  if (@_ > 1) {
+    ${${$_[0]}->[2]->{public_id}} = ''.$_[1];
+  }
   return ${${$_[0]}->[2]->{public_id}};
 } # public_id
 
 sub system_id ($) {
+  if (@_ > 1) {
+    ${${$_[0]}->[2]->{system_id}} = ''.$_[1];
+  }
   return ${${$_[0]}->[2]->{system_id}};
 } # system_id
+
+# XXX declaration_base_uri, manakai_declaration_base_uri
 
 1;
 

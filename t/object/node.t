@@ -400,9 +400,10 @@ test {
 
   is $doc->parent_node, undef;
   is $doc->parent_element, undef;
+  is $doc->manakai_parent_element, undef;
 
   done $c;
-} n => 2, name => 'parent_node, parent_element no parent';
+} n => 3, name => 'parent_node, parent_element no parent';
 
 test {
   my $c = shift;
@@ -411,9 +412,10 @@ test {
 
   is $el->parent_node, undef;
   is $el->parent_element, undef;
+  is $el->manakai_parent_element, undef;
 
   done $c;
-} n => 2, name => 'parent_node, parent_element no parent';
+} n => 3, name => 'parent_node, parent_element no parent';
 
 test {
   my $c = shift;
@@ -423,9 +425,10 @@ test {
 
   is $el->parent_node, $doc;
   is $el->parent_element, undef;
+  is $el->manakai_parent_element, undef;
 
   done $c;
-} n => 2, name => 'parent_node, parent_element parent is doc';
+} n => 3, name => 'parent_node, parent_element parent is doc';
 
 test {
   my $c = shift;
@@ -437,9 +440,10 @@ test {
 
   is $el2->parent_node, $el1;
   is $el2->parent_element, $el1;
+  is $el2->manakai_parent_element, $el1;
 
   done $c;
-} n => 2, name => 'parent_node, parent_element has element parent';
+} n => 3, name => 'parent_node, parent_element has element parent';
 
 test {
   my $c = shift;
@@ -874,6 +878,21 @@ test {
   is $node->get_user_data ('hoge'), 521;
   done $c;
 } n => 5, name => 'user_data UserDataHandler';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element ('aa');
+  is $el->manakai_expanded_uri, 'http://www.w3.org/1999/xhtmlaa';
+
+  $el->set_attribute (hoge => 'fuga');
+  is $el->get_attribute_node ('hoge')->manakai_expanded_uri, 'hoge';
+
+  is $doc->manakai_expanded_uri, undef;
+
+  done $c;
+} n => 3, name => 'manakai_expanded_uri';
 
 run_tests;
 

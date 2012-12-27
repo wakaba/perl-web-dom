@@ -20,6 +20,18 @@ are available:
 Return the L<Web::DOM::NamedNodeMap> object containing the content
 attributes for the element.  [DOM] [DOMATTREXODUS]
 
+=item $string = $el->manakai_base_uri
+
+=item $el->manakai_base_uri ($string)
+
+Return or set the explicit [base URI] property value of the element.
+[MANAKAI]
+
+=item $bool = $el->manakai_element_type_match ($nsurl, $local_name)
+
+Return whether the namespace URL and local name are equal to the
+specified values or not.  [MANAKAI]
+
 =item $value = $el->get_attribute ($name)
 
 Return the value of the specified attribute.  If there is no attribute
@@ -148,7 +160,7 @@ Document Object Model (DOM) Level 3 Core Specification
 =item MANAKAI
 
 manakai DOM Extensions
-<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Node%20Extensions>.
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai++DOM%20Extensions>.
 
 =back
 

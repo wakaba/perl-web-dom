@@ -20,15 +20,21 @@ Return the name of the document type.  [DOM]
 
 =item $id = $dt->public_id
 
-Return the public identifier of the document type.  [DOM]
+=item $dt->public_id ($id)
+
+Return or set the public identifier of the document type.  [DOM]
+[MANAKAI]
 
 =item $id = $dt->system_id
 
-Return the system identifier of the document type.  [DOM]
+=item $dt->system_id ($id)
+
+Return or set the system identifier of the document type.  [DOM]
+[MANAKAI]
 
 =back
 
-=head1 SPECIFICATION
+=head1 SPECIFICATIONS
 
 =over 4
 
@@ -36,6 +42,11 @@ Return the system identifier of the document type.  [DOM]
 
 DOM Living Standard
 <http://dom.spec.whatwg.org/#interface-documenttype>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Extensions>.
 
 =back
 

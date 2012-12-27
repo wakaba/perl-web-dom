@@ -59,6 +59,40 @@ test {
   done $c;
 } n => 8, name => 'document type attributes';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  
+  $dt->public_id ('hoge');
+  is $dt->public_id, 'hoge';
+  
+  $dt->public_id ('hoge "');
+  is $dt->public_id, 'hoge "';
+  
+  $dt->public_id (undef);
+  is $dt->public_id, '';
+
+  done $c;
+} n => 3, name => 'public_id setter';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  
+  $dt->system_id ('hoge');
+  is $dt->system_id, 'hoge';
+  
+  $dt->system_id ('hoge "');
+  is $dt->system_id, 'hoge "';
+  
+  $dt->system_id (undef);
+  is $dt->system_id, '';
+
+  done $c;
+} n => 3, name => 'system_id setter';
+
 run_tests;
 
 =head1 LICENSE

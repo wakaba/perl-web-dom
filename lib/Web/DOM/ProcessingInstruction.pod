@@ -15,13 +15,20 @@ methods are available:
 
 =over 4
 
+=item $string = $pi->manakai_base_uri
+
+=item $pi->manakai_base_uri ($string)
+
+Return or set the explicit [base URI] property value of the processing
+instruction.  [MANAKAI]
+
 =item $name = $pi->target
 
 Return the target of the processing instruction.
 
 =back
 
-=head1 SPECIFICATION
+=head1 SPECIFICATIONS
 
 =over 4
 
@@ -29,6 +36,11 @@ Return the target of the processing instruction.
 
 DOM Living Standard
 <http://dom.spec.whatwg.org/#interface-processinginstruction>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai++DOM%20Extensions>.
 
 =back
 

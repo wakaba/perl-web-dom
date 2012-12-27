@@ -264,6 +264,66 @@ test {
   done $c;
 } n => 3, name => 'strict_error_checking';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  is $doc->manakai_charset, undef;
+
+  $doc->manakai_charset ('hogE');
+  is $doc->manakai_charset, 'hogE';
+
+  $doc->manakai_charset (undef);
+  is $doc->manakai_charset, undef;
+
+  done $c;
+} n => 3, name => 'manakai_charset';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  ok not $doc->manakai_has_bom;
+
+  $doc->manakai_has_bom ('hogE');
+  ok $doc->manakai_has_bom;
+
+  $doc->manakai_has_bom (undef);
+  ok not $doc->manakai_has_bom;
+
+  done $c;
+} n => 3, name => 'manakai_has_bom';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  ok not $doc->all_declarations_processed;
+
+  $doc->all_declarations_processed ('hogE');
+  ok $doc->all_declarations_processed;
+
+  $doc->all_declarations_processed (undef);
+  ok not $doc->all_declarations_processed;
+
+  done $c;
+} n => 3, name => 'all_declarations_processed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  ok not $doc->manakai_is_srcdoc;
+
+  $doc->manakai_is_srcdoc ('hogE');
+  ok $doc->manakai_is_srcdoc;
+
+  $doc->manakai_is_srcdoc (undef);
+  ok not $doc->manakai_is_srcdoc;
+
+  done $c;
+} n => 3, name => 'manakai_is_srcdoc';
+
 run_tests;
 
 =head1 LICENSE
