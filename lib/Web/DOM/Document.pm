@@ -449,26 +449,6 @@ sub xml_standalone ($;$) {
   return ${$_[0]}->[2]->{xml_standalone};
 } # xml_standalone
 
-sub doctype ($) {
-  for ($_[0]->child_nodes->to_list) {
-    if ($_->node_type == DOCUMENT_TYPE_NODE) {
-      return $_;
-    }
-  }
-  return undef;
-} # doctype
-
-sub document_element ($) {
-  for ($_[0]->child_nodes->to_list) {
-    if ($_->node_type == ELEMENT_NODE) {
-      return $_;
-    }
-  }
-  return undef;
-} # document_element
-
-# XXX getElementById
-
 sub strict_error_checking ($;$) {
   if (@_ > 1) {
     if ($_[1]) {
@@ -503,6 +483,59 @@ sub manakai_is_srcdoc ($;$) {
   }
   return ${$_[0]}->[2]->{is_srcdoc};
 } # manakai_is_srcdoc
+
+sub doctype ($) {
+  for ($_[0]->child_nodes->to_list) {
+    if ($_->node_type == DOCUMENT_TYPE_NODE) {
+      return $_;
+    }
+  }
+  return undef;
+} # doctype
+
+sub document_element ($) {
+  for ($_[0]->child_nodes->to_list) {
+    if ($_->node_type == ELEMENT_NODE) {
+      return $_;
+    }
+  }
+  return undef;
+} # document_element
+
+sub manakai_html ($) {
+  my $html = $_[0]->document_element or return undef;
+  return $html if $html->manakai_element_type_match (HTML_NS, 'html');
+  return undef;
+} # manakai_html
+
+sub head ($) {
+  my $html = $_[0]->manakai_html or return undef;
+  for ($html->child_nodes->to_list) {
+    if ($_->manakai_element_type_match (HTML_NS, 'head')) {
+      return $_;
+    }
+  }
+  return undef;
+} # head
+
+*manakai_head = \&head;
+
+sub body ($;$) {
+  if (@_ > 1) {
+    # XXX setter
+    return unless defined wantarray;
+  }
+  my $html = $_[0]->manakai_html or return undef;
+  for ($html->child_nodes->to_list) {
+    if ($_->manakai_element_type_match (HTML_NS, 'body') or
+        $_->manakai_element_type_match (HTML_NS, 'frameset')) {
+      return $_;
+    }
+  }
+  return undef;
+} # body
+
+# XXX getElementById
 
 1;
 

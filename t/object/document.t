@@ -324,6 +324,124 @@ test {
   done $c;
 } n => 3, name => 'manakai_is_srcdoc';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  is $doc->manakai_html, undef;
+  is $doc->head, undef;
+  is $doc->manakai_head, undef;
+  is $doc->body, undef;
+  done $c;
+} n => 4, name => 'html structure, empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->append_child ($doc->create_element_ns (undef, 'html'));
+  is $doc->manakai_html, undef;
+  is $doc->head, undef;
+  is $doc->manakai_head, undef;
+  is $doc->body, undef;
+  done $c;
+} n => 4, name => 'html structure, non-HTML element';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->append_child ($doc->create_element_ns
+                          ('http://www.w3.org/1999/xhtml', 'a'));
+  is $doc->manakai_html, undef;
+  is $doc->head, undef;
+  is $doc->manakai_head, undef;
+  is $doc->body, undef;
+  done $c;
+} n => 4, name => 'html structure, non-html element';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $html = $doc->append_child ($doc->create_element_ns
+                          ('http://www.w3.org/1999/xhtml', 'html'));
+  is $doc->manakai_html, $html;
+  is $doc->head, undef;
+  is $doc->manakai_head, undef;
+  is $doc->body, undef;
+  done $c;
+} n => 4, name => 'html structure, html element only';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $html = $doc->append_child ($doc->create_element_ns
+                          ('http://www.w3.org/1999/xhtml', 'html'));
+  my $head = $html->append_child ($doc->create_element ('head'));
+  my $body = $html->append_child ($doc->create_element ('body'));
+  is $doc->manakai_html, $html;
+  is $doc->head, $head;
+  is $doc->manakai_head, $head;
+  is $doc->body, $body;
+  done $c;
+} n => 4, name => 'html structure, html, head, body';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $html = $doc->append_child ($doc->create_element_ns
+                          ('http://www.w3.org/1999/xhtml', 'html'));
+  my $head = $html->append_child ($doc->create_element_ns (undef, 'head'));
+  my $body = $html->append_child ($doc->create_element_ns (undef, 'body'));
+  is $doc->manakai_html, $html;
+  is $doc->head, undef;
+  is $doc->manakai_head, undef;
+  is $doc->body, undef;
+  done $c;
+} n => 4, name => 'html structure, html, without head, body';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $html = $doc->append_child ($doc->create_element_ns
+                          ('http://www.w3.org/1999/xhtml', 'html'));
+  my $body1 = $html->append_child ($doc->create_element ('body'));
+  my $body2 = $html->append_child ($doc->create_element ('body'));
+  my $head1 = $html->append_child ($doc->create_element ('head'));
+  my $head2 = $html->append_child ($doc->create_element ('head'));
+  is $doc->manakai_html, $html;
+  is $doc->head, $head1;
+  is $doc->manakai_head, $head1;
+  is $doc->body, $body1;
+  done $c;
+} n => 4, name => 'html structure, html, head, body reordered multiple';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $html = $doc->append_child ($doc->create_element_ns
+                          ('http://www.w3.org/1999/xhtml', 'html'));
+  my $head = $html->append_child ($doc->create_element ('head'));
+  my $body = $html->append_child ($doc->create_element ('frameset'));
+  is $doc->manakai_html, $html;
+  is $doc->head, $head;
+  is $doc->manakai_head, $head;
+  is $doc->body, $body;
+  done $c;
+} n => 4, name => 'html structure, html, head, frameset';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $html = $doc->append_child ($doc->create_element_ns
+                          ('http://www.w3.org/1999/xhtml', 'html'));
+  my $head = $html->append_child ($doc->create_element ('head'));
+  my $body = $html->append_child ($doc->create_element ('frameset'));
+  my $body2 = $html->append_child ($doc->create_element ('body'));
+  is $doc->manakai_html, $html;
+  is $doc->head, $head;
+  is $doc->manakai_head, $head;
+  is $doc->body, $body;
+  done $c;
+} n => 4, name => 'html structure, html, head, frameset, body';
+
 run_tests;
 
 =head1 LICENSE
