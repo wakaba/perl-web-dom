@@ -13,6 +13,10 @@ following methods:
 
 =over 4
 
+=item $bool = $attr->is_id
+
+Return whether the attribute is C<id> or not.  [MANAKAI]
+
 =item $name = $attr->local_name
 
 =item $name = $attr->manakai_local_name (DEPRECATED)

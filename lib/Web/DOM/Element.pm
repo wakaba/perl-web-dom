@@ -554,6 +554,11 @@ sub remove_attribute_node ($$) {
 
 # XXX id / class attrs
 
+sub manakai_ids ($) {
+  my $id = $_[0]->get_attribute ('id');
+  return defined $id ? [$id] : [];
+} # manakai_ids
+
 1;
 
 =head1 LICENSE

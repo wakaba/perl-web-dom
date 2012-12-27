@@ -52,6 +52,11 @@ Return whether there is the specified attribute or not.  [DOM]
 Return whether there is the attribute with the specified namespace URL
 and local name or not.  [DOM]
 
+=item $arrayref = $el->manakai_ids
+
+Return the array reference containing the ID of the element, if any,
+or the empty array reference, otherwise.  [MANAKAI]
+
 =item $name = $el->local_name
 
 =item $name = $el->manakai_local_name (DEPRECATED)

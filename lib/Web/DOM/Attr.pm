@@ -16,6 +16,11 @@ sub name ($) {
   }
 } # name
 
+sub is_id ($) {
+  return (not ${$_[0]}->[2]->{namespace_uri} and
+          ${${$_[0]}->[2]->{local_name}} eq 'id');
+} # is_id
+
 sub value ($;$) {
   if (@_ > 1) {
     # XXX mutation?
@@ -37,7 +42,7 @@ sub owner_element ($) {
   }
 } # owner_element
 
-# XXX isId schemaTypeInfo
+# XXX schemaTypeInfo
 
 1;
 

@@ -157,6 +157,22 @@ test {
   done $c;
 } n => 3, name => 'specified';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $attr1 = $doc->create_attribute ('hoge');
+  ok not $attr1->is_id;
+
+  my $attr2 = $doc->create_attribute ('id');
+  ok $attr2->is_id;
+
+  my $attr3 = $doc->create_attribute_ns ('http://foo/', 'id');
+  ok not $attr3->is_id;
+
+  done $c;
+} n => 3, name => 'is_id';
+
 run_tests;
 
 =head1 LICENSE
