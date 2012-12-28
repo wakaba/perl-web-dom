@@ -65,7 +65,7 @@ sub namespace_uri ($) {
 sub prefix ($;$) {
   if (@_ > 1) {
     # 1.
-    my $prefix = $_[1];
+    my $prefix = defined $_[1] ? ''.$_[1] : undef;
 
     # 2.
     unless (${$_[0]}->[2]->{namespace_uri}) {
@@ -1063,18 +1063,19 @@ sub lookup_prefix ($$) {
   my $self = $_[0];
 
   # 1.
-  if (not defined $_[1] or not length $_[1]) {
+  my $prefix = defined $_[1] ? ''.$_[1] : undef;
+  if (not defined $prefix or not length $prefix) {
     return undef;
   }
 
   # 2.
   my $nt = $self->node_type;
   if ($nt == ELEMENT_NODE) {
-    return $self->_locate_prefix ($_[1]);
+    return $self->_locate_prefix ($prefix);
   } elsif ($nt == DOCUMENT_NODE) {
     my $de = $self->document_element;
     if ($de) {
-      return $de->_locate_prefix ($_[1]);
+      return $de->_locate_prefix ($prefix);
     } else {
       return undef;
     }
@@ -1083,14 +1084,14 @@ sub lookup_prefix ($$) {
   } elsif ($nt == ATTRIBUTE_NODE) {
     my $oe = $self->owner_element;
     if ($oe) {
-      return $oe->_locate_prefix ($_[1]);
+      return $oe->_locate_prefix ($prefix);
     } else {
       return undef;
     }
   } else {
     my $pe = $self->parent_element;
     if ($pe) {
-      return $pe->_locate_prefix ($_[1]);
+      return $pe->_locate_prefix ($prefix);
     } else {
       return undef;
     }
@@ -1099,7 +1100,7 @@ sub lookup_prefix ($$) {
 
 sub _locate_prefix ($$) {
   my $self = $_[0];
-  my $nsurl = ''.$_[1];
+  my $nsurl = $_[1];
 
   # Locate a namespace prefix
 

@@ -11,8 +11,6 @@ sub node_name ($) {
   return '#text';
 } # node_name
 
-# XXX isElementContentWhitespace
-
 sub split_text ($$) {
   my $node = $_[0];
   # WebIDL: unsigned long
@@ -79,8 +77,6 @@ sub whole_text ($) {
   }
   die "The node not found...";
 } # whole_text
-
-# XXX replaceWholeText
 
 1;
 

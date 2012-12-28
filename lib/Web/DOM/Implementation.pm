@@ -34,6 +34,12 @@ sub new ($) {
 
 sub create_document ($;$$$) {
   my ($self, $ns, $qn, $doctype) = @_;
+  $ns = ''.$ns if defined $ns;
+  $qn = ''.$qn if defined $qn and (not ref $qn or not ref $qn eq 'ARRAY');
+  if (ref $qn eq 'ARRAY') {
+    $qn->[0] = ''.$qn->[0] if defined $qn->[0];
+    $qn->[1] = ''.$qn->[1];
+  }
 
   # WebIDL
   if (defined $doctype and
@@ -114,6 +120,8 @@ sub create_html_document ($;$) {
 sub create_document_type ($$$$) {
   my $self = $_[0];
   my $qname = ''.$_[1];
+  my $pubid = ''.$_[2];
+  my $sysid = ''.$_[3];
 
   if ($$self->[0]->{data}->[0]->{no_strict_error_checking}) {
     unless (length $qname) {
@@ -137,22 +145,22 @@ sub create_document_type ($$$$) {
   # 3.
   my $data = {node_type => DOCUMENT_TYPE_NODE,
               name => Web::DOM::Internal->text ($qname),
-              public_id => Web::DOM::Internal->text (''.$_[2]),
-              system_id => Web::DOM::Internal->text (''.$_[3])};
+              public_id => Web::DOM::Internal->text ($pubid),
+              system_id => Web::DOM::Internal->text ($sysid)};
   my $id = $$self->[0]->add_data ($data);
   return $$self->[0]->node ($id);
 } # create_document_type
 
 sub has_feature ($$;$) {
   my $feature = ''.$_[1];
+  # WebIDL, 1.
+  my $version = defined $_[2] ? ''.$_[2] : '';
 
   # 1.
   $feature =~ tr/A-Z/a-z/; ## ASCII case-insensitive.
   if ($feature =~ m{\Ahttp://www\.w3\.org/tr/svg} or
       $feature =~ m{\Aorg\.w3c\.dom\.svg} or
       $feature =~ m{\Aorg\.w3c\.svg}) {
-    # WebIDL, 1.
-    my $version = defined $_[2] ? ''.$_[2] : '';
     if ($version eq '') {
       # 1.
       # XXX

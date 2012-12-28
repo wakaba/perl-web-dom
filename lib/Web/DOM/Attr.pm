@@ -70,8 +70,6 @@ sub manakai_attribute_type ($;$) {
   return ${$_[0]}->[2]->{attribute_type} || 0;
 } # manakai_attribute_type
 
-# XXX schemaTypeInfo
-
 1;
 
 =head1 LICENSE

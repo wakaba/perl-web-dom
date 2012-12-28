@@ -307,35 +307,24 @@ sub set_attribute ($$$) {
 
 sub set_attribute_ns ($$$$) {
   my $node = $_[0];
-  my $value = ''.$_[3];
   my $qname;
   my $prefix;
   my $ln;
   my $not_strict = $$node->[0]->{data}->[0]->{no_strict_error_checking};
+
+  # WebIDL / 1.
+  my $nsurl = defined $_[1] ? length $_[1] ? ''.$_[1] : undef : undef;
 
   # DOMPERL
   if (defined $_[2] and ref $_[2] eq 'ARRAY') {
     $prefix = $_[2]->[0];
     $ln = ''.$_[2]->[1];
     $qname = defined $prefix ? $prefix . ':' . $ln : $ln;
-
-    unless ($not_strict) {
-      if (defined $prefix and
-          not $prefix =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*\z/) {
-        _throw Web::DOM::Exception 'NamespaceError',
-            'The prefix is not an XML NCName';
-      }
-      unless ($ln =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*\z/) {
-        _throw Web::DOM::Exception 'NamespaceError',
-            'The local name is not an XML NCName';
-      }
-    }
   } else {
     $qname = ''.$_[2];
   }
 
-  # 1.
-  my $nsurl = defined $_[1] ? length $_[1] ? ''.$_[1] : undef : undef;
+  my $value = ''.$_[3];
 
   if ($not_strict) {
     unless (length $qname) {
@@ -350,6 +339,17 @@ sub set_attribute_ns ($$$$) {
     }
 
     # 3.
+    if (defined $ln) {
+      if (defined $prefix and
+          not $prefix =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*\z/) {
+        _throw Web::DOM::Exception 'NamespaceError',
+            'The prefix is not an XML NCName';
+      }
+      unless ($ln =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*\z/) {
+        _throw Web::DOM::Exception 'NamespaceError',
+            'The local name is not an XML NCName';
+      }
+    }
     unless ($qname =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*(?::\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*)?\z/) {
       _throw Web::DOM::Exception 'NamespaceError',
           'The qualified name is not an XML QName';
