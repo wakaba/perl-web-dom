@@ -1,6 +1,7 @@
 package Web::DOM::Internal;
 use strict;
 use warnings;
+no warnings 'utf8';
 use Exporter::Lite;
 
 our @EXPORT;

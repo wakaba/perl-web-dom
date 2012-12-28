@@ -356,7 +356,35 @@ test {
   is $dt->public_id, 'abc';
   is $dt->system_id, 'def';
   done $c;
-} n => 4, name => 'create_document_type not strict empty';
+} n => 4, name => 'create_document_type not strict not empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $impl = $doc->implementation;
+  my $dt = $impl->create_document_type ("\x{FFFF}012:41", 'abc', 'def');
+  is $dt->node_type, $dt->DOCUMENT_TYPE_NODE;
+  is $dt->node_name, "\x{FFFF}012:41";
+  is $dt->public_id, 'abc';
+  is $dt->system_id, 'def';
+  done $c;
+} n => 4, name => 'create_document_type not strict not empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $impl = $doc->implementation;
+  eval {
+    $impl->create_document_type ("\x{FFFF}", '', '');
+    ok 0;
+  };
+  ok 1;
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_document_type U+FFFF';
 
 test {
   my $c = shift;

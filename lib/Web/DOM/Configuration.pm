@@ -1,6 +1,7 @@
 package Web::DOM::Configuration;
 use strict;
 use warnings;
+no warnings 'utf8';
 our $VERSION = '1.0';
 use Carp;
 our @CARP_NOT = qw(Web::DOM::Document Web::DOM::TypeError);

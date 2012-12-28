@@ -1,6 +1,7 @@
 package Web::DOM::Exception;
 use strict;
 use warnings;
+no warnings 'utf8';
 use Web::DOM::Error;
 push our @ISA, qw(Web::DOM::Error);
 our $VERSION = '1.0';
