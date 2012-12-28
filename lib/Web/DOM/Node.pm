@@ -8,7 +8,6 @@ use Web::DOM::Exception;
 use Web::DOM::Internal;
 use Carp;
 our @CARP_NOT = qw(Web::DOM::Exception Web::DOM::TypeError);
-use Exporter::Lite;
 use Char::Class::XML qw(
   InXMLNameChar InXMLNameStartChar
   InXMLNCNameChar InXMLNCNameStartChar
@@ -26,7 +25,19 @@ use overload
     },
     fallback => 1;
 
-our @EXPORT = qw(
+our @EXPORT;
+sub import ($;@) {
+  my $from_class = shift;
+  my ($to_class, $file, $line) = caller;
+  for (@_ ? @_ : @EXPORT) {
+    my $code = $from_class->can ($_)
+        or croak qq{"$_" is not exported by the $from_class module at $file line $line};
+    no strict 'refs';
+    *{$to_class . '::' . $_} = $code;
+  }
+} # import
+
+push @EXPORT, qw(
   ELEMENT_NODE ATTRIBUTE_NODE TEXT_NODE CDATA_SECTION_NODE 
   ENTITY_REFERENCE_NODE ENTITY_NODE PROCESSING_INSTRUCTION_NODE
   COMMENT_NODE DOCUMENT_NODE DOCUMENT_TYPE_NODE DOCUMENT_FRAGMENT_NODE

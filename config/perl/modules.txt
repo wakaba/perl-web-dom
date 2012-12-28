@@ -1,3 +1,2 @@
 Carp
-Exporter::Lite
 Scalar::Util

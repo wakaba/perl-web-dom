@@ -4,7 +4,19 @@ use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
 push our @ISA, qw(Web::DOM::Node);
-use Exporter::Lite;
+use Carp;
+
+our @EXPORT;
+sub import ($;@) {
+  my $from_class = shift;
+  my ($to_class, $file, $line) = caller;
+  for (@_ ? @_ : @EXPORT) {
+    my $code = $from_class->can ($_)
+        or croak qq{"$_" is not exported by the $from_class module at $file line $line};
+    no strict 'refs';
+    *{$to_class . '::' . $_} = $code;
+  }
+} # import
 
 *node_name = \&name;
 *manakai_name = \&name;
@@ -57,7 +69,7 @@ sub NOTATION_ATTR () { 9 }
 sub ENUMERATION_ATTR () { 10 }
 sub UNKNOWN_ATTR () { 11 }
 
-our @EXPORT = qw(
+push @EXPORT, qw(
   NO_TYPE_ATTR CDATA_ATTR ID_ATTR IDREF_ATTR IDREFS_ATTR ENTITY_ATTR
   ENTITIES_ATTR NMTOKEN_ATTR NMTOKENS_ATTR NOTATION_ATTR ENUMERATION_ATTR
   UNKNOWN_ATTR

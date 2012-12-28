@@ -6,7 +6,18 @@ use Web::DOM::Error;
 push our @ISA, qw(Web::DOM::Error);
 our $VERSION = '1.0';
 use Carp;
-use Exporter::Lite;
+
+our @EXPORT;
+sub import ($;@) {
+  my $from_class = shift;
+  my ($to_class, $file, $line) = caller;
+  for (@_ ? @_ : @EXPORT) {
+    my $code = $from_class->can ($_)
+        or croak qq{"$_" is not exported by the $from_class module at $file line $line};
+    no strict 'refs';
+    *{$to_class . '::' . $_} = $code;
+  }
+} # import
 
 sub INDEX_SIZE_ERR () { 1 }
 sub DOMSTRING_SIZE_ERR () { 2 }
@@ -34,7 +45,7 @@ sub TIMEOUT_ERR () { 23 }
 sub INVALID_NODE_TYPE_ERR () { 24 }
 sub DATA_CLONE_ERR () { 25 }
 
-our @EXPORT = qw(
+push @EXPORT, qw(
   INDEX_SIZE_ERR DOMSTRING_SIZE_ERR HIERARCHY_REQUEST_ERR
   WRONG_DOCUMENT_ERR INVALID_CHARACTER_ERR NO_DATA_ALLOWED_ERR
   NO_MODIFICATION_ALLOWED_ERR NOT_FOUND_ERR NOT_SUPPORTED_ERR

@@ -120,7 +120,9 @@ of the modules.
 
 The modules require Perl 5.8 or later.
 
-It does not depend on non-core Perl modules.
+The only dependency is the perl-charclass package
+<https://github.com/wakaba/perl-charclass>, which is the submodule of
+the Git repository.
 
 XXX But some features will require additional modules.  For example,
 base URL resolution will require URL parsing modules.  innerHTML will

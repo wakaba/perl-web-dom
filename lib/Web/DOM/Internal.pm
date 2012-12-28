@@ -2,7 +2,7 @@ package Web::DOM::Internal;
 use strict;
 use warnings;
 no warnings 'utf8';
-use Exporter::Lite;
+use Carp;
 
 our @EXPORT;
 
@@ -16,6 +16,17 @@ push @EXPORT, qw(HTML_NS XML_NS XMLNS_NS);
 sub HTML_NS () { q<http://www.w3.org/1999/xhtml> }
 sub XML_NS () { q<http://www.w3.org/XML/1998/namespace> }
 sub XMLNS_NS () { q<http://www.w3.org/2000/xmlns/> }
+
+sub import ($;@) {
+  my $from_class = shift;
+  my ($to_class, $file, $line) = caller;
+  for (@_ ? @_ : @EXPORT) {
+    my $code = $from_class->can ($_)
+        or croak qq{"$_" is not exported by the $from_class module at $file line $line};
+    no strict 'refs';
+    *{$to_class . '::' . $_} = $code;
+  }
+} # import
 
 ## Internal data structure for DOM tree.
 ##
