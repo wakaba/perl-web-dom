@@ -258,7 +258,82 @@ test {
   done $c;
 } n => 3, name => 'create_document / doctype not a doctype';
 
-# XXX create_document doctype tests
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $doc2 = $doc->implementation->create_document (undef, undef, $dt);
+  is $doc2->child_nodes->length, 1;
+  is $doc2->child_nodes->[0], $dt;
+  is $dt->owner_document, $doc2;
+  is $dt->parent_node, $doc2;
+  done $c;
+} n => 4, name => 'create_document doctype';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  $doc->append_child ($dt);
+  my $doc2 = $doc->implementation->create_document (undef, undef, $dt);
+  is $doc2->child_nodes->length, 1;
+  is $doc2->child_nodes->[0], $dt;
+  is $dt->owner_document, $doc2;
+  is $dt->parent_node, $doc2;
+  is $doc->child_nodes->length, 0;
+  done $c;
+} n => 5, name => 'create_document doctype in use';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $doc2 = $doc->implementation->create_document (undef, 'hoge', $dt);
+  is $doc2->child_nodes->length, 2;
+  is $doc2->child_nodes->[0], $dt;
+  my $el = $doc2->last_child;
+  is $el->node_type, 1;
+  is $el->namespace_uri, undef;
+  is $el->prefix, undef;
+  is $el->local_name, 'hoge';
+  is $dt->owner_document, $doc2;
+  is $dt->parent_node, $doc2;
+  done $c;
+} n => 8, name => 'create_document qname doctype';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $doc2 = $doc->implementation->create_document
+      ('undef', ['aa', 'hoge'], $dt);
+  is $doc2->child_nodes->length, 2;
+  is $doc2->child_nodes->[0], $dt;
+  my $el = $doc2->last_child;
+  is $el->node_type, 1;
+  is $el->namespace_uri, 'undef';
+  is $el->prefix, 'aa';
+  is $el->local_name, 'hoge';
+  is $dt->owner_document, $doc2;
+  is $dt->parent_node, $doc2;
+  done $c;
+} n => 8, name => 'create_document qname doctype';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  dies_here_ok {
+    $doc->implementation->create_document
+        ('undef', ['aa', 'ho:ge'], $dt);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'The local name is not an XML NCName';
+  is $dt->parent_node, undef;
+  done $c;
+} n => 5, name => 'create_document arrayref qname invalid';
 
 test {
   my $c = shift;
