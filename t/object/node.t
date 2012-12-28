@@ -397,6 +397,53 @@ test {
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  
+  my $node = $doc->create_text_node ('a');
+  dies_here_ok {
+    $node->prefix ('hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'Namespace prefix can only be specified for namespaced node';
+  is $node->prefix, undef;
+
+  for my $el (
+    $doc->create_element_ns (undef, 'hoge'),
+    $doc->create_attribute_ns (undef, 'hoge'),
+  ) {
+    $el->prefix ('foo');
+    is $el->prefix, 'foo';
+
+    $el->prefix ('');
+    is $el->prefix, undef;
+  }
+
+  done $c;
+} n => 9, name => 'prefix not strict null namespace';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+
+  for my $el (
+    $doc->create_element_ns ('http:///', 'hoge'),
+    $doc->create_attribute_ns ('http:///', 'hoge'),
+  ) {
+    $el->prefix ('120');
+    is $el->prefix, '120';
+
+    $el->prefix ('');
+    is $el->prefix, undef;
+  }
+
+  done $c;
+} n => 4, name => 'prefix not strict not XML Name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
 
   is $doc->parent_node, undef;
   is $doc->parent_element, undef;

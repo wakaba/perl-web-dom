@@ -112,19 +112,26 @@ sub create_html_document ($;$) {
 
 sub create_document_type ($$$$) {
   my $self = $_[0];
+  my $qname = ''.$_[1];
 
-  # 1.
-  my $qname = $_[1];
-  unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
-    _throw Web::DOM::Exception 'InvalidCharacterError',
-        'The qualified name is not an XML Name';
-  }
+  if ($$self->[0]->{data}->[0]->{no_strict_error_checking}) {
+    unless (length $qname) {
+      _throw Web::DOM::Exception 'InvalidCharacterError',
+          'The qualified name is not an XML Name';
+    }
+  } else {
+    # 1.
+    unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+      _throw Web::DOM::Exception 'InvalidCharacterError',
+          'The qualified name is not an XML Name';
+    }
 
-  # 2.
-  unless ($qname =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*(?::\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*)?\z/) {
-    _throw Web::DOM::Exception 'NamespaceError',
-        'The qualified name is not an XML QName';
-  }
+    # 2.
+    unless ($qname =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*(?::\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*)?\z/) {
+      _throw Web::DOM::Exception 'NamespaceError',
+          'The qualified name is not an XML QName';
+    }
+  } # strict
 
   # 3.
   my $data = {node_type => DOCUMENT_TYPE_NODE,

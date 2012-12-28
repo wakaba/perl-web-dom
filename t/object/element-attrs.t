@@ -849,6 +849,156 @@ test {
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $doc->strict_error_checking (0);
+
+  $el->set_attribute ('123 hoge' => 'abc');
+  is $el->get_attribute ('123 hoge'), 'abc';
+  
+  my $attr = $el->get_attribute_node ('123 hoge');
+  is $attr->prefix, undef;
+  is $attr->local_name, '123 hoge';
+  is $attr->namespace_uri, undef;
+
+  done $c;
+} n => 4, name => 'set_attribute not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $doc->strict_error_checking (0);
+
+  dies_here_ok {
+    $el->set_attribute ('' => 'abc');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The name is not an XML Name';
+  is $el->get_attribute (''), undef;
+  is $el->attributes->length, 0;
+
+  done $c;
+} n => 6, name => 'set_attribute not strict empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $doc->strict_error_checking (0);
+
+  $el->set_attribute_ns (undef, '123 hoge' => 'abc');
+  is $el->get_attribute ('123 hoge'), 'abc';
+  
+  my $attr = $el->get_attribute_node ('123 hoge');
+  is $attr->prefix, undef;
+  is $attr->local_name, '123 hoge';
+  is $attr->namespace_uri, undef;
+
+  done $c;
+} n => 4, name => 'set_attribute_ns not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $doc->strict_error_checking (0);
+
+  dies_here_ok {
+    $el->set_attribute_ns (undef, '' => 'abc');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  is $el->get_attribute (''), undef;
+  is $el->attributes->length, 0;
+
+  done $c;
+} n => 6, name => 'set_attribute_ns not strict empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $doc->strict_error_checking (0);
+
+  $el->set_attribute_ns (undef, ':hoge' => 'abc');
+  is $el->get_attribute (':hoge'), 'abc';
+  
+  my $attr = $el->get_attribute_node (':hoge');
+  is $attr->prefix, undef;
+  is $attr->local_name, ':hoge';
+  is $attr->namespace_uri, undef;
+
+  done $c;
+} n => 4, name => 'set_attribute_ns not strict :name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $doc->strict_error_checking (0);
+
+  $el->set_attribute_ns (undef, 'hoge:' => 'abc');
+  is $el->get_attribute ('hoge:'), 'abc';
+  
+  my $attr = $el->get_attribute_node ('hoge:');
+  is $attr->prefix, undef;
+  is $attr->local_name, 'hoge:';
+  is $attr->namespace_uri, undef;
+
+  done $c;
+} n => 4, name => 'set_attribute_ns not strict name:';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $doc->strict_error_checking (0);
+
+  $el->set_attribute_ns ('abc', 'hoge::fuga:' => 'abc');
+  is $el->get_attribute ('hoge::fuga:'), 'abc';
+  
+  my $attr = $el->get_attribute_node ('hoge::fuga:');
+  is $attr->prefix, 'hoge';
+  is $attr->local_name, ':fuga:';
+  is $attr->namespace_uri, 'abc';
+
+  done $c;
+} n => 4, name => 'set_attribute_ns not strict name:';
+
+for my $test (
+  [[undef, 'foo:bar'] => [undef, 'foo', 'bar']],
+  [[undef, 'xml:lang'] => [undef, 'xml', 'lang']],
+  [['http://foo/', 'xml:lang'] => ['http://foo/', 'xml', 'lang']],
+  [['http://www.w3.org/XML/1998/namespace', 'hoge:lang'] =>
+   ['http://www.w3.org/XML/1998/namespace', 'hoge', 'lang']],
+  [[undef, 'xmlns'] => [undef, undef, 'xmlns']],
+  [['http://hoge/', 'xmlns'] => ['http://hoge/', undef, 'xmlns']],
+  [['http://www.w3.org/2000/xmlns/', 'hoge:lang'] =>
+   ['http://www.w3.org/2000/xmlns/', 'hoge', 'lang']],
+  [['http://www.w3.org/2000/xmlns/', 'fuga'] =>
+   ['http://www.w3.org/2000/xmlns/', undef, 'fuga']],
+) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element ('a');
+    $doc->strict_error_checking (0);
+
+    $el->set_attribute_ns (@{$test->[0]} => 'abc');
+    my $attr = $el->attributes->[0];
+    is $attr->namespace_uri, $test->[1]->[0];
+    is $attr->prefix, $test->[1]->[1];
+    is $attr->local_name, $test->[1]->[2];
+
+    done $c;
+  } n => 3, name => ['set_attribute_ns', @{$test->[0]}];
+}
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
   my $el = $doc->create_element ('a');
   
   ok not $el->has_attribute ('ab');

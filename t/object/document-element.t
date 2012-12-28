@@ -513,6 +513,112 @@ test {
   done $c;
 } n => 4, name => 'create_element_ns undef';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $el = $doc->create_element ('124 aa');
+  is $el->namespace_uri, 'http://www.w3.org/1999/xhtml';
+  is $el->prefix, undef;
+  is $el->local_name, '124 aa';
+  done $c;
+} n => 3, name => 'create_element not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+
+  my $attr = $doc->create_element_ns (undef, '123 hoge' => 'abc');
+  is $attr->prefix, undef;
+  is $attr->local_name, '123 hoge';
+  is $attr->namespace_uri, undef;
+
+  done $c;
+} n => 3, name => 'create_element_ns not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+
+  dies_here_ok {
+    $doc->create_element_ns (undef, '' => 'abc');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+
+  done $c;
+} n => 4, name => 'create_element_ns not strict empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+
+  my $attr = $doc->create_element_ns (undef, ':hoge' => 'abc');
+  is $attr->prefix, undef;
+  is $attr->local_name, ':hoge';
+  is $attr->namespace_uri, undef;
+
+  done $c;
+} n => 3, name => 'create_element_ns not strict :name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+
+  my $attr = $doc->create_element_ns (undef, 'hoge:' => 'abc');
+  is $attr->prefix, undef;
+  is $attr->local_name, 'hoge:';
+  is $attr->namespace_uri, undef;
+
+  done $c;
+} n => 3, name => 'create_element_ns not strict name:';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $doc->strict_error_checking (0);
+
+  my $attr = $doc->create_element_ns ('abc', 'hoge::fuga:' => 'abc');
+  is $attr->prefix, 'hoge';
+  is $attr->local_name, ':fuga:';
+  is $attr->namespace_uri, 'abc';
+
+  done $c;
+} n => 3, name => 'create_element_ns not strict name:';
+
+for my $test (
+  [[undef, 'foo:bar'] => [undef, 'foo', 'bar']],
+  [[undef, 'xml:lang'] => [undef, 'xml', 'lang']],
+  [['http://foo/', 'xml:lang'] => ['http://foo/', 'xml', 'lang']],
+  [['http://www.w3.org/XML/1998/namespace', 'hoge:lang'] =>
+   ['http://www.w3.org/XML/1998/namespace', 'hoge', 'lang']],
+  [[undef, 'xmlns'] => [undef, undef, 'xmlns']],
+  [['http://hoge/', 'xmlns'] => ['http://hoge/', undef, 'xmlns']],
+  [['http://www.w3.org/2000/xmlns/', 'hoge:lang'] =>
+   ['http://www.w3.org/2000/xmlns/', 'hoge', 'lang']],
+  [['http://www.w3.org/2000/xmlns/', 'fuga'] =>
+   ['http://www.w3.org/2000/xmlns/', undef, 'fuga']],
+) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    $doc->strict_error_checking (0);
+
+    my $attr = $doc->create_element_ns (@{$test->[0]} => 'abc');
+    is $attr->namespace_uri, $test->[1]->[0];
+    is $attr->prefix, $test->[1]->[1];
+    is $attr->local_name, $test->[1]->[2];
+
+    done $c;
+  } n => 3, name => ['create_element_ns', @{$test->[0]}];
+}
+
 run_tests;
 
 =head1 LICENSE

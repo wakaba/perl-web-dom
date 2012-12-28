@@ -169,6 +169,41 @@ test {
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  dies_here_ok {
+    $doc->create_processing_instruction ('', 'aa');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The target is not an XML Name';
+  done $c;
+} n => 4, name => 'create_processing_instruction not strict empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $pi = $doc->create_processing_instruction ('0123', 'foo');
+  is $pi->node_type, $pi->PROCESSING_INSTRUCTION_NODE;
+  is $pi->node_name, '0123';
+  is $pi->data, 'foo';
+  done $c;
+} n => 3, name => 'create_processing_instruction not strict not empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $pi = $doc->create_processing_instruction ('abc', 'fo?>o');
+  is $pi->node_type, $pi->PROCESSING_INSTRUCTION_NODE;
+  is $pi->node_name, 'abc';
+  is $pi->data, 'fo?>o';
+  done $c;
+} n => 3, name => 'create_processing_instruction not strict ?>';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
 
   dies_here_ok {
     $doc->create_cdata_section ("a");

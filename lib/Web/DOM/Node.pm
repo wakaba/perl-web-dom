@@ -69,21 +69,26 @@ sub prefix ($;$) {
 
     # 2.
     unless (${$_[0]}->[2]->{namespace_uri}) {
-      _throw Web::DOM::Exception 'NamespaceError',
-          'Namespace prefix can only be specified for namespaced node';
+      if (not ${$_[0]}->[2]->{local_name} or
+          not ${$_[0]}->[0]->{data}->[0]->{no_strict_error_checking}) {
+        _throw Web::DOM::Exception 'NamespaceError',
+            'Namespace prefix can only be specified for namespaced node';
+      }
     }
 
     if (defined $prefix and length $prefix) {
-      # 4.1.
-      unless ($prefix =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
-        _throw Web::DOM::Exception 'InvalidCharacterError',
-            'The prefix is not an XML Name';
-      }
+      unless (${$_[0]}->[0]->{data}->[0]->{no_strict_error_checking}) {
+        # 4.1.
+        unless ($prefix =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+          _throw Web::DOM::Exception 'InvalidCharacterError',
+              'The prefix is not an XML Name';
+        }
 
-      # 4.2.
-      unless ($prefix =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*\z/) {
-        _throw Web::DOM::Exception 'NamespaceError',
-            'The prefix is not an XML NCName';
+        # 4.2.
+        unless ($prefix =~ /\A\p{InXMLNCNameStartChar}\p{InXMLNCNameChar}*\z/) {
+          _throw Web::DOM::Exception 'NamespaceError',
+              'The prefix is not an XML NCName';
+        }
       }
 
       # 5.

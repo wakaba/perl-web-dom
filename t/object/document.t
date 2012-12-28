@@ -118,7 +118,7 @@ test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
 
-  for my $version (1.2, 1, 'hoge', '') {
+  for my $version (1.2, 1, 'hoge', 0, '', undef) {
     dies_here_ok {
       $doc->xml_version ($version);
     };
@@ -129,7 +129,34 @@ test {
 
   is $doc->xml_version, '1.0';
   done $c;
-} n => 4*4 + 1, name => 'xml_version error';
+} n => 4*6 + 1, name => 'xml_version error';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+
+  for my $version (1.2, 1, 'hoge', 0, '') {
+    $doc->xml_version ($version);
+    is $doc->xml_version, $version;
+  }
+
+  done $c;
+} n => 5, name => 'xml_version not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+
+  $doc->xml_version ('1.1');
+  is $doc->xml_version, '1.1';
+
+  $doc->xml_version (undef);
+  is $doc->xml_version, '';
+
+  done $c;
+} n => 2, name => 'xml_version not strict';
 
 test {
   my $c = shift;
