@@ -1,0 +1,218 @@
+=head1 NAME
+
+Web::DOM - A Perl DOM implementation
+
+=head1 SYNOPSIS
+
+  use Web::DOM::Document;
+  
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('a');
+  $el->set_attribute (href => 'http://www.whatwg.org/');
+  $doc->append_child ($el);
+
+=head1 DESCRIPTION
+
+The C<Web::DOM> modules is a pure-Perl DOM implementation.  It
+implements various Web standard specifications, including DOM Living
+Standard and HTML Living Standard.
+
+=head1 USAGE
+
+The L<Web::DOM::Document> module provides the C<new> method returning
+a new document object, which corresponds to the C<new Document ()>
+constructor in JavaScript Web browser environment.
+
+  my $doc = new Web::DOM::Document;
+
+Using the document object, the application can create various DOM
+object, using standard DOM methods:
+
+  my $el = $doc->create_element ('p'); # HTML element
+  my $el = $doc->create_element_ns ($nsurl, $qname);
+  $el->set_attribute (class => 'hoge fuga');
+  my $text = $doc->create_text_node ('text');
+  my $comment = $doc->create_comment ('data');
+
+Please note that DOM attributes and methods are available in
+perllish_underscored_name rather than domSpecificationsCamelCaseName.
+
+For more information, see documentation of relevant modules.  For
+example, methods available on the document object is listed in the
+L<Web::DOM::Document> documentation.  Frequently used modules include:
+
+=over 4
+
+=item L<Web::DOM::Document>
+
+The C<Document> interface.
+
+=item L<Web::DOM::Element>
+
+The C<Element> interface.
+
+=item L<Web::DOM::Exception>
+
+The C<DOMException> interface.
+
+=item L<Web::DOM::HTMLCollection>
+
+The C<HTMLCollection> interface.
+
+=back
+
+=head1 DOM MAPPING
+
+The modules implement the manakai's DOM Perl Binding specification
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding>,
+which defines the mapping between WebIDL/DOM and Perl.
+
+As a general rule, the object implementing the DOM interface I<I> is
+an instance of the class (or the class that is a subclass of the
+class) C<Web::DOM::I>.  However, applications should not rely on this,
+as the class inheritance hierarchy could be different from the
+interface's one, and could be changed in future revision of the module
+implementation.  In particular, applications should not test whether
+the object is an instance of the interface that is defined with the
+C<[NoInterfaceObject]> extended attribute.  For example, the
+C<RootNode> interface is defined with the extended attribute.  The
+L<Web::DOM::Document> class inherits the L<Web::DOM::RootNode> class,
+as the C<Document> interface implements the C<RootNode> interface
+according to the DOM Standard, but applications should not test C<<
+$node->isa ('Web::DOM::RootNode') >>.
+
+=head1 SPECIFICATIONS
+
+Specifications defining features supported by the modules include:
+
+=over
+
+=item DOM
+
+DOM Living Standard <http://dom.spec.whatwg.org/>.
+
+=item DOM3CORE
+
+Document Object Model (DOM) Level 3 Core Specification
+<http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html>.
+
+=item HTML
+
+HTML Living Standard
+<http://www.whatwg.org/specs/web-apps/current-work/>.
+
+=item DOMPERL
+
+manakai's DOM Perl Binding
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Extensions>.
+
+=back
+
+For the complete list of relevant specifications, see documentations
+of the modules.
+
+=head1 DEVELOPMENT
+
+Latest version of the modules is available from the GitHub repository:
+<https://github.com/wakaba/perl-web-dom>.
+
+Test results can be reviewed at:
+<https://travis-ci.org/wakaba/perl-web-dom>.
+
+=head1 HISTORY
+
+The manakai project has been developed several generations of DOM
+implementation.  The current DOM3 implementation
+<https://github.com/wakaba/manakai/tree/master/lib/Message/DOM> had
+been worked since 2007.
+
+The C<Web::DOM> modules has been developed as replacement for those
+modules, supporting the current DOM Standard.  It does not reuse most
+of the code of the older implementation, and many useless DOM3
+features are not implemented.  However, it does implement some DOM3
+features that is really necessary for backward compatibility, as well
+as non-standard manakai extensions.  It should be possible for
+applications using the old implementation to migrate to the new
+implementation by just replacing class name and as such.
+
+=head1 TODO
+
+The initial milestone of the project is reimplementing the subset of
+DOM supported by the original manakai's DOM implementation
+<https://github.com/wakaba/manakai/tree/master/lib/Message/DOM>,
+except for obsolete features.  Features that should be implemented in
+the initial phase of the development include:
+
+=over 4
+
+=item DOM Core methods
+
+getElementById, getElementsByClassName, id, className, classList,
+HTMLCollection.prototype.namedItem, HTMLCollection.prototype.%{} [DOM]
+
+entities, notations [DOM3CORE]
+
+=item baseURI and related methods [DOM] [HTML] [MANAKAI]
+
+=item Mutation observers [DOM]
+
+=item Notation [DOM3CORE]
+
+=item Entity [DOM3CORE]
+
+=item Selectors API
+
+=item DOMTokenList, DOMSettableTokenList interface [DOM]
+
+=item New mutation methods [DOM]
+
+prepend, append, before, after, replace, remove
+
+=item manakai_append_text [MANAKAI]
+
+=item [DOMDTDDEF]
+
+=item DOM Parsing and Serialization
+
+=item Document.prototype.innerHTML
+
+=item DOM Events [DOM]
+
+=item DOM Ranges [DOM]
+
+=item DOM Traversal [DOM]
+
+=item Window [HTML]
+
+=item CSSOM
+
+=item manakai CSSOM/Window extensions
+
+Element.prototype.manakaiComputedStyle,
+Window.prototype.manakaiGetComputedStyle, Window.prototype.setDocument
+
+=item HTML DOM [HTML]
+
+=item Atom DOM [ATOMDOM]
+
+=item WebVTT DOM [HTML]
+
+=back
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
