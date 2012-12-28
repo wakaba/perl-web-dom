@@ -766,7 +766,7 @@ sub normalize ($) {
 } # normalize
 
 sub clone_node ($;$) {
-  return $_[0]->_clone ($_[0]->owner_document || $_[0], $_[1]);
+  return $_[0]->_clone ($_[0]->owner_document || $_[0], !!$_[1]);
 } # clone_node
 
 sub _clone {
