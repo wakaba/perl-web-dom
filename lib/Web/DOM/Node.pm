@@ -772,11 +772,19 @@ sub clone_node ($;$) {
 sub _clone {
   # 1.
   my ($node, $od, $deep) = @_;
+
+  my $orig_strict_error_checking = $od->strict_error_checking;
+  $od->strict_error_checking (0);
+  my $orig_strict_document_children
+      = $od->dom_config->{manakai_strict_document_children};
+  $od->dom_config->{manakai_strict_document_children} = 0;
+  my $orig_allow_doctype_children
+      = $od->dom_config->{manakai_allow_doctype_children};
+  $od->dom_config->{manakai_allow_doctype_children} = 1;
   
   # 2.-4.
   my $copy;
   my $nt = $node->node_type;
-  # XXX strictErrorChecking
   if ($nt == ELEMENT_NODE) {
     $copy = $od->create_element_ns
         ($node->namespace_uri, $node->manakai_tag_name);
@@ -796,12 +804,27 @@ sub _clone {
     $copy = $od->create_attribute_ns ($node->namespace_uri, $node->name);
     $copy->value ($node->value);
   } elsif ($nt == DOCUMENT_NODE) {
+    $od->strict_error_checking ($orig_strict_error_checking);
+    $od->dom_config->{manakai_strict_document_children}
+        = $orig_strict_document_children;
+    $od->dom_config->{manakai_allow_doctype_children}
+        = $orig_allow_doctype_children;
+
     if ($node->isa ('Web::DOM::XMLDocument')) {
       $copy = Web::DOM::Document->new->implementation->create_document;
     } else {
       $copy = Web::DOM::Document->new;
     }
     $od = $copy;
+
+    $orig_strict_error_checking = $od->strict_error_checking;
+    $od->strict_error_checking (0);
+    $orig_strict_document_children
+        = $od->dom_config->{manakai_strict_document_children};
+    $od->dom_config->{manakai_strict_document_children} = 0;
+    $orig_allow_doctype_children
+        = $od->dom_config->{manakai_allow_doctype_children};
+    $od->dom_config->{manakai_allow_doctype_children} = 1;
   } elsif ($nt == DOCUMENT_FRAGMENT_NODE) {
     $copy = $od->create_document_fragment;
   } else {
@@ -814,10 +837,15 @@ sub _clone {
   # 6.
   if ($deep) {
     for ($node->child_nodes->to_list) {
-      # XXX strictErrorChecking
       $copy->append_child ($_->_clone ($od, 1));
     }
   }
+
+  $od->strict_error_checking ($orig_strict_error_checking);
+  $od->dom_config->{manakai_strict_document_children}
+      = $orig_strict_document_children;
+  $od->dom_config->{manakai_allow_doctype_children}
+      = $orig_allow_doctype_children;
 
   # 7.
   return $copy;
