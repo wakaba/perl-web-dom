@@ -116,6 +116,16 @@ manakai DOM Extensions
 For the complete list of relevant specifications, see documentations
 of the modules.
 
+=head1 DEPENDENCY
+
+The modules require Perl 5.8 or later.
+
+It does not depend on non-core Perl modules.
+
+XXX But some features will require additional modules.  For example,
+base URL resolution will require URL parsing modules.  innerHTML will
+require HTML parser modules.
+
 =head1 DEVELOPMENT
 
 Latest version of the modules is available from the GitHub repository:
