@@ -73,8 +73,14 @@ empty value.  [MANAKAI]
 
 =item $attr = $doc->create_attribute_ns ($nsurl, $qname)
 
+=item $attr = $doc->create_attribute_ns ($nsurl, [$prefix, $local_name])
+
 Create a new attribute (L<Web::DOM::Attr>) with the specified
 namespace URL and qualified name.  [MANAKAI]
+
+The qualified name can be represented as an array reference, where the
+first item is the prefix (or C<undef> for the null namespace) and the
+second item is the local name.  [DOMPERL]
 
 =item $doc->create_cdata_section ($text)
 
@@ -88,8 +94,14 @@ local name in the HTML namespace.  [DOM]
 
 =item $el = $doc->create_element_ns ($nsurl, $qname)
 
+=item $el = $doc->create_elemenT_ns ($nsurl, [$prefix, $local_name])
+
 Create a new element (L<Web::DOM::Element>) with specified namespace
 URL and qualified name.  [DOM]
+
+The qualified name can be represented as an array reference, where the
+first item is the prefix (or C<undef> for the null namespace) and the
+second item is the local name.  [DOMPERL]
 
 =item $doc->create_entity_reference ($name)
 
@@ -224,6 +236,11 @@ Document Object Model (DOM) Level 3 Core Specification
 
 HTML Living Standard
 <http://www.whatwg.org/specs/web-apps/current-work/>.
+
+=item DOMPERL
+
+manakai's DOM Perl Binding
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding>.
 
 =item MANAKAI
 

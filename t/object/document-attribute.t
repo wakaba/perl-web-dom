@@ -633,6 +633,107 @@ for my $test (
   } n => 3, name => ['create_attribute_ns', @{$test->[0]}];
 }
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_attribute_ns ('http://hoge', ['fuga', 'abc']);
+  is $el->prefix, 'fuga';
+  is $el->local_name, 'abc';
+  is $el->namespace_uri, 'http://hoge';
+  done $c;
+} n => 3, name => 'create_attribute_ns qname as arrayref';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_attribute_ns ('http://hoge', [undef, 'abc']);
+  is $el->prefix, undef;
+  is $el->local_name, 'abc';
+  is $el->namespace_uri, 'http://hoge';
+  done $c;
+} n => 3, name => 'create_attribute_ns ncname as arrayref';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_attribute_ns ('http://hoge', [undef, 'a:bc']);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'The local name is not an XML NCName';
+  done $c;
+} n => 4, name => 'create_attribute_ns arrayref error';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_attribute_ns ('http://hoge', ['a:b', 'abc']);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'The prefix is not an XML NCName';
+  done $c;
+} n => 4, name => 'create_attribute_ns arrayref error';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_attribute_ns ('http://hoge', [':', 'abc']);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'The prefix is not an XML NCName';
+  done $c;
+} n => 4, name => 'create_attribute_ns arrayref error';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_attribute_ns ('http://hoge', ['', 'abc']);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'The prefix is not an XML NCName';
+  done $c;
+} n => 4, name => 'create_attribute_ns arrayref error';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $el = $doc->create_attribute_ns ('http://hoge', [undef, 'a:bc']);
+  is $el->prefix, undef;
+  is $el->local_name, 'a:bc';
+  is $el->namespace_uri, 'http://hoge';
+  done $c;
+} n => 3, name => 'create_attribute_ns arrayref not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $el = $doc->create_attribute_ns ('http://hoge', ['12:ab', 'abc']);
+  is $el->prefix, '12:ab';
+  is $el->local_name, 'abc';
+  is $el->namespace_uri, 'http://hoge';
+  done $c;
+} n => 3, name => 'create_attribute_ns arrayref not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $el = $doc->create_attribute_ns ('http://hoge', ['12:ab', 'a:b:c']);
+  is $el->prefix, '12:ab';
+  is $el->local_name, 'a:b:c';
+  is $el->namespace_uri, 'http://hoge';
+  done $c;
+} n => 3, name => 'create_attribute_ns arrayref not strict';
+
 run_tests;
 
 =head1 LICENSE

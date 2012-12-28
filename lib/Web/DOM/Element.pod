@@ -114,9 +114,15 @@ new one.  [DOM]
 
 =item $el->set_attribute_ns ($nsurl, $qname => $value)
 
+=item $el->set_attribute_ns ($nsurl, [$prefix, $local_name] => $value)
+
 Set the attribute with the specified namespace URL, qualified name,
 and value.  If there is already the attribute with the same namespace
 URL / local name pair, its value is replaced by the new one.  [DOM]
+
+The qualified name can be represented as an array reference, where the
+first item is the prefix (or C<undef> for the null namespace) and the
+second item is the local name.  [DOMPERL]
 
 =item $old_attr = $el->set_attribute_node ($new_attr)
 
@@ -156,6 +162,11 @@ DOM Living Standard, commented out
 
 Document Object Model (DOM) Level 3 Core Specification
 <http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html#core-ID-745549614>.
+
+=item DOMPERL
+
+manakai's DOM Perl Binding
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding>.
 
 =item MANAKAI
 
