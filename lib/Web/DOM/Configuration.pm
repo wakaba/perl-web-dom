@@ -103,6 +103,7 @@ sub set_parameter ($$;$) {
   } else {
     _throw Web::DOM::Exception 'NotFoundError', 'Parameter not found';
   }
+  return;
 } # set_parameter
 
 sub can_set_parameter ($$;$) {
