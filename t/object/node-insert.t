@@ -1354,6 +1354,146 @@ test {
   done $c;
 } n => 3, name => 'doctype > df > empty allowed';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_text_node ('a');
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+  
+  $doc->append_child ($node);
+
+  is $doc->child_nodes->length, 1;
+  is $doc->first_child, $node;
+
+  done $c;
+} n => 2, name => 'doc > text allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+  my $df = $doc->create_document_fragment;
+  my $node = $doc->create_text_node ('a');
+  $df->append_child ($node);
+  
+  $doc->append_child ($df);
+
+  is $doc->child_nodes->length, 1;
+  is $doc->first_child, $node;
+  is $node->parent_node, $doc;
+  is $df->child_nodes->length, 0;
+
+  done $c;
+} n => 4, name => 'doc > df > text allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+
+  my $el1 = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('a');
+
+  $doc->append_child ($el1);
+  $doc->append_child ($el2);
+
+  is $doc->child_nodes->length, 2;
+  is $doc->first_child, $el1;
+  is $doc->last_child, $el2;
+  
+  done $c;
+} n => 3, name => 'doc > multiple elements, allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+
+  my $el1 = $doc->implementation->create_document_type ('a', '', '');
+  my $el2 = $doc->implementation->create_document_type ('a', '', '');
+
+  $doc->append_child ($el1);
+  $doc->append_child ($el2);
+
+  is $doc->child_nodes->length, 2;
+  is $doc->first_child, $el1;
+  is $doc->last_child, $el2;
+  
+  done $c;
+} n => 3, name => 'doc > multiple doctypes, allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+
+  my $el1 = $doc->create_element ('f');
+  my $el2 = $doc->implementation->create_document_type ('a', '', '');
+
+  $doc->append_child ($el1);
+  $doc->append_child ($el2);
+
+  is $doc->child_nodes->length, 2;
+  is $doc->first_child, $el1;
+  is $doc->last_child, $el2;
+  
+  done $c;
+} n => 3, name => 'doc > el + doctype, allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+
+  my $df = $doc->create_document_fragment;
+  my $el1 = $doc->create_element ('f');
+  my $el2 = $doc->create_element ('f');
+  my $el3 = $doc->implementation->create_document_type ('a', '', '');
+  my $el4 = $doc->implementation->create_document_type ('a', '', '');
+  $df->append_child ($el1);
+  $df->append_child ($el2);
+
+  $doc->append_child ($df);
+  $doc->append_child ($el3);
+  $doc->append_child ($el4);
+
+  is $doc->child_nodes->length, 4;
+  is $doc->child_nodes->[0], $el1;
+  is $doc->child_nodes->[1], $el2;
+  is $doc->child_nodes->[2], $el3;
+  is $doc->child_nodes->[3], $el4;
+  is $df->child_nodes->length, 0;
+  
+  done $c;
+} n => 6, name => 'doc > df > el + doctype, allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+
+  my $df = $doc->create_document_fragment;
+  my $el1 = $doc->create_element ('f');
+  my $el2 = $doc->create_element ('f');
+  my $el3 = $doc->implementation->create_document_type ('a', '', '');
+  my $el4 = $doc->implementation->create_document_type ('a', '', '');
+  $df->append_child ($el1);
+  $df->append_child ($el2);
+
+  $doc->insert_before ($el4, undef);
+  $doc->insert_before ($el3, $el4);
+  $doc->insert_before ($df, $el3);
+
+  is $doc->child_nodes->length, 4;
+  is $doc->child_nodes->[0], $el1;
+  is $doc->child_nodes->[1], $el2;
+  is $doc->child_nodes->[2], $el3;
+  is $doc->child_nodes->[3], $el4;
+  is $df->child_nodes->length, 0;
+  
+  done $c;
+} n => 6, name => 'doc > df > el + doctype, allowed';
+
 run_tests;
 
 =head1 LICENSE

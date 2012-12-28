@@ -291,10 +291,12 @@ sub _pre_insert ($$;$$) {
     }
   }
 
+  my $not_strict_doc
+      = $$parent->[0]->{config}->{not_manakai_strict_document_children};
   my $node_nt = $$node->[2]->{node_type};
   if ($node_nt == TEXT_NODE) {
     # 5.
-    if ($parent_nt == DOCUMENT_NODE) {
+    if ($parent_nt == DOCUMENT_NODE and not $not_strict_doc) {
       _throw Web::DOM::Exception 'HierarchyRequestError',
           'Document node cannot contain this kind of node';
     }
@@ -316,7 +318,7 @@ sub _pre_insert ($$;$$) {
   }
 
   # 6.
-  if ($parent_nt == DOCUMENT_NODE) {
+  if ($parent_nt == DOCUMENT_NODE and not $not_strict_doc) {
     if ($node_nt == ELEMENT_NODE) {
       # 6.2.
       if (defined $old_child) { # replace
@@ -432,7 +434,7 @@ sub _pre_insert ($$;$$) {
         }
       }
     }
-  }
+  } # document children
 
   if ($parent_nt == DOCUMENT_TYPE_NODE) {
     if ($node_nt == DOCUMENT_FRAGMENT_NODE) {
@@ -447,7 +449,7 @@ sub _pre_insert ($$;$$) {
       _throw Web::DOM::Exception 'HierarchyRequestError',
           'The node cannot be contain this kind of node';
     }
-  }
+  } # doctype children
 
   # 7.-8.
   my $insert_position = 0;

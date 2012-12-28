@@ -31,7 +31,11 @@ sub owner_document ($) {
 } # owner_document
 
 sub text_content ($;$) {
-  return undef;
+  if (${$_[0]}->[0]->{config}->{not_manakai_strict_document_children}) {
+    return shift->SUPER::text_content (@_);
+  } else {
+    return undef;
+  }
 } # text_content
 
 sub manakai_is_html ($;$) {

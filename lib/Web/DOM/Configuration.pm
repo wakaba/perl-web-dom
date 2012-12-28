@@ -49,11 +49,11 @@ my $PerlNames = [];
 
 for (@$Defs) {
   if ($_->{not}) { # boolean, negation
-    $PerlNotParams->{$_->{perl_name}} = $_->{perl_name};
-    $DOMNotParams->{$_->{name}} = $_->{perl_name};
+    $PerlNotParams->{$_->{perl_name}} = "not_$_->{perl_name}";
+    $DOMNotParams->{$_->{name}} = "not_$_->{perl_name}";
     if (defined $_->{obs_name}) {
-      $PerlNotParams->{$_->{obs_name}} = $_->{perl_name};
-      $DOMNotParams->{$_->{obs_name}} = $_->{perl_name};
+      $PerlNotParams->{$_->{obs_name}} = "not_$_->{perl_name}";
+      $DOMNotParams->{$_->{obs_name}} = "not_$_->{perl_name}";
     }
   } else { # boolean
     $PerlParams->{$_->{perl_name}} = $_->{perl_name};

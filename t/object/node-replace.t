@@ -1091,4 +1091,144 @@ test {
   done $c;
 } n => 4, name => 'dt > fragment > empty allowed';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node0 = $doc->create_element ('a');
+  $doc->append_child ($node0);
+
+  my $node = $doc->create_text_node ('a');
+
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+  $doc->replace_child ($node, $node0);
+
+  is $doc->child_nodes->length, 1;
+  is $doc->first_child, $node;
+  is $node->parent_node, $doc;
+  is $node0->parent_node, undef;
+
+  done $c;
+} n => 4, name => 'doc > text allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node0 = $doc->create_element ('a');
+  $doc->append_child ($node0);
+
+  my $df = $doc->create_document_fragment;
+  my $node = $doc->create_text_node ('a');
+  $df->append_child ($node);
+
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+  $doc->replace_child ($df, $node0);
+
+  is $doc->child_nodes->length, 1;
+  is $doc->first_child, $node;
+  is $node->parent_node, $doc;
+  is $node0->parent_node, undef;
+  is $df->child_nodes->length, 0;
+
+  done $c;
+} n => 5, name => 'doc > text allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+  my $el01 = $doc->create_comment ('hoge');
+  my $el02 = $doc->create_element ('hoge');
+  $doc->append_child ($el01);
+  $doc->append_child ($el02);
+
+  my $el1 = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('a');
+
+  $doc->replace_child ($el1, $el01);
+  $doc->replace_child ($el2, $el02);
+
+  is $doc->child_nodes->length, 2;
+  is $doc->first_child, $el1;
+  is $doc->last_child, $el2;
+  
+  done $c;
+} n => 3, name => 'doc > multiple elements, allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+  my $el01 = $doc->create_comment ('hoge');
+  my $el02 = $doc->create_element ('hoge');
+  $doc->append_child ($el01);
+  $doc->append_child ($el02);
+
+  my $el1 = $doc->implementation->create_document_type ('a', '', '');
+  my $el2 = $doc->implementation->create_document_type ('a', '', '');
+
+  $doc->replace_child ($el1, $el01);
+  $doc->replace_child ($el2, $el02);
+
+  is $doc->child_nodes->length, 2;
+  is $doc->first_child, $el1;
+  is $doc->last_child, $el2;
+  
+  done $c;
+} n => 3, name => 'doc > multiple doctypes, allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+  my $el01 = $doc->create_comment ('hoge');
+  my $el02 = $doc->create_element ('hoge');
+  $doc->append_child ($el01);
+  $doc->append_child ($el02);
+
+  my $el1 = $doc->create_element ('f');
+  my $el2 = $doc->implementation->create_document_type ('a', '', '');
+
+  $doc->replace_child ($el1, $el01);
+  $doc->replace_child ($el2, $el02);
+
+  is $doc->child_nodes->length, 2;
+  is $doc->first_child, $el1;
+  is $doc->last_child, $el2;
+  
+  done $c;
+} n => 3, name => 'doc > el + doctype, allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+  my $el01 = $doc->create_comment ('hoge');
+  my $el02 = $doc->create_comment ('hoge');
+  my $el03 = $doc->create_element ('hoge');
+  $doc->append_child ($el01);
+  $doc->append_child ($el02);
+  $doc->append_child ($el03);
+
+  my $df = $doc->create_document_fragment;
+  my $el1 = $doc->create_element ('f');
+  my $el2 = $doc->create_element ('f');
+  my $el3 = $doc->implementation->create_document_type ('a', '', '');
+  my $el4 = $doc->implementation->create_document_type ('a', '', '');
+  $df->append_child ($el1);
+  $df->append_child ($el2);
+
+  $doc->replace_child ($df, $el01);
+  $doc->replace_child ($el3, $el02);
+  $doc->replace_child ($el4, $el03);
+
+  is $doc->child_nodes->length, 4;
+  is $doc->child_nodes->[0], $el1;
+  is $doc->child_nodes->[1], $el2;
+  is $doc->child_nodes->[2], $el3;
+  is $doc->child_nodes->[3], $el4;
+  is $df->child_nodes->length, 0;
+  
+  done $c;
+} n => 6, name => 'doc > df > el + doctype, allowed';
+
 run_tests;

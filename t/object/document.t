@@ -44,6 +44,42 @@ test {
 test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+
+  is $doc->text_content, '';
+  $doc->text_content ('hoge fuga');
+  is $doc->text_content, 'hoge fuga';
+  is $doc->child_nodes->length, 1;
+  is $doc->first_child->node_type, $doc->TEXT_NODE;
+  is $doc->first_child->data, 'hoge fuga';
+
+  $doc->text_content ('');
+  is $doc->first_child, undef;
+
+  done $c;
+} n => 6, name => 'text_content not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_strict_document_children} = 0;
+
+  my $el = $doc->create_element ('aaa');
+  $el->text_content ('hoge');
+  $doc->append_child ($el);
+
+  is $doc->text_content, 'hoge';
+  $doc->text_content ('foo');
+  is $doc->text_content, 'foo';
+  is $el->parent_node, undef;
+  is $el->text_content, 'hoge';
+
+  done $c;
+} n => 4, name => 'text_content not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
 
   is $doc->character_set, 'utf-8';
   is $doc->charset, 'utf-8';
