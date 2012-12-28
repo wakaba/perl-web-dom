@@ -255,11 +255,14 @@ sub _pre_insert ($$;$$) {
   my $parent_nt = $$parent->[2]->{node_type};
 
   # 1.
-  unless ($parent_nt == ELEMENT_NODE or
-          $parent_nt == DOCUMENT_FRAGMENT_NODE or
-          $parent_nt == DOCUMENT_NODE) {
-    _throw Web::DOM::Exception 'HierarchyRequestError',
-        'The parent node cannot have a child';
+  if (not $parent_nt == DOCUMENT_TYPE_NODE or
+      not $$parent->[0]->{config}->{manakai_allow_doctype_children}) {
+    unless ($parent_nt == ELEMENT_NODE or
+            $parent_nt == DOCUMENT_FRAGMENT_NODE or
+            $parent_nt == DOCUMENT_NODE) {
+      _throw Web::DOM::Exception 'HierarchyRequestError',
+          'The parent node cannot have a child';
+    }
   }
 
   # 2.
@@ -428,6 +431,21 @@ sub _pre_insert ($$;$$) {
           }
         }
       }
+    }
+  }
+
+  if ($parent_nt == DOCUMENT_TYPE_NODE) {
+    if ($node_nt == DOCUMENT_FRAGMENT_NODE) {
+      for (@{$$node->[2]->{child_nodes}}) {
+        my $data = $$node->[0]->{data}->[$_];
+        unless ($data->{node_type} == PROCESSING_INSTRUCTION_NODE) {
+          _throw Web::DOM::Exception 'HierarchyRequestError',
+              'The node cannot be contain this kind of node';
+        }        
+      }
+    } elsif ($node_nt != PROCESSING_INSTRUCTION_NODE) {
+      _throw Web::DOM::Exception 'HierarchyRequestError',
+          'The node cannot be contain this kind of node';
     }
   }
 

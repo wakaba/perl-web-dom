@@ -199,6 +199,35 @@ test {
   my $doc = new Web::DOM::Document;
   my $config = $doc->dom_config;
 
+  ok not $config->{manakai_allow_doctype_children};
+
+  $config->{manakai_allow_doctype_children} = 0;
+  ok not $config->{manakai_allow_doctype_children};
+  ok not $config->get_parameter ('manakai-allow-doctype-children');
+
+  $config->{manakai_allow_doctype_children} = 3;
+  ok $config->{manakai_allow_doctype_children};
+  ok $config->get_parameter ('manakai-allow-doctype-children');
+
+  delete $config->{manakai_allow_doctype_children};
+  ok not $config->{manakai_allow_doctype_children};
+  ok not $config->get_parameter ('manakai-allow-doctype-children');
+
+  dies_here_ok {
+    $config->get_parameter ('manakai_allow_doctype_children');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NotFoundError';
+  is $@->message, 'Parameter not found';
+
+  done $c;
+} n => 11, name => 'manakai-allow-doctype-children';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $config = $doc->dom_config;
+
   $config->{hoge} = 23;
   is $config->{hoge}, undef;
   ok not exists $config->{hoge};
@@ -233,12 +262,14 @@ test {
   my @expected1 = qw(
     http://suika.fam.cx/www/2006/dom-config/create-child-element
     http://suika.fam.cx/www/2006/dom-config/strict-document-children
+    manakai_allow_doctype_children
     manakai_create_child_element
     manakai_strict_document_children
   );
   my @expected2 = qw(
     http://suika.fam.cx/www/2006/dom-config/create-child-element
     http://suika.fam.cx/www/2006/dom-config/strict-document-children
+    manakai-allow-doctype-children
     manakai-create-child-element
     manakai-strict-document-children
   );
@@ -268,14 +299,14 @@ test {
 
   my $list = $config->parameter_names;
   is ref $list, 'ARRAY';
-  is scalar @$list, 4;
+  is scalar @$list, 5;
   
   dies_here_ok {
     push @$list, 'hoge';
   };
   ok not ref $@;
   
-  is scalar @$list, 4;
+  is scalar @$list, 5;
 
   done $c;
 } n => 5, name => 'parameter_names read-only';

@@ -63,6 +63,11 @@ Following parameters are supported:
 
 =over 4
 
+=item manakai_allow_doctype_children (DOM: manakai-allow-doctype-children)
+
+Specifies whether the document type node can contain processing
+instruction children or not.  The default value is false.  [MANAKAI]
+
 =item manakai_create_child_element (DOM: manakai-create-child-element)
 
 Specifies whether "element reflecting" methods of the Atom DOM objects

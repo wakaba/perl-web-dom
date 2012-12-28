@@ -34,6 +34,10 @@ my $Defs = [
     obs_name => 'http://suika.fam.cx/www/2006/dom-config/create-child-element',
     perl_name => 'manakai_create_child_element',
   },
+  {
+    name => 'manakai-allow-doctype-children',
+    perl_name => 'manakai_allow_doctype_children',
+  },
 ];
 
 my $DOMParams = {};
@@ -44,19 +48,27 @@ my $PerlNotParams = {};
 my $PerlNames = [];
 
 for (@$Defs) {
-  if ($_->{not}) {
+  if ($_->{not}) { # boolean, negation
     $PerlNotParams->{$_->{perl_name}} = $_->{perl_name};
-    $PerlNotParams->{$_->{obs_name}} = $_->{perl_name};
     $DOMNotParams->{$_->{name}} = $_->{perl_name};
-    $DOMNotParams->{$_->{obs_name}} = $_->{perl_name};
-  } else {
+    if (defined $_->{obs_name}) {
+      $PerlNotParams->{$_->{obs_name}} = $_->{perl_name};
+      $DOMNotParams->{$_->{obs_name}} = $_->{perl_name};
+    }
+  } else { # boolean
     $PerlParams->{$_->{perl_name}} = $_->{perl_name};
-    $PerlParams->{$_->{obs_name}} = $_->{perl_name};
     $DOMParams->{$_->{name}} = $_->{perl_name};
-    $DOMParams->{$_->{obs_name}} = $_->{perl_name};
+    if (defined $_->{obs_name}) {
+      $PerlParams->{$_->{obs_name}} = $_->{perl_name};
+      $DOMParams->{$_->{obs_name}} = $_->{perl_name};
+    }
   }
-  push @$DOMNames, $_->{name}, $_->{obs_name};
-  push @$PerlNames, $_->{perl_name}, $_->{obs_name};
+  push @$DOMNames, $_->{name};
+  push @$PerlNames, $_->{perl_name};
+  if (defined $_->{obs_name}) {
+    push @$DOMNames, $_->{obs_name};
+    push @$PerlNames, $_->{obs_name};
+  }
 }
 
 @$DOMNames = sort { $a cmp $b } @$DOMNames;

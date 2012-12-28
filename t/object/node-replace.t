@@ -923,4 +923,172 @@ test {
   done $c;
 } n => 10, name => 'replace_child ref is diferent document';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  $dt->append_child ($pi);
+  $doc->dom_config->{manakai_allow_doctype_children} = 0;
+
+  my $pi2 = $doc->create_processing_instruction ('hoge2', 'fyuga');
+  dies_here_ok {
+    $dt->replace_child ($pi2, $pi);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The parent node cannot have a child';
+
+  is $dt->child_nodes->length, 1;
+  is $dt->first_child, $pi;
+  is $pi2->parent_node, undef;
+  is $pi->parent_node, $dt;
+
+  done $c;
+} n => 8, name => 'dt > pi';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  $dt->append_child ($pi);
+
+  my $pi2 = $doc->create_processing_instruction ('hoge2', 'fyuga');
+  my $pi3 = $dt->replace_child ($pi2, $pi);
+
+  is $dt->child_nodes->length, 1;
+  is $dt->first_child, $pi2;
+  is $pi2->parent_node, $dt;
+  is $pi->parent_node, undef;
+  is $pi3, $pi2;
+
+  done $c;
+} n => 5, name => 'dt > pi allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge2', 'fyuga');
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  $dt->append_child ($pi);
+
+  my $pi2 = $doc->create_text_node ('hoge');
+  dies_here_ok {
+    $dt->replace_child ($pi2, $pi);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The node cannot be contain this kind of node';
+
+  is $dt->child_nodes->length, 1;
+  is $dt->first_child, $pi;
+  is $pi2->parent_node, undef;
+  is $pi->parent_node, $dt;
+
+  done $c;
+} n => 8, name => 'dt > pi allowed / text';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  $dt->append_child ($pi);
+  $doc->dom_config->{manakai_allow_doctype_children} = 0;
+
+  my $df = $doc->create_document_fragment;
+  my $pi2 = $doc->create_processing_instruction ('hoge2', 'fyuga');
+  $df->append_child ($pi2);
+  dies_here_ok {
+    $dt->replace_child ($df, $pi);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The parent node cannot have a child';
+
+  is $dt->child_nodes->length, 1;
+  is $dt->first_child, $pi;
+  is $pi2->parent_node, $df;
+  is $pi->parent_node, $dt;
+  is $df->child_nodes->length, 1;
+
+  done $c;
+} n => 9, name => 'dt > fragment > pi';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  $dt->append_child ($pi);
+
+  my $df = $doc->create_document_fragment;
+  my $pi2 = $doc->create_processing_instruction ('hoge2', 'fyuga');
+  $df->append_child ($pi2);
+  my $pi3 = $dt->replace_child ($df, $pi);
+
+  is $dt->child_nodes->length, 1;
+  is $dt->first_child, $pi2;
+  is $pi2->parent_node, $dt;
+  is $pi->parent_node, undef;
+  is $pi3, $df;
+  is $df->child_nodes->length, 0;
+
+  done $c;
+} n => 6, name => 'dt > fragment > pi allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  $dt->append_child ($pi);
+
+  my $df = $doc->create_document_fragment;
+  my $pi2 = $doc->create_processing_instruction ('hoge2', 'fyuga');
+  my $text = $doc->create_text_node ('a');
+  $df->append_child ($pi2);
+  $df->append_child ($text);
+  dies_here_ok {
+    $dt->replace_child ($df, $pi);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The node cannot be contain this kind of node';
+
+  is $dt->child_nodes->length, 1;
+  is $dt->first_child, $pi;
+  is $pi2->parent_node, $df;
+  is $pi->parent_node, $dt;
+  is $df->child_nodes->length, 2;
+
+  done $c;
+} n => 9, name => 'dt > fragment > pi';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  $dt->append_child ($pi);
+
+  my $df = $doc->create_document_fragment;
+  my $pi3 = $dt->replace_child ($df, $pi);
+
+  is $dt->child_nodes->length, 0;
+  is $pi->parent_node, undef;
+  is $pi3, $df;
+  is $df->child_nodes->length, 0;
+
+  done $c;
+} n => 4, name => 'dt > fragment > empty allowed';
+
 run_tests;

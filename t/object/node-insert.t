@@ -1224,6 +1224,136 @@ test {
   done $c;
 } n => 8, name => 'insert_before diferent document';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  dies_here_ok {
+    $dt->append_child ($pi);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The parent node cannot have a child';
+  is $dt->child_nodes->length, 0;
+  done $c;
+} n => 5, name => 'doctype > pi';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  my $pi2 = $dt->append_child ($pi);
+  is $pi2, $pi;
+  is $dt->child_nodes->length, 1;
+  is $dt->child_nodes->[0], $pi;
+  done $c;
+} n => 3, name => 'doctype > pi allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $text = $doc->create_text_node ('hhh');
+  dies_here_ok {
+    $dt->append_child ($text);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The node cannot be contain this kind of node';
+  is $text->parent_node, undef;
+  is $dt->child_nodes->length, 0;
+  done $c;
+} n => 6, name => 'doctype > pi allowed / text';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $df = $doc->create_document_fragment;
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  $df->append_child ($pi);
+  dies_here_ok {
+    $dt->append_child ($df);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The parent node cannot have a child';
+  is $dt->child_nodes->length, 0;
+  is $df->child_nodes->length, 1;
+  done $c;
+} n => 6, name => 'doctype > df > pi';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $df = $doc->create_document_fragment;
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  $df->append_child ($pi);
+  my $pi2 = $dt->append_child ($df);
+  is $pi2, $df;
+  is $dt->child_nodes->length, 1;
+  is $dt->child_nodes->[0], $pi;
+  is $pi->parent_node, $dt;
+  is $df->child_nodes->length, 0;
+  done $c;
+} n => 5, name => 'doctype > df > pi allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $df = $doc->create_document_fragment;
+  my $pi = $doc->create_processing_instruction ('hoge', 'fyuga');
+  my $text = $doc->create_text_node ('aa');
+  $df->append_child ($pi);
+  $df->append_child ($text);
+  dies_here_ok {
+    $dt->append_child ($df);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The node cannot be contain this kind of node';
+  is $dt->child_nodes->length, 0;
+  is $df->child_nodes->length, 2;
+  done $c;
+} n => 6, name => 'doctype > df > pi + text';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $df = $doc->create_document_fragment;
+  dies_here_ok {
+    $dt->append_child ($df);
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'HierarchyRequestError';
+  is $@->message, 'The parent node cannot have a child';
+  is $dt->child_nodes->length, 0;
+  is $df->child_nodes->length, 0;
+  done $c;
+} n => 6, name => 'doctype > df > empty not allowed';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  my $dt = $doc->implementation->create_document_type ('aa', '', '');
+  my $df = $doc->create_document_fragment;
+  my $pi2 = $dt->append_child ($df);
+  is $pi2, $df;
+  is $dt->child_nodes->length, 0;
+  is $df->child_nodes->length, 0;
+  done $c;
+} n => 3, name => 'doctype > df > empty allowed';
+
 run_tests;
 
 =head1 LICENSE
