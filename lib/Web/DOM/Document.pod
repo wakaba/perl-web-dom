@@ -87,6 +87,13 @@ second item is the local name.  [DOMPERL]
 Throw a "NotSupportedError" exception.  The C<CDATASection> interface
 is obsolete.  [MANAKAI]
 
+=item $comment = $doc->create_comment ($data)
+
+=item $comment = $doc->create_comment (\$data)
+
+Create a new comment (L<Web::DOM::Comment>) with the specified data.
+[DOM]
+
 =item $el = $doc->create_element ($local_name)
 
 Create a new element (L<Web::DOM::HTMLElement>) with the specified
@@ -94,7 +101,7 @@ local name in the HTML namespace.  [DOM]
 
 =item $el = $doc->create_element_ns ($nsurl, $qname)
 
-=item $el = $doc->create_elemenT_ns ($nsurl, [$prefix, $local_name])
+=item $el = $doc->create_element_ns ($nsurl, [$prefix, $local_name])
 
 Create a new element (L<Web::DOM::Element>) with specified namespace
 URL and qualified name.  [DOM]
@@ -109,6 +116,8 @@ Throw a "NotSupportedError" exception.  The C<EntityReference>
 interface is obsolete.  [MANAKAI]
 
 =item $text = $doc->create_text_node ($data)
+
+=item $text = $doc->create_text_node (\$data)
 
 Create a new text node (L<Web::DOM::Text>) with the given character
 string.  [DOM]

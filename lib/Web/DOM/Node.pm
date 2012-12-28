@@ -665,7 +665,7 @@ sub remove_child ($$) {
 
 # XXX mutators
 
-# XXX manakai_append_text
+# XXX manakai_append_text (accepts scalarref)
 
 sub node_value ($;$) {
   return undef;

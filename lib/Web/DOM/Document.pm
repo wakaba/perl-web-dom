@@ -392,7 +392,7 @@ sub create_document_fragment ($) {
 
 sub create_text_node ($) {
   my $id = ${$_[0]}->[0]->add_data
-      ({node_type => TEXT_NODE, data => \(''.$_[1])});
+      ({node_type => TEXT_NODE, data => \(ref $_[1] eq 'SCALAR' ? ''.${$_[1]} : ''.$_[1])});
   return ${$_[0]}->[0]->node ($id);
 } # create_text_node
 
@@ -403,7 +403,7 @@ sub create_cdata_section ($) {
 
 sub create_comment ($) {
   my $id = ${$_[0]}->[0]->add_data
-      ({node_type => COMMENT_NODE, data => \(''.$_[1])});
+      ({node_type => COMMENT_NODE, data => \(ref $_[1] eq 'SCALAR' ? ''.${$_[1]} : ''.$_[1])});
   return ${$_[0]}->[0]->node ($id);
 } # create_comment
 

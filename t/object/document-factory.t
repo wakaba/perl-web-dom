@@ -39,6 +39,18 @@ test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
   
+  my $text = $doc->create_text_node (\'hoge');
+  isa_ok $text, 'Web::DOM::Text';
+  is $text->node_type, $text->TEXT_NODE;
+  is $text->data, 'hoge';
+  is $text->owner_document, $doc;
+  done $c;
+} n => 4, name => 'create_text_node';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
   my $text = $doc->create_text_node;
   isa_ok $text, 'Web::DOM::Text';
   is $text->node_type, $text->TEXT_NODE;
@@ -52,6 +64,18 @@ test {
   my $doc = new Web::DOM::Document;
   
   my $comment = $doc->create_comment ('hoge');
+  isa_ok $comment, 'Web::DOM::Comment';
+  is $comment->node_type, $comment->COMMENT_NODE;
+  is $comment->data, 'hoge';
+  is $comment->owner_document, $doc;
+  done $c;
+} n => 4, name => 'create_comment';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  
+  my $comment = $doc->create_comment (\'hoge');
   isa_ok $comment, 'Web::DOM::Comment';
   is $comment->node_type, $comment->COMMENT_NODE;
   is $comment->data, 'hoge';
