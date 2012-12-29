@@ -117,18 +117,13 @@ sub create_html_document ($;$) {
   return $doc;
 } # create_html_document
 
-sub create_document_type ($$$$) {
+sub create_document_type ($$;$$) {
   my $self = $_[0];
   my $qname = ''.$_[1];
   my $pubid = defined $_[2] ? ''.$_[2] : '';
   my $sysid = defined $_[3] ? ''.$_[3] : '';
 
-  if ($$self->[0]->{data}->[0]->{no_strict_error_checking}) {
-    unless (length $qname) {
-      _throw Web::DOM::Exception 'InvalidCharacterError',
-          'The qualified name is not an XML Name';
-    }
-  } else {
+  unless ($$self->[0]->{data}->[0]->{no_strict_error_checking}) {
     # 1.
     unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
       _throw Web::DOM::Exception 'InvalidCharacterError',

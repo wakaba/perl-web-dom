@@ -443,6 +443,98 @@ sub create_processing_instruction ($$$) {
   return $$self->[0]->node ($id);
 } # create_processing_instruction
 
+sub create_document_type_definition ($$) {
+  my $self = $_[0];
+  my $qname = ''.$_[1];
+
+  unless ($$self->[2]->{no_strict_error_checking}) {
+    unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+      _throw Web::DOM::Exception 'InvalidCharacterError',
+          'The qualified name is not an XML Name';
+    }
+  } # strict
+
+  my $data = {node_type => DOCUMENT_TYPE_NODE,
+              name => Web::DOM::Internal->text ($qname),
+              public_id => Web::DOM::Internal->text (''),
+              system_id => Web::DOM::Internal->text ('')};
+  my $id = $$self->[0]->add_data ($data);
+  return $$self->[0]->node ($id);
+} # create_document_type_definition
+
+sub create_element_type_definition ($$) {
+  my $self = $_[0];
+  my $qname = ''.$_[1];
+
+  unless ($$self->[2]->{no_strict_error_checking}) {
+    unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+      _throw Web::DOM::Exception 'InvalidCharacterError',
+          'The qualified name is not an XML Name';
+    }
+  } # strict
+
+  my $data = {node_type => ELEMENT_TYPE_DEFINITION_NODE,
+              node_name => Web::DOM::Internal->text ($qname)};
+  my $id = $$self->[0]->add_data ($data);
+  return $$self->[0]->node ($id);
+} # create_element_type_definition
+
+sub create_attribute_definition ($$) {
+  my $self = $_[0];
+  my $qname = ''.$_[1];
+
+  unless ($$self->[2]->{no_strict_error_checking}) {
+    unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+      _throw Web::DOM::Exception 'InvalidCharacterError',
+          'The qualified name is not an XML Name';
+    }
+  } # strict
+
+  my $data = {node_type => ATTRIBUTE_DEFINITION_NODE,
+              node_name => Web::DOM::Internal->text ($qname),
+              node_value => ''};
+  my $id = $$self->[0]->add_data ($data);
+  return $$self->[0]->node ($id);
+} # create_attribute_definition
+
+sub create_general_entity ($$) {
+  my $self = $_[0];
+  my $qname = ''.$_[1];
+
+  unless ($$self->[2]->{no_strict_error_checking}) {
+    unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+      _throw Web::DOM::Exception 'InvalidCharacterError',
+          'The qualified name is not an XML Name';
+    }
+  } # strict
+
+  my $data = {node_type => ENTITY_NODE,
+              name => Web::DOM::Internal->text ($qname),
+              public_id => Web::DOM::Internal->text (''),
+              system_id => Web::DOM::Internal->text ('')};
+  my $id = $$self->[0]->add_data ($data);
+  return $$self->[0]->node ($id);
+} # create_general_entity
+
+sub create_notation ($$) {
+  my $self = $_[0];
+  my $qname = ''.$_[1];
+
+  unless ($$self->[2]->{no_strict_error_checking}) {
+    unless ($qname =~ /\A\p{InXMLNameStartChar}\p{InXMLNameChar}*\z/) {
+      _throw Web::DOM::Exception 'InvalidCharacterError',
+          'The qualified name is not an XML Name';
+    }
+  } # strict
+
+  my $data = {node_type => NOTATION_NODE,
+              name => Web::DOM::Internal->text ($qname),
+              public_id => Web::DOM::Internal->text (''),
+              system_id => Web::DOM::Internal->text ('')};
+  my $id = $$self->[0]->add_data ($data);
+  return $$self->[0]->node ($id);
+} # create_notation
+
 sub import_node ($$;$) {
   # WebIDL
   unless (UNIVERSAL::isa ($_[1], 'Web::DOM::Node')) {

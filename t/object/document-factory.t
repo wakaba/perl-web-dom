@@ -253,6 +253,468 @@ test {
   done $c;
 } n => 4, name => 'create_entity_reference';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_document_type_definition ('hoge');
+  isa_ok $dt, 'Web::DOM::DocumentType';
+  is $dt->node_type, $dt->DOCUMENT_TYPE_NODE;
+  is $dt->node_name, 'hoge';
+  is $dt->name, 'hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 9, name => 'create_document_type_definition';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_document_type_definition (':hoge');
+  isa_ok $dt, 'Web::DOM::DocumentType';
+  is $dt->node_type, $dt->DOCUMENT_TYPE_NODE;
+  is $dt->node_name, ':hoge';
+  is $dt->name, ':hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 9, name => 'create_document_type_definition not qname';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_document_type_definition ('120hoge');
+  isa_ok $dt, 'Web::DOM::DocumentType';
+  is $dt->node_type, $dt->DOCUMENT_TYPE_NODE;
+  is $dt->node_name, '120hoge';
+  is $dt->name, '120hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 9, name => 'create_document_type_definition not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_document_type_definition ('');
+  isa_ok $dt, 'Web::DOM::DocumentType';
+  is $dt->node_type, $dt->DOCUMENT_TYPE_NODE;
+  is $dt->node_name, '';
+  is $dt->name, '';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 9, name => 'create_document_type_definition not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_document_type_definition ('');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_document_type_definition not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_document_type_definition ('120hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_document_type_definition not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_general_entity ('hoge');
+  isa_ok $dt, 'Web::DOM::Entity';
+  is $dt->node_type, $dt->ENTITY_NODE;
+  is $dt->node_name, 'hoge';
+  is $dt->name, 'hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document_type_definition, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 10, name => 'create_general_entity';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_general_entity (':hoge');
+  isa_ok $dt, 'Web::DOM::Entity';
+  is $dt->node_type, $dt->ENTITY_NODE;
+  is $dt->node_name, ':hoge';
+  is $dt->name, ':hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document_type_definition, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 10, name => 'create_general_entity not qname';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_general_entity ('120hoge');
+  isa_ok $dt, 'Web::DOM::Entity';
+  is $dt->node_type, $dt->ENTITY_NODE;
+  is $dt->node_name, '120hoge';
+  is $dt->name, '120hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document_type_definition, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 10, name => 'create_general_entity not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_general_entity ('');
+  isa_ok $dt, 'Web::DOM::Entity';
+  is $dt->node_type, $dt->ENTITY_NODE;
+  is $dt->node_name, '';
+  is $dt->name, '';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document_type_definition, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 10, name => 'create_general_entity not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_general_entity ('');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_general_entity not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_general_entity ('120hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_general_entity not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_notation ('hoge');
+  isa_ok $dt, 'Web::DOM::Notation';
+  is $dt->node_type, $dt->NOTATION_NODE;
+  is $dt->node_name, 'hoge';
+  is $dt->name, 'hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document_type_definition, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 10, name => 'create_notation';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_notation (':hoge');
+  isa_ok $dt, 'Web::DOM::Notation';
+  is $dt->node_type, $dt->NOTATION_NODE;
+  is $dt->node_name, ':hoge';
+  is $dt->name, ':hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_document_type_definition, undef;
+  done $c;
+} n => 10, name => 'create_notation not qname';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_notation ('120hoge');
+  isa_ok $dt, 'Web::DOM::Notation';
+  is $dt->node_type, $dt->NOTATION_NODE;
+  is $dt->node_name, '120hoge';
+  is $dt->name, '120hoge';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_document_type_definition, undef;
+  done $c;
+} n => 10, name => 'create_notation not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_notation ('');
+  isa_ok $dt, 'Web::DOM::Notation';
+  is $dt->node_type, $dt->NOTATION_NODE;
+  is $dt->node_name, '';
+  is $dt->name, '';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_document_type_definition, undef;
+  done $c;
+} n => 10, name => 'create_notation not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_notation ('');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_notation not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_notation ('120hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_notation not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_element_type_definition ('hoge');
+  isa_ok $dt, 'Web::DOM::ElementTypeDefinition';
+  is $dt->node_type, $dt->ELEMENT_TYPE_DEFINITION_NODE;
+  is $dt->node_name, 'hoge';
+  is $dt->attribute_definitions->length, 0;
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document_type_definition, undef;
+  is $dt->owner_document, $doc;
+  done $c;
+} n => 8, name => 'create_element_type_definition';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_element_type_definition (':hoge');
+  isa_ok $dt, 'Web::DOM::ElementTypeDefinition';
+  is $dt->node_type, $dt->ELEMENT_TYPE_DEFINITION_NODE;
+  is $dt->node_name, ':hoge';
+  is $dt->attribute_definitions->length, 0;
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_document_type_definition, undef;
+  done $c;
+} n => 8, name => 'create_element_type_definition not qname';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_element_type_definition ('120hoge');
+  isa_ok $dt, 'Web::DOM::ElementTypeDefinition';
+  is $dt->node_type, $dt->ELEMENT_TYPE_DEFINITION_NODE;
+  is $dt->node_name, '120hoge';
+  is $dt->attribute_definitions->length, 0;
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_document_type_definition, undef;
+  done $c;
+} n => 8, name => 'create_element_type_definition not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_element_type_definition ('');
+  isa_ok $dt, 'Web::DOM::ElementTypeDefinition';
+  is $dt->node_type, $dt->ELEMENT_TYPE_DEFINITION_NODE;
+  is $dt->node_name, '';
+  is $dt->attribute_definitions->length, 0;
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_document_type_definition, undef;
+  done $c;
+} n => 8, name => 'create_element_type_definition not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_element_type_definition ('');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_element_type_definition not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_element_type_definition ('120hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_element_type_definition not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_attribute_definition ('hoge');
+  isa_ok $dt, 'Web::DOM::AttributeDefinition';
+  is $dt->node_type, $dt->ATTRIBUTE_DEFINITION_NODE;
+  is $dt->node_name, 'hoge';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_element_type_definition, undef;
+  is $dt->owner_document, $doc;
+  is $dt->node_value, '';
+  is $dt->declared_type, $dt->NO_TYPE_ATTR;
+  is $dt->default_type, $dt->UNKNOWN_DEFAULT;
+  is scalar @{$dt->allowed_tokens}, 0;
+  done $c;
+} n => 11, name => 'create_attribute_definition';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_attribute_definition (':hoge');
+  isa_ok $dt, 'Web::DOM::AttributeDefinition';
+  is $dt->node_type, $dt->ATTRIBUTE_DEFINITION_NODE;
+  is $dt->node_name, ':hoge';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_element_type_definition, undef;
+  is $dt->node_value, '';
+  is $dt->declared_type, $dt->NO_TYPE_ATTR;
+  is $dt->default_type, $dt->UNKNOWN_DEFAULT;
+  is scalar @{$dt->allowed_tokens}, 0;
+  done $c;
+} n => 11, name => 'create_attribute_definition not qname';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_attribute_definition ('120hoge');
+  isa_ok $dt, 'Web::DOM::AttributeDefinition';
+  is $dt->node_type, $dt->ATTRIBUTE_DEFINITION_NODE;
+  is $dt->node_name, '120hoge';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_element_type_definition, undef;
+  is $dt->node_value, '';
+  is $dt->declared_type, $dt->NO_TYPE_ATTR;
+  is $dt->default_type, $dt->UNKNOWN_DEFAULT;
+  is scalar @{$dt->allowed_tokens}, 0;
+  done $c;
+} n => 11, name => 'create_attribute_definition not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->strict_error_checking (0);
+  my $dt = $doc->create_attribute_definition ('');
+  isa_ok $dt, 'Web::DOM::AttributeDefinition';
+  is $dt->node_type, $dt->ATTRIBUTE_DEFINITION_NODE;
+  is $dt->node_name, '';
+  is $dt->child_nodes->length, 0;
+  is $dt->parent_node, undef;
+  is $dt->owner_document, $doc;
+  is $dt->owner_element_type_definition, undef;
+  is $dt->node_value, '';
+  is $dt->declared_type, $dt->NO_TYPE_ATTR;
+  is $dt->default_type, $dt->UNKNOWN_DEFAULT;
+  is scalar @{$dt->allowed_tokens}, 0;
+  done $c;
+} n => 11, name => 'create_attribute_definition not strict';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_attribute_definition ('');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_attribute_definition not name';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  dies_here_ok {
+    $doc->create_attribute_definition ('120hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'InvalidCharacterError';
+  is $@->message, 'The qualified name is not an XML Name';
+  done $c;
+} n => 4, name => 'create_attribute_definition not name';
+
 run_tests;
 
 =head1 LICENSE

@@ -411,12 +411,11 @@ test {
   my $doc = new Web::DOM::Document;
   $doc->strict_error_checking (0);
   my $impl = $doc->implementation;
-  dies_here_ok {
-    $impl->create_document_type ('', '', '');
-  };
-  isa_ok $@, 'Web::DOM::Exception';
-  is $@->name, 'InvalidCharacterError';
-  is $@->message, 'The qualified name is not an XML Name';
+  my $dt = $impl->create_document_type ('', '', '');
+  is $dt->node_type, $dt->DOCUMENT_TYPE_NODE;
+  is $dt->node_name, '';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
   done $c;
 } n => 4, name => 'create_document_type not strict empty';
 

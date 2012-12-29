@@ -94,10 +94,14 @@ sub add_data ($$) {
 my $NodeClassByNodeType = {
   2 => 'Web::DOM::Attr',
   3 => 'Web::DOM::Text',
+  6 => 'Web::DOM::Entity',
   7 => 'Web::DOM::ProcessingInstruction',
   8 => 'Web::DOM::Comment',
   10 => 'Web::DOM::DocumentType',
   11 => 'Web::DOM::DocumentFragment',
+  12 => 'Web::DOM::Notation',
+  81001 => 'Web::DOM::ElementTypeDefinition',
+  81002 => 'Web::DOM::AttributeDefinition',
 };
 
 sub node ($$) {
@@ -131,12 +135,13 @@ sub node ($$) {
 ##
 ## $self->{cols}->[$root_node_id]->
 ## 
-##   - {child_nodes}         - $node->child_nodes
-##   - {attributes}          - $node->attributes
-##   - {children}            - $node->children
-##   - {"by_tag_name$;$ln"}  - $node->get_elements_by_tag_name ($ln)
+##   - {child_nodes}           - $node->child_nodes
+##   - {attributes}            - $node->attributes
+##   - {attribute_definitions} - $node->attribute_definitions
+##   - {children}              - $node->children
+##   - {"by_tag_name$;$ln"}    - $node->get_elements_by_tag_name ($ln)
 ##   - {"by_tag_name_ns$;$ns$;$ln"} - $node->get_elements_by_tag_name_ns ($ns, $ln)
-##   - {images}              - $node->images
+##   - {images}                - $node->images
 
 my $CollectionClass = {
   child_nodes => 'Web::DOM::NodeList',
@@ -212,8 +217,10 @@ sub connect ($$$) {
   while (@id) {
     my $id = shift @id;
     $self->{tree_id}->[$id] = $tree_id;
-    push @id, @{$self->{data}->[$id]->{child_nodes} or []};
     push @id, grep { not ref $_ } @{$self->{data}->[$id]->{attributes} or []};
+    push @id,
+        @{$self->{data}->[$id]->{child_nodes} or []},
+        @{$self->{data}->[$id]->{attribute_definitions} or []};
   }
 } # connect
 
@@ -224,8 +231,10 @@ sub disconnect ($$) {
   while (@id) {
     my $id = shift @id;
     $self->{tree_id}->[$id] = $tree_id;
-    push @id, @{$self->{data}->[$id]->{child_nodes} or []};
     push @id, grep { not ref $_ } @{$self->{data}->[$id]->{attributes} or []};
+    push @id,
+        @{$self->{data}->[$id]->{child_nodes} or []},
+        @{$self->{data}->[$id]->{attribute_definitions} or []};
   }
 } # disconnect
 
@@ -256,8 +265,10 @@ sub adopt ($$) {
     delete $old_int->{tree_id}->[$old_id];
     $new_int->{tree_id}->[$new_id] = $new_tree_id;
 
-    push @old_id, @{$data->{child_nodes} or []};
     push @old_id, grep { not ref $_ } @{$data->{attributes} or []};
+    push @old_id,
+        @{$data->{child_nodes} or []},
+        @{$data->{attribute_definitions} or []};
 
     if (my $node = delete $old_int->{nodes}->[$old_id]) {
       weaken ($new_int->{nodes}->[$new_id] = $node);
@@ -277,8 +288,6 @@ sub adopt ($$) {
   }
   
   for my $data (@data) {
-    @{$data->{child_nodes}} = map { $id_map{$_} } @{$data->{child_nodes}}
-        if $data->{child_nodes};
     @{$data->{attributes}} = map {
       ref $_ ? $_ : $id_map{$_};
     } @{$data->{attributes}} if $data->{attributes};
@@ -289,7 +298,12 @@ sub adopt ($$) {
         }
       }
     }
-    for (qw(parent_node owner_element)) {
+    @{$data->{child_nodes}} = map { $id_map{$_} } @{$data->{child_nodes}}
+        if $data->{child_nodes};
+    @{$data->{attribute_definitions}} = map { $id_map{$_} } @{$data->{attribute_definitions}}
+        if $data->{attribute_definitions};
+    for (qw(parent_node owner_element
+            owner_document_type_definition owner_element_type_definition)) {
       $data->{$_} = $id_map{$data->{$_}} if defined $data->{$_};
     }
   }

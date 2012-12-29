@@ -30,6 +30,11 @@ of the specified node and its descendant nodes to the document.  [DOM]
 Return or set the [all declarations processed] property value of the
 document.  [MANAKAI]
 
+=item $adef = $doc->create_attribute_definition ($name)
+
+Create an attribute definition (L<Web::DOM::AttributeDefinition>) with
+the specified name.  [DOMDTDEF]
+
 =item $el = $doc->body
 
 Return the body element of the document (i.e. the C<body> element or
@@ -94,6 +99,11 @@ is obsolete.  [MANAKAI]
 Create a new comment (L<Web::DOM::Comment>) with the specified data.
 [DOM]
 
+=item $dt = $doc->create_document_type_definition ($name)
+
+Create a new document type (L<Web::DOM::DocumentType>) with the
+specified name.  [DOMDTDEF]
+
 =item $el = $doc->create_element ($local_name)
 
 Create a new element (L<Web::DOM::HTMLElement>) with the specified
@@ -110,10 +120,26 @@ The qualified name can be represented as an array reference, where the
 first item is the prefix (or C<undef> for the null namespace) and the
 second item is the local name.  [DOMPERL]
 
+=item $et = $doc->create_element_type_definition ($name)
+
+Create a new element type definition
+(L<Web::DOM::ElementTypeDefinition>) with the specified name.
+[DOMDTDEF]
+
 =item $doc->create_entity_reference ($name)
 
 Throw a "NotSupportedError" exception.  The C<EntityReference>
 interface is obsolete.  [MANAKAI]
+
+=item $ent = $doc->create_general_entity ($name)
+
+Create a general entity (L<Web::DOM::Entity>) with the specified name.
+[DOMDTDEF]
+
+=item $notation = $doc->create_notation ($name)
+
+Create a notatioon (L<Web::DOM::Notation>) with the specified name.
+[DOMDTDEF]
 
 =item $text = $doc->create_text_node ($data)
 
@@ -245,6 +271,11 @@ Document Object Model (DOM) Level 3 Core Specification
 
 HTML Living Standard
 <http://www.whatwg.org/specs/web-apps/current-work/>.
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
 
 =item DOMPERL
 

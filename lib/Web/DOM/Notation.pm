@@ -1,10 +1,9 @@
-package Web::DOM::DocumentType;
+package Web::DOM::Notation;
 use strict;
 use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
-use Web::DOM::ChildNode;
-push our @ISA, qw(Web::DOM::Node Web::DOM::ChildNode);
+push our @ISA, qw(Web::DOM::Node);
 use Web::DOM::Internal;
 
 *node_name = \&name;
@@ -29,7 +28,15 @@ sub system_id ($) {
   return ${${$_[0]}->[2]->{system_id}};
 } # system_id
 
-# XXX declaration_base_uri, manakai_declaration_base_uri
+# XXX manakai_declaration_base_uri
+
+sub owner_document_type_definition ($) {
+  if (my $id = ${$_[0]}->[2]->{owner_document_type_definition}) {
+    return ${$_[0]}->[0]->node ($id);
+  } else {
+    return undef;
+  }
+} # owner_document_type_definition
 
 1;
 
