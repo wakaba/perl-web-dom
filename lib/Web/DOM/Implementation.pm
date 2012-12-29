@@ -120,8 +120,8 @@ sub create_html_document ($;$) {
 sub create_document_type ($$$$) {
   my $self = $_[0];
   my $qname = ''.$_[1];
-  my $pubid = ''.$_[2];
-  my $sysid = ''.$_[3];
+  my $pubid = defined $_[2] ? ''.$_[2] : '';
+  my $sysid = defined $_[3] ? ''.$_[3] : '';
 
   if ($$self->[0]->{data}->[0]->{no_strict_error_checking}) {
     unless (length $qname) {

@@ -477,6 +477,16 @@ test {
 
 test {
   my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->implementation->create_document_type ('foo');
+  is $dt->name, 'foo';
+  is $dt->public_id, '';
+  is $dt->system_id, '';
+  done $c;
+} n => 3, name => 'create_document_type null';
+
+test {
+  my $c = shift;
   my $impl = new Web::DOM::Implementation;
 
   my $doc = $impl->create_html_document;

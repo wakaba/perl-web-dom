@@ -50,6 +50,7 @@ is specified, it is used as the title of the document.  [DOM]
 
 Create a new document type node (L<Web::DOM::DocumentType>) with the
 specified name, public identifier, and system identifier.  [DOM]
+[DOMPERL]
 
 =item $bool = $impl->has_feature ($feature, $version)
 
