@@ -16,7 +16,8 @@ methods are available:
 
 =item $col = $dt->attribute_definitions
 
-Return the collection of attribute definitions.  [DOMDTDEF]
+Return the collection (L<Web::DOM::NamedNodeMap>) of attribute
+definitions.  [DOMDTDEF]
 
 =item $adef = $dt->get_attribute_definition_node ($name)
 

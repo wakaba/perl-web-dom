@@ -23,6 +23,9 @@ Return the first node in the list whose name is equal to the argument.
 Return the node in the list whose namespace URL and local name are
 equal to the arguments.  [DOMATTREXODUS] [DOM3CORE]
 
+This method is only applicable to the C<attributes> collection.
+[DOMDTDEF]
+
 =item $node = $col->[$index]
 
 =item $node = $col->item ($index)
@@ -52,6 +55,9 @@ Remove the node in the list whose namespace URL and local name are
 equal to the arguments.  The removed node is returned.
 [DOMATTREXODUS] [DOM3CORE]
 
+This method is only applicable to the C<attributes> collection.
+[DOMDTDEF]
+
 =item $node = $col->set_named_item ($node)
 
 =item $node = $col->set_named_item_ns ($node)
@@ -60,6 +66,9 @@ Add the specified node to the list.  If there is already a node with
 same name in the list, the node is removed from the list and is
 returned.  Otherwise C<undef> is returned.  [DOMATTREXODUS] [DOM3CORE]
 [MANAKAI]
+
+The C<set_named_item_ns> method is only applicable to the
+C<attributes> collection.  [DOMDTDEF]
 
 =item $arrayref = $col->to_a
 
@@ -89,6 +98,11 @@ DOM Standard <view-source:http://dom.spec.whatwg.org/>.
 
 Document Object Model (DOM) Level 3 Core Specification
 <http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html#core-ID-1780488922>.
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
 
 =item DOMPERL
 
