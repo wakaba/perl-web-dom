@@ -18,6 +18,30 @@ use Web::DOM::Document;
 
 test {
   my $c = shift;
+  ok ELEMENT_NODE;
+  ok ATTRIBUTE_NODE;
+  ok ENTITY_NODE;
+  ok XPATH_NAMESPACE_NODE;
+  ok ELEMENT_TYPE_DEFINITION_NODE;
+  ok ATTRIBUTE_DEFINITION_NODE;
+  ok +Web::DOM::Node->ELEMENT_NODE;
+  ok +Web::DOM::Node->ATTRIBUTE_NODE;
+  ok +Web::DOM::Node->ENTITY_NODE;
+  ok +Web::DOM::Node->XPATH_NAMESPACE_NODE;
+  ok +Web::DOM::Node->ELEMENT_TYPE_DEFINITION_NODE;
+  ok +Web::DOM::Node->ATTRIBUTE_DEFINITION_NODE;
+  my $node = new Web::DOM::Document;
+  ok $node->ELEMENT_NODE;
+  ok $node->ATTRIBUTE_NODE;
+  ok $node->ENTITY_NODE;
+  ok $node->XPATH_NAMESPACE_NODE;
+  ok $node->ELEMENT_TYPE_DEFINITION_NODE;
+  ok $node->ATTRIBUTE_DEFINITION_NODE;
+  done $c;
+} n => 6*3, name => 'constants';
+
+test {
+  my $c = shift;
   
   my $doc = new Web::DOM::Document;
   my $el1 = $doc->create_element ('a');

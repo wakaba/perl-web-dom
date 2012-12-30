@@ -1,0 +1,51 @@
+=head1 NAME
+
+Web::DOM::AttributeDefinition - The DOM |AttributeDefinition| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::AttributeDefinition> class implements the DOM
+C<AttributeDefinition> interface.
+
+=head1 METHODS
+
+In addition to the methods of the L<Web::DOM::Node> class, following
+methods are available:
+
+=over 4
+
+XXX
+
+=back
+
+The attribute definition name can be accessed by the C<<
+$adef->node_name >> method.  The default value can be returned or set
+by the C<< $adef->node_value >> method.
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>, L<Web::DOM::ElementTypeDefinition>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

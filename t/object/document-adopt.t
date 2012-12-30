@@ -611,6 +611,53 @@ test {
   done $c;
 } n => 4, name => 'adopt_node not Node';
 
+test {
+  my $c = shift;
+  my $doc1 = new Web::DOM::Document;
+  my $doc2 = new Web::DOM::Document;
+  $doc2->create_text_node ('a') for 1..rand 10;
+
+  my $dt1 = $doc1->create_document_type_definition ('hoge');
+  my $et1 = $doc1->create_element_type_definition ('foo');
+  my $at1 = $doc1->create_attribute_definition ('foo');
+  my $ent1 = $doc1->create_general_entity ('bar');
+  my $not1 = $doc1->create_notation ('bar');
+  my $pi1 = $doc1->create_processing_instruction ('hoge', '');
+  $dt1->set_element_type_definition_node ($et1);
+  $et1->set_attribute_definition_node ($at1);
+  $dt1->set_general_entity_node ($ent1);
+  $dt1->set_notation_node ($not1);
+  $doc1->dom_config->{manakai_allow_doctype_children} = 1;
+  $dt1->append_child ($pi1);
+
+  $doc2->adopt_node ($dt1);
+
+  is $dt1->owner_document, $doc2;
+  is $et1->owner_document, $doc2;
+  is $at1->owner_document, $doc2;
+  is $ent1->owner_document, $doc2;
+  is $not1->owner_document, $doc2;
+  is $pi1->owner_document, $doc2;
+  is $dt1->parent_node, undef;
+  is $et1->owner_document_type_definition, $dt1;
+  is $at1->owner_element_type_definition, $et1;
+  is $ent1->owner_document_type_definition, $dt1;
+  is $not1->owner_document_type_definition, $dt1;
+  is $pi1->parent_node, $dt1;
+  is $dt1->child_nodes->length, 1;
+  is $dt1->child_nodes->[0], $pi1;
+  is $dt1->element_types->length, 1;
+  is $dt1->element_types->[0], $et1;
+  is $et1->attribute_definitions->length, 1;
+  is $et1->attribute_definitions->[0], $at1;
+  is $dt1->general_entities->length, 1;
+  is $dt1->general_entities->[0], $ent1;
+  is $dt1->notations->length, 1;
+  is $dt1->notations->[0], $not1;
+
+  done $c;
+} n => 22, name => 'adopt document type';
+
 run_tests;
 
 =head1 LICENSE

@@ -72,8 +72,9 @@ sub text_content ($;$) {
 
     # 1.-2.
     my $node;
-    $node = ($self->owner_document || $self)->create_text_node ($_[1])
-        if length $_[1];
+    my $text = defined $_[1] ? ''.$_[1] : '';
+    $node = ($self->owner_document || $self)->create_text_node ($text)
+        if length $text;
     my $int = $$self->[0];
 
     # 3. Replace all

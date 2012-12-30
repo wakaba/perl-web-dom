@@ -334,6 +334,148 @@ test {
   done $c;
 } n => 6, name => 'compare attrs of parent element';
 
+for my $type (qw(element_type_definition general_entity notation)) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+
+    my $el = $doc->create_document_type_definition ('a');
+    my $method1 = 'create_' . $type;
+    my $attr1 = $doc->$method1 ('hoge');
+    my $attr2 = $doc->$method1 ('fuga');
+    my $method2 = 'set_' . $type . '_node';
+    $el->$method2 ($attr1);
+    $el->$method2 ($attr2);
+
+    is $attr2->compare_document_position ($attr1),
+        DOCUMENT_POSITION_FOLLOWING |
+        DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+    is $attr1->compare_document_position ($attr2),
+        DOCUMENT_POSITION_PRECEDING |
+        DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+    is $attr1->compare_document_position ($el),
+        DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+    is $el->compare_document_position ($attr1),
+        DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+
+    $doc->append_child ($el);
+    is $attr1->compare_document_position ($el),
+        DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+    is $el->compare_document_position ($attr1),
+        DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+    is $attr1->compare_document_position ($doc),
+        DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+    is $doc->compare_document_position ($attr1),
+        DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+
+    done $c;
+  } n => 8, name => ['compare', $type];
+}
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_document_type_definition ('a');
+  my $attr1 = $doc->create_general_entity ('hoge');
+  my $attr2 = $doc->create_notation ('zfuga');
+  my $attr3 = $doc->create_element_type_definition ('afuga');
+  my $pi = $doc->create_processing_instruction ('hoge');
+  $el->set_general_entity_node ($attr1);
+  $el->set_notation_node ($attr2);
+  $el->set_element_type_definition_node ($attr3);
+  $doc->dom_config->{manakai_allow_doctype_children} = 1;
+  $el->append_child ($pi);
+
+  is $attr1->compare_document_position ($attr2),
+      DOCUMENT_POSITION_FOLLOWING |
+      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+  is $attr2->compare_document_position ($attr3),
+      DOCUMENT_POSITION_FOLLOWING |
+      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+  is $attr1->compare_document_position ($attr3),
+      DOCUMENT_POSITION_FOLLOWING |
+      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+  is $attr1->compare_document_position ($pi), DOCUMENT_POSITION_FOLLOWING;
+  is $attr2->compare_document_position ($pi), DOCUMENT_POSITION_FOLLOWING;
+  is $attr3->compare_document_position ($pi), DOCUMENT_POSITION_FOLLOWING;
+  is $attr2->compare_document_position ($attr1),
+      DOCUMENT_POSITION_PRECEDING |
+      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+  is $attr3->compare_document_position ($attr1),
+      DOCUMENT_POSITION_PRECEDING |
+      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+  is $attr3->compare_document_position ($attr2),
+      DOCUMENT_POSITION_PRECEDING |
+      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+  is $pi->compare_document_position ($attr1), DOCUMENT_POSITION_PRECEDING;
+  is $pi->compare_document_position ($attr2), DOCUMENT_POSITION_PRECEDING;
+  is $pi->compare_document_position ($attr3), DOCUMENT_POSITION_PRECEDING;
+
+  done $c;
+} n => 12, name => ['compare document type children'];
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el = $doc->create_element_type_definition ('a');
+  my $attr1 = $doc->create_attribute_definition ('hoge');
+  my $attr2 = $doc->create_attribute_definition ('fuga');
+  $el->set_attribute_definition_node ($attr1);
+  $el->set_attribute_definition_node ($attr2);
+
+  is $attr2->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING |
+      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+  is $attr1->compare_document_position ($attr2),
+      DOCUMENT_POSITION_PRECEDING |
+      DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+  is $attr1->compare_document_position ($el),
+      DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+  is $el->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+
+  my $dt = $doc->create_document_type_definition ('foo');
+  $dt->set_element_type_definition_node ($el);
+  my $notation = $doc->create_notation ('hoge');
+  $dt->set_notation_node ($notation);
+
+  is $attr1->compare_document_position ($el),
+      DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+  is $el->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+  is $attr1->compare_document_position ($dt),
+      DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+  is $dt->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+  is $attr1->compare_document_position ($notation),
+      DOCUMENT_POSITION_PRECEDING;
+  is $notation->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING;
+
+  $doc->append_child ($dt);
+
+  is $attr1->compare_document_position ($el),
+      DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+  is $el->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+  is $attr1->compare_document_position ($dt),
+      DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+  is $dt->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+  is $attr1->compare_document_position ($notation),
+      DOCUMENT_POSITION_PRECEDING;
+  is $notation->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING;
+  is $attr1->compare_document_position ($doc),
+      DOCUMENT_POSITION_PRECEDING | DOCUMENT_POSITION_CONTAINS;
+  is $doc->compare_document_position ($attr1),
+      DOCUMENT_POSITION_FOLLOWING | DOCUMENT_POSITION_CONTAINED_BY;
+
+  done $c;
+} n => 18, name => ['compare attribute definitions'];
+
 test {
   my $c = shift;
   my $doc1 = new Web::DOM::Document;
@@ -440,6 +582,70 @@ test {
 
   done $c;
 } n => 2, name => 'contains attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el2 = $doc->create_document_type_definition ('a');
+  my $attr = $doc->create_element_type_definition ('hoge');
+  $el2->set_element_type_definition_node ($attr);
+  $doc->append_child ($el2);
+
+  ok not $doc->contains ($attr);
+  ok not $attr->contains ($doc);
+
+  done $c;
+} n => 2, name => 'contains element type';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el2 = $doc->create_document_type_definition ('a');
+  my $attr = $doc->create_general_entity ('hoge');
+  $el2->set_general_entity_node ($attr);
+  $doc->append_child ($el2);
+
+  ok not $doc->contains ($attr);
+  ok not $attr->contains ($doc);
+
+  done $c;
+} n => 2, name => 'contains general entity';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el2 = $doc->create_document_type_definition ('a');
+  my $attr = $doc->create_notation ('hoge');
+  $el2->set_notation_node ($attr);
+  $doc->append_child ($el2);
+
+  ok not $doc->contains ($attr);
+  ok not $attr->contains ($doc);
+
+  done $c;
+} n => 2, name => 'contains notation';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $el1 = $doc->create_document_type_definition ('b');
+  my $el2 = $doc->create_element_type_definition ('a');
+  my $attr = $doc->create_attribute_definition ('hoge');
+  $el2->set_attribute_definition_node ($attr);
+  $el1->set_element_type_definition_node ($el2);
+  $doc->append_child ($el1);
+
+  ok not $el1->contains ($attr);
+  ok not $attr->contains ($el1);
+  ok not $doc->contains ($attr);
+  ok not $attr->contains ($doc);
+
+  done $c;
+} n => 4, name => 'contains attribute definition';
 
 run_tests;
 

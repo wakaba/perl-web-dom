@@ -55,8 +55,6 @@ sub xml_encoding ($) {
   return ${${$_[0]}->[2]->{xml_encoding}};
 } # xml_encoding
 
-# XXX has_replacement_tree
-
 sub notation_name ($) {
   if (@_ > 1) {
     ${${$_[0]}->[2]->{notation_name}} = ''.$_[1];
@@ -100,6 +98,18 @@ sub owner_document_type_definition ($) {
     return undef;
   }
 } # owner_document_type_definition
+
+sub node_value ($;$) {
+  if (@_ > 1) {
+    ${$_[0]}->[2]->{node_value} = defined $_[1] ? ''.$_[1] : '';
+  }
+  return defined ${$_[0]}->[2]->{node_value}
+      ? ${$_[0]}->[2]->{node_value} : '';
+} # node_value
+
+*text_content = \&node_value;
+
+# XXX has_replacement_tree
 
 1;
 

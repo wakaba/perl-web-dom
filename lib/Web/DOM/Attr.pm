@@ -37,7 +37,7 @@ sub is_id ($) {
 sub value ($;$) {
   if (@_ > 1) {
     # XXX mutation?
-    ${$_[0]}->[2]->{value} = $_[1];
+    ${$_[0]}->[2]->{value} = defined $_[1] ? ''.$_[1] : '';
   }
   return ${$_[0]}->[2]->{value};
 } # value

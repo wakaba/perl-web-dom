@@ -780,6 +780,7 @@ sub clone_node ($;$) {
   return $_[0]->_clone ($_[0]->owner_document || $_[0], !!$_[1]);
 } # clone_node
 
+# XXX DOMDTDEF
 sub _clone {
   # 1.
   my ($node, $od, $deep) = @_;
@@ -873,6 +874,7 @@ sub is_same_node ($$) {
   return $_[0] eq $_[1];
 } # is_same_node
 
+# XXX DOMDTDEF
 sub is_equal_node ($$) {
   my ($node1, $node2) = @_;
 
@@ -982,12 +984,48 @@ sub compare_document_position ($$) {
                : DOCUMENT_POSITION_FOLLOWING);
   }
 
-  if ($ref->node_type == ATTRIBUTE_NODE and
-      $other->node_type == ATTRIBUTE_NODE) {
+  my $ref_nt = $ref->node_type;
+  my $other_nt = $other->node_type;
+  if ($ref_nt == $other_nt and $ref_nt == ATTRIBUTE_NODE) {
     my $ref_oe = $ref->owner_element;
     my $other_oe = $other->owner_element;
     if ($ref_oe and $other_oe and $ref_oe eq $other_oe) {
       for ($other_oe->attributes->to_list) {
+        if ($_ eq $other) {
+          return DOCUMENT_POSITION_PRECEDING |
+              DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+        } elsif ($_ eq $ref) {
+          return DOCUMENT_POSITION_FOLLOWING |
+              DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+        }
+      }
+    }
+  } elsif (($other_nt == ELEMENT_TYPE_DEFINITION_NODE or
+            $other_nt == ENTITY_NODE or
+            $other_nt == NOTATION_NODE) and
+           ($ref_nt == ELEMENT_TYPE_DEFINITION_NODE or
+            $ref_nt == ENTITY_NODE or
+            $ref_nt == NOTATION_NODE)) {
+    my $ref_oe = $ref->owner_document_type_definition;
+    my $other_oe = $other->owner_document_type_definition;
+    if ($ref_oe and $other_oe and $ref_oe eq $other_oe) {
+      for ($other_oe->general_entities->to_list,
+           $other_oe->notations->to_list,
+           $other_oe->element_types->to_list) {
+        if ($_ eq $other) {
+          return DOCUMENT_POSITION_PRECEDING |
+              DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+        } elsif ($_ eq $ref) {
+          return DOCUMENT_POSITION_FOLLOWING |
+              DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+        }
+      }
+    }
+  } elsif ($ref_nt == $other_nt and $ref_nt == ATTRIBUTE_DEFINITION_NODE) {
+    my $ref_oe = $ref->owner_element_type_definition;
+    my $other_oe = $other->owner_element_type_definition;
+    if ($ref_oe and $other_oe and $ref_oe eq $other_oe) {
+      for ($other_oe->attribute_definitions->to_list) {
         if ($_ eq $other) {
           return DOCUMENT_POSITION_PRECEDING |
               DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
@@ -1002,9 +1040,49 @@ sub compare_document_position ($$) {
   # 4.
   my @ref = ();
   my $ref_p = $ref;
-  if ($ref_p->node_type == ATTRIBUTE_NODE) {
+  if ($ref_nt == ATTRIBUTE_NODE) {
     $ref_p = $ref_p->owner_element;
     unshift @ref, -1;
+  } elsif ($ref_nt == ELEMENT_TYPE_DEFINITION_NODE or
+           $ref_nt == ENTITY_NODE or
+           $ref_nt == NOTATION_NODE) {
+    $ref_p = $ref_p->owner_document_type_definition;
+    if ($ref_p) {
+      my $i = 0;
+      for (reverse ($ref_p->general_entities->to_list,
+                    $ref_p->notations->to_list,
+                    $ref_p->element_types->to_list)) {
+        $i--;
+        last if $_ eq $ref;
+      }
+      unshift @ref, $i;
+    } else {
+      unshift @ref, -1;
+    }
+  } elsif ($ref_nt == ATTRIBUTE_DEFINITION_NODE) {
+    $ref_p = $ref_p->owner_element_type_definition;
+    if ($ref_p) {
+      my $i = 0;
+      for (reverse $ref_p->attribute_definitions->to_list) {
+        $i--;
+        last if $_ eq $ref;
+      }
+      unshift @ref, $i;
+      my $ref2 = $ref_p;
+      $ref_p = $ref_p->owner_document_type_definition;
+      if ($ref_p) {
+        my $i = 0;
+        for (reverse $ref_p->element_types->to_list) {
+          $i--;
+          last if $_ eq $ref2;
+        }
+        unshift @ref, $i;
+      } else {
+        unshift @ref, -1;
+      }
+    } else {
+      unshift @ref, -1;
+    }
   }
   while ($ref_p and my $pn = $ref_p->parent_node) {
     my $i = 0;
@@ -1018,9 +1096,49 @@ sub compare_document_position ($$) {
   unshift @ref, 0;
   my @other = ();
   my $other_p = $other;
-  if ($other_p->node_type == ATTRIBUTE_NODE) {
+  if ($other_nt == ATTRIBUTE_NODE) {
     $other_p = $other_p->owner_element;
     unshift @other, -1;
+  } elsif ($other_nt == ELEMENT_TYPE_DEFINITION_NODE or
+           $other_nt == ENTITY_NODE or
+           $other_nt == NOTATION_NODE) {
+    $other_p = $other_p->owner_document_type_definition;
+    if ($other_p) {
+      my $i = 0;
+      for (reverse ($other_p->general_entities->to_list,
+                    $other_p->notations->to_list,
+                    $other_p->element_types->to_list)) {
+        $i--;
+        last if $_ eq $other;
+      }
+      unshift @other, $i;
+    } else {
+      unshift @other, -1;
+    }
+  } elsif ($other_nt == ATTRIBUTE_DEFINITION_NODE) {
+    $other_p = $other_p->owner_element_type_definition;
+    if ($other_p) {
+      my $i = 0;
+      for (reverse $other_p->attribute_definitions->to_list) {
+        $i--;
+        last if $_ eq $other;
+      }
+      unshift @other, $i;
+      my $other2 = $other_p;
+      $other_p = $other_p->owner_document_type_definition;
+      if ($other_p) {
+        my $i = 0;
+        for (reverse $other_p->element_types->to_list) {
+          $i--;
+          last if $_ eq $other2;
+        }
+        unshift @other, $i;
+      } else {
+        unshift @other, -1;
+      }
+    } else {
+      unshift @other, -1;
+    }
   }
   while ($other_p and my $pn = $other_p->parent_node) {
     my $i = 0;

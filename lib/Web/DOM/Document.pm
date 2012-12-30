@@ -570,8 +570,22 @@ sub adopt_node ($$) {
     # Adopt 1. Remove
     if (defined $$node->[2]->{parent_node}) {
       $node->parent_node->remove_child ($node);
-    } elsif (defined $$node->[2]->{owner}) { # XXX DOMDTDEF
-      $node->owner_element->remove_attribute_node ($node);
+    } elsif (defined $$node->[2]->{owner}) {
+      my $node_nt = $$node->[2]->{node_type};
+      if ($node_nt == ATTRIBUTE_NODE) {
+        $node->owner_element->remove_attribute_node ($node);
+      } elsif ($node_nt == ELEMENT_TYPE_DEFINITION_NODE) {
+        $node->owner_document_type_definition
+            ->remove_element_type_definition_node ($node);
+      } elsif ($node_nt == ENTITY_NODE) {
+        $node->owner_document_type_definition
+            ->remove_general_entity_node ($node);
+      } elsif ($node_nt == NOTATION_NODE) {
+        $node->owner_document_type_definition->remove_notation_node ($node);
+      } elsif ($node_nt == ATTRIBUTE_DEFINITION_NODE) {
+        $node->owner_element_type_definition
+            ->remove_attribute_definition_node ($node);
+      }
     }
 
     # Adopt 2.

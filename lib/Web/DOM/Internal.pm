@@ -116,6 +116,7 @@ sub add_data ($$) {
 ##   namespace_uri                  \string   Namespace URL
 ##   node_name                      \string   Node name
 ##   node_type                      integer   Node type
+##   node_value                     string    Node value
 ##   no_strict_error_checking       boolean   !Strict error checking flag
 ##   notations                      {node_id} Notations
 ##   owner                          node_id   Owner

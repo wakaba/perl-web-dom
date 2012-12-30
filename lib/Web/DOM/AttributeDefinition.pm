@@ -22,10 +22,6 @@ sub node_name ($) {
   return ${${$_[0]}->[2]->{node_name}};
 } # node_name
 
-sub node_value ($) {
-  return ${$_[0]}->[2]->{node_value};
-} # node_value
-
 sub owner_element_type_definition ($) {
   if (my $id = ${$_[0]}->[2]->{owner}) {
     return ${$_[0]}->[0]->node ($id);
@@ -33,6 +29,16 @@ sub owner_element_type_definition ($) {
     return undef;
   }
 } # owner_element_type_definition
+
+sub node_value ($;$) {
+  if (@_ > 1) {
+    ${$_[0]}->[2]->{node_value} = defined $_[1] ? ''.$_[1] : '';
+  }
+  return defined ${$_[0]}->[2]->{node_value}
+      ? ${$_[0]}->[2]->{node_value} : '';
+} # node_value
+
+*text_content = \&node_value;
 
 ## |DeclaredValueType|
 sub NO_TYPE_ATTR () { 0 }

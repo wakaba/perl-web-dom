@@ -14,28 +14,31 @@ methods are available:
 
 =over 4
 
-=item $col = $dt->attribute_definitions
+=item $col = $et->attribute_definitions
 
 Return the collection (L<Web::DOM::NamedNodeMap>) of attribute
 definitions.  [DOMDTDEF]
 
-=item $adef = $dt->get_attribute_definition_node ($name)
+=item $adef = $et->get_attribute_definition_node ($name)
 
 Return the attribute definition (L<Web::DOM::AttributeDefinition>)
 with the specified name, if any, or C<undef>.  [DOMDTDEF]
 
-=item $node = $dt->remove_attribute_definition_node ($node)
+=item $node = $et->remove_attribute_definition_node ($node)
 
 Remove the specified attribute definition from the element type.  The
 removed node is returned.  [DOMDTDEF]
 
-=item $old = $dt->set_attribute_definition_node ($new)
+=item $old = $et->set_attribute_definition_node ($new)
 
 Set the specified attribute definition node to the element type.  If
 there is already an attribute definition with the same name, it is
 removed from the element type and returned.  [DOMDTDEF]
 
 =back
+
+The element type name can be accessed by the C<< $et->node_name >>
+method.
 
 =head1 SPECIFICATION
 
