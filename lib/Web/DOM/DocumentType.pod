@@ -14,23 +14,85 @@ L<Web::DOM::ChildNode>, following methods are available:
 
 =over 4
 
+=item $col = $dt->element_types
+
+Return the collection of element types.  [DOMDTDEF]
+
+=item $col = $dt->general_entities
+
+=item $col = $dt->entities
+
+Return the collection of general entities.  [DOM3CORE] [DOMDTDEF]
+
+=item $et = $dt->get_element_type_definition_node ($name)
+
+Return the element type (L<Web::DOM::ElementTypeDefinition>) with the
+specified name, if any, or C<undef>.  [DOMDTDEF]
+
+=item $entity = $dt->get_general_entity_node ($name)
+
+Return the general entity (L<Web::DOM::Entity>) with the specified
+name, if any, or C<undef>.  [DOMDTDEF]
+
+=item $notation = $dt->get_notation_node ($name)
+
+Return the notation (L<Web::DOM::Notation>) with the specified name,
+if any, or C<undef>.  [DOMDTDEF]
+
 =item $name = $dt->name
 
 Return the name of the document type.  [DOM]
+
+=item $col = $dt->notations
+
+Return the collection of notations.  [DOM3CORE]
 
 =item $id = $dt->public_id
 
 =item $dt->public_id ($id)
 
 Return or set the public identifier of the document type.  [DOM]
-[MANAKAI] [DOMPERL]
+[DOMDTDEF] [MANAKAI] [DOMPERL]
+
+=item $node = $dt->remove_element_type_definition_node ($node)
+
+Remove the specified element type from the document type.  The removed
+node is returned.  [DOMDTDEF]
+
+=item $node = $dt->remove_general_entity_node ($node)
+
+Remove the specified general entity from the document type.  The
+removed node is returned.  [DOMDTDEF]
+
+=item $node = $dt->remove_notation_node ($node)
+
+Remove the specified notation from the document type.  The removed
+node is returned.  [DOMDTDEF]
+
+=item $old = $dt->set_element_type_definition_node ($new)
+
+Set the specified element type to the document type.  If there is
+already an element type with the same name, it is removed from the
+document type and returned.  [DOMDTDEF]
+
+=item $old = $dt->set_general_entity_node ($new)
+
+Set the specified general entity node to the document type.  If there
+is already a general entity with the same name, it is removed from the
+document type and returned.  [DOMDTDEF]
+
+=item $old = $dt->set_notation_node ($new)
+
+Set the specified notation node to the document type.  If there is
+already a notation with the same name, it is removed from the document
+type and returned.  [DOMDTDEF]
 
 =item $id = $dt->system_id
 
 =item $dt->system_id ($id)
 
 Return or set the system identifier of the document type.  [DOM]
-[MANAKAI] [DOMPERL]
+[DOMDTDEF] [MANAKAI] [DOMPERL]
 
 =back
 
@@ -42,6 +104,11 @@ Return or set the system identifier of the document type.  [DOM]
 
 DOM Living Standard
 <http://dom.spec.whatwg.org/#interface-documenttype>.
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
 
 =item DOMPERL
 

@@ -31,7 +31,7 @@ sub system_id ($) {
 # XXX manakai_declaration_base_uri
 
 sub owner_document_type_definition ($) {
-  if (my $id = ${$_[0]}->[2]->{owner_document_type_definition}) {
+  if (my $id = ${$_[0]}->[2]->{owner}) {
     return ${$_[0]}->[0]->node ($id);
   } else {
     return undef;

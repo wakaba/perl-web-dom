@@ -91,6 +91,46 @@ sub add_data ($$) {
 ## Its the reference to the reference, not just the reference, to
 ## allow overloading of |@{}| and |%{}| in some kinds of nodes.
 
+## Node data
+##
+##   all_declarations_processed     boolean   [all declarations processed]
+##   attributes                     [attr]    Attributes by index
+##   attribute_definitions          {node_id} Attribute definitions
+##   attribute_type                 integer   [attribute type]
+##   attrs                          {{attr}}  Attributes by name
+##   child_nodes                    [node_id] Child nodes
+##   compat_mode                    string    Quirksness
+##   content_type                   string    MIME type
+##   data                           \string   Data
+##   element_types                  {node_id} Element types
+##   encoding                       string    Character encoding
+##   general_entities               {node_id} General entities
+##   is_html                        boolean   An HTML document?
+##   is_srcdoc                      boolean   An iframe srcdoc document?
+##   is_XMLDocument                 boolean   An XMLDocument?
+##   local_name                     \string   Local name
+##   manakai_base_uri               string    [base URI]
+##   manakai_charset                string    Content-Type charset=""
+##   manakai_has_bom                boolean   Has BOM?
+##   name                           \string   Name
+##   namespace_uri                  \string   Namespace URL
+##   node_name                      \string   Node name
+##   node_type                      integer   Node type
+##   no_strict_error_checking       boolean   !Strict error checking flag
+##   notations                      {node_id} Notations
+##   owner                          node_id   Owner
+##   parent_node                    node_id   Parent node
+##   prefix                         \string   Namespace prefix
+##   public_id                      \string   Public ID
+##   system_id                      \string   System ID
+##   target                         \string   Target
+##   url                            string    Document URL
+##   user_data                      {object}  User data
+##   value                          string    Value
+##   xml_encoding                   string    XML encoding=""
+##   xml_standalone                 boolean   XML standalone=""
+##   xml_version                    string    XML version
+
 my $NodeClassByNodeType = {
   2 => 'Web::DOM::Attr',
   3 => 'Web::DOM::Text',
@@ -138,6 +178,9 @@ sub node ($$) {
 ##   - {child_nodes}           - $node->child_nodes
 ##   - {attributes}            - $node->attributes
 ##   - {attribute_definitions} - $node->attribute_definitions
+##   - {element_types}         - $node->element_types
+##   - {general_entities}      - $node->general_entities
+##   - {notations}             - $node->notations
 ##   - {children}              - $node->children
 ##   - {"by_tag_name$;$ln"}    - $node->get_elements_by_tag_name ($ln)
 ##   - {"by_tag_name_ns$;$ns$;$ln"} - $node->get_elements_by_tag_name_ns ($ns, $ln)
@@ -146,6 +189,10 @@ sub node ($$) {
 my $CollectionClass = {
   child_nodes => 'Web::DOM::NodeList',
   attributes => 'Web::DOM::NamedNodeMap',
+  attribute_definitions => 'Web::DOM::NamedNodeMap',
+  element_types => 'Web::DOM::NamedNodeMap',
+  general_entities => 'Web::DOM::NamedNodeMap',
+  notations => 'Web::DOM::NamedNodeMap',
 }; # $CollectionClass
 
 sub collection ($$$$) {
@@ -220,7 +267,11 @@ sub connect ($$$) {
     push @id, grep { not ref $_ } @{$self->{data}->[$id]->{attributes} or []};
     push @id,
         @{$self->{data}->[$id]->{child_nodes} or []},
-        @{$self->{data}->[$id]->{attribute_definitions} or []};
+        grep { defined $_ } 
+        values %{$self->{data}->[$id]->{element_types} or {}},
+        values %{$self->{data}->[$id]->{general_entities} or {}},
+        values %{$self->{data}->[$id]->{notations} or {}},
+        values %{$self->{data}->[$id]->{attribute_definitions} or {}};
   }
 } # connect
 
@@ -234,7 +285,11 @@ sub disconnect ($$) {
     push @id, grep { not ref $_ } @{$self->{data}->[$id]->{attributes} or []};
     push @id,
         @{$self->{data}->[$id]->{child_nodes} or []},
-        @{$self->{data}->[$id]->{attribute_definitions} or []};
+        grep { defined $_ } 
+        values %{$self->{data}->[$id]->{element_types} or {}},
+        values %{$self->{data}->[$id]->{general_entities} or {}},
+        values %{$self->{data}->[$id]->{notations} or {}},
+        values %{$self->{data}->[$id]->{attribute_definitions} or {}};
   }
 } # disconnect
 
@@ -268,7 +323,11 @@ sub adopt ($$) {
     push @old_id, grep { not ref $_ } @{$data->{attributes} or []};
     push @old_id,
         @{$data->{child_nodes} or []},
-        @{$data->{attribute_definitions} or []};
+        grep { defined $_ } 
+        values %{$data->{element_types} or {}},
+        values %{$data->{general_entities} or {}},
+        values %{$data->{notations} or {}},
+        values %{$data->{attribute_definitions} or {}};
 
     if (my $node = delete $old_int->{nodes}->[$old_id]) {
       weaken ($new_int->{nodes}->[$new_id] = $node);
@@ -300,10 +359,15 @@ sub adopt ($$) {
     }
     @{$data->{child_nodes}} = map { $id_map{$_} } @{$data->{child_nodes}}
         if $data->{child_nodes};
-    @{$data->{attribute_definitions}} = map { $id_map{$_} } @{$data->{attribute_definitions}}
-        if $data->{attribute_definitions};
-    for (qw(parent_node owner_element
-            owner_document_type_definition owner_element_type_definition)) {
+    for my $key (qw(element_types general_entities notations
+                    attribute_definitions)) {
+      for (keys %{$data->{$key} or {}}) {
+        if (defined $data->{$key}->{$_}) {
+          $data->{$key}->{$_} = $id_map{$data->{$key}->{$_}};
+        }
+      }
+    }
+    for (qw(parent_node owner)) {
       $data->{$_} = $id_map{$data->{$_}} if defined $data->{$_};
     }
   }

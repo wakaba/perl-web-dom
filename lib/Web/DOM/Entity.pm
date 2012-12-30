@@ -94,7 +94,7 @@ sub manakai_has_dom {
 } # manakai_has_dom
 
 sub owner_document_type_definition ($) {
-  if (my $id = ${$_[0]}->[2]->{owner_document_type_definition}) {
+  if (my $id = ${$_[0]}->[2]->{owner}) {
     return ${$_[0]}->[0]->node ($id);
   } else {
     return undef;

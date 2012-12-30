@@ -1,0 +1,65 @@
+=head1 NAME
+
+Web::DOM::ElementTypeDefinition - The DOM |ElementTypeDefinition| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::ElementTypeDefinition> class implements the DOM
+C<ElementTypeDefinition> interface.
+
+=head1 METHODS
+
+In addition to the methods of the L<Web::DOM::Node> class, following
+methods are available:
+
+=over 4
+
+=item $col = $dt->attribute_definitions
+
+Return the collection of attribute definitions.  [DOMDTDEF]
+
+=item $adef = $dt->get_attribute_definition_node ($name)
+
+Return the attribute definition (L<Web::DOM::AttributeDefinition>)
+with the specified name, if any, or C<undef>.  [DOMDTDEF]
+
+=item $node = $dt->remove_attribute_definition_node ($node)
+
+Remove the specified attribute definition from the element type.  The
+removed node is returned.  [DOMDTDEF]
+
+=item $old = $dt->set_attribute_definition_node ($new)
+
+Set the specified attribute definition node to the element type.  If
+there is already an attribute definition with the same name, it is
+removed from the element type and returned.  [DOMDTDEF]
+
+=back
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>, L<Web::DOM::DocumentType>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

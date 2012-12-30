@@ -570,7 +570,7 @@ sub adopt_node ($$) {
     # Adopt 1. Remove
     if (defined $$node->[2]->{parent_node}) {
       $node->parent_node->remove_child ($node);
-    } elsif (defined $$node->[2]->{owner_element}) {
+    } elsif (defined $$node->[2]->{owner}) { # XXX DOMDTDEF
       $node->owner_element->remove_attribute_node ($node);
     }
 

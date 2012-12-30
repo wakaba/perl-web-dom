@@ -171,6 +171,11 @@ Set the specified key-value pair as one of user data of the node.
 Note that this implementation does not support user data handler.  The
 third argument cannot be specified.
 
+Please note that, if the value directly or indirectly references the
+node itself, the node will not be garbage collected even when the
+other references to the node have been removed.  This is the
+limitation of the Perl's garbage collection mechanism.
+
 =item $string = $node->text_content
 
 =item $node->text_content ($string)

@@ -48,7 +48,7 @@ sub value ($;$) {
 sub specified ($) { 1 }
 
 sub owner_element ($) {
-  if (my $id = ${$_[0]}->[2]->{owner_element}) {
+  if (my $id = ${$_[0]}->[2]->{owner}) {
     return ${$_[0]}->[0]->node ($id);
   } else {
     return undef;

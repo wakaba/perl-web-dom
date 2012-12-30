@@ -4,13 +4,15 @@ use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
 push our @ISA, qw(Web::DOM::Node);
+use Web::DOM::DocumentType;
+push our @CARP_NOT, qw(Web::DOM::DocumentType);
 
 sub node_name ($) {
   return ${${$_[0]}->[2]->{node_name}};
 } # node_name
 
 sub owner_document_type_definition ($) {
-  if (my $id = ${$_[0]}->[2]->{owner_document_type_definition}) {
+  if (my $id = ${$_[0]}->[2]->{owner}) {
     return ${$_[0]}->[0]->node ($id);
   } else {
     return undef;
@@ -19,9 +21,49 @@ sub owner_document_type_definition ($) {
 
 sub attribute_definitions ($) {
   return ${$_[0]}->[0]->collection ('attribute_definitions', $_[0], sub {
-    return @{${$_[0]}->[2]->{attribute_definitions} or []};
+    return grep { defined $_ } values %{${$_[0]}->[2]->{attribute_definitions} or {}};
   });
 } # attribute_definitions
+
+sub get_attribute_definition_node ($$) {
+  my $id = ${$_[0]}->[2]->{attribute_definitions}->{''.$_[1]};
+  return defined $id ? ${$_[0]}->[0]->node ($id) : undef;
+} # get_attribute_definition_node
+
+sub set_attribute_definition_node ($$) {
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::AttributeDefinition')) {
+    _throw Web::DOM::TypeError 'The argument is not an AttributeDefinition';
+  }
+  return $_[0]->Web::DOM::DocumentType::_set_node
+      ('attribute_definitions', $_[1]);
+} # set_attribute_definition_node
+
+sub remove_attribute_definition_node ($$) {
+  # WebIDL
+  unless (UNIVERSAL::isa ($_[1], 'Web::DOM::AttributeDefinition')) {
+    _throw Web::DOM::TypeError 'The argument is not an AttributeDefinition';
+  }
+  my ($node, $obj) = @_;
+
+  # 1.
+  if ($$node->[0] eq $$obj->[0] and
+      defined $$obj->[2]->{owner} and
+      $$node->[1] == $$obj->[2]->{owner}) {
+    #
+  } else {
+    _throw Web::DOM::Exception 'NotFoundError',
+        'The specified node is not attached to the context object';
+  }
+
+  # 2.-3.
+  delete $$node->[2]->{attribute_definitions}->{${$$obj->[2]->{node_name}}};
+  delete $$obj->[2]->{owner};
+  $$node->[0]->disconnect ($$obj->[1]);
+
+  # 4.
+  return $obj;
+} # remove_attribute_definition_node
 
 1;
 

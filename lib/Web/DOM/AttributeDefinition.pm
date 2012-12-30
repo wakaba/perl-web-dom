@@ -27,7 +27,7 @@ sub node_value ($) {
 } # node_value
 
 sub owner_element_type_definition ($) {
-  if (my $id = ${$_[0]}->[2]->{owner_element_type_definition}) {
+  if (my $id = ${$_[0]}->[2]->{owner}) {
     return ${$_[0]}->[0]->node ($id);
   } else {
     return undef;

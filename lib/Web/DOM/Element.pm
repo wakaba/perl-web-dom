@@ -86,7 +86,7 @@ my $InflateAttr = sub ($) {
   my $data = {node_type => ATTRIBUTE_NODE,
               local_name => Web::DOM::Internal->text ($$_),
               value => ${$$node->[2]->{attrs}->{''}->{$$_}},
-              owner_element => $$node->[1]};
+              owner => $$node->[1]};
   my $attr_id = $$node->[0]->add_data ($data);
   $$node->[2]->{attrs}->{''}->{$$_} = $attr_id;
   $$node->[0]->connect ($attr_id => $$node->[1]);
@@ -426,7 +426,7 @@ sub set_attribute_ns ($$$$) {
                       prefix => Web::DOM::Internal->text ($prefix),
                       local_name => Web::DOM::Internal->text ($ln),
                       value => $value,
-                      owner_element => $$node->[1]};
+                      owner => $$node->[1]};
           my $attr_id = $$node->[0]->add_data ($data);
           push @{$$node->[2]->{attributes} ||= []}, $attr_id;
           $$node->[2]->{attrs}->{$nsurl}->{$ln} = $attr_id;
@@ -455,9 +455,9 @@ sub set_attribute_node ($$) {
   my ($node, $attr) = @_;
 
   # 2.
-  if (defined $$attr->[2]->{owner_element} and
+  if (defined $$attr->[2]->{owner} and
       not ($$attr->[0] eq $$node->[0] and
-           $$attr->[2]->{owner_element} == $$node->[1])) {
+           $$attr->[2]->{owner} == $$node->[1])) {
     _throw Web::DOM::Exception 'InUseAttributeError',
         'The specified attribute has already attached to another node';
   }
@@ -478,7 +478,7 @@ sub set_attribute_node ($$) {
     $old_attr_id = $_;
   }
   if (defined $old_attr_id and not ref $old_attr_id) {
-    delete $$node->[0]->{data}->[$old_attr_id]->{owner_element};
+    delete $$node->[0]->{data}->[$old_attr_id]->{owner};
     $$node->[0]->disconnect ($old_attr_id);
   }
 
@@ -500,7 +500,7 @@ sub set_attribute_node ($$) {
   $$node->[2]->{attrs}->{$nsurl}->{$ln} = $$attr->[1];
 
   # 7.
-  $$attr->[2]->{owner_element} = $$node->[1];
+  $$attr->[2]->{owner} = $$node->[1];
   $$node->[0]->connect ($$attr->[1] => $$node->[1]);
   
   return $$node->[0]->node ($old_attr_id)
@@ -594,8 +594,8 @@ sub remove_attribute_node ($$) {
   my ($node, $attr) = @_;
   
   if ($$node->[0] eq $$attr->[0] and
-      defined $$attr->[2]->{owner_element} and
-      $$node->[1] == $$attr->[2]->{owner_element}) {
+      defined $$attr->[2]->{owner} and
+      $$node->[1] == $$attr->[2]->{owner}) {
     #
   } else {
     _throw Web::DOM::Exception 'NotFoundError',
@@ -606,7 +606,7 @@ sub remove_attribute_node ($$) {
   @{$$node->[2]->{attributes}} = grep {
     $_ != $$attr->[1];
   } @{$$node->[2]->{attributes}};
-  delete $$attr->[2]->{owner_element};
+  delete $$attr->[2]->{owner};
   $$node->[0]->disconnect ($$attr->[1]);
 
   return $attr;
