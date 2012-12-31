@@ -158,6 +158,89 @@ test {
   done $c;
 } n => 5, name => 'default_type';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $adef = $doc->create_attribute_definition ('hoge');
+  my $list = $adef->allowed_tokens;
+  is ref $list, 'ARRAY';
+  is scalar @$list, 0;
+  is $list->[0], undef;
+  is $list->[1], undef;
+  is scalar @$list, 0;
+  is $adef->allowed_tokens, $list;
+  done $c;
+} n => 6, name => 'allowed_tokens empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $adef = $doc->create_attribute_definition ('hoge');
+  my $list = $adef->allowed_tokens;
+  $adef->allowed_tokens ([1, 2, 3]);
+  is_deeply $list, [1, 2, 3];
+  is $adef->allowed_tokens, $list;
+  done $c;
+} n => 2, name => 'allowed_tokens setter';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $adef = $doc->create_attribute_definition ('hoge');
+  my $list = $adef->allowed_tokens;
+  $adef->allowed_tokens (bless [1, 2, 3], 'test::FooBar');
+  is_deeply $list, [1, 2, 3];
+  is $adef->allowed_tokens, $list;
+  done $c;
+} n => 2, name => 'allowed_tokens setter blessed array';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $adef = $doc->create_attribute_definition ('hoge');
+  my $adef2 = $doc->create_attribute_definition ('hoge');
+  my $list = $adef->allowed_tokens;
+  my $list2 = $adef2->allowed_tokens;
+  $adef2->allowed_tokens ([12, 42]);
+  $adef->allowed_tokens ($list2);
+  is_deeply $list, [12, 42];
+  is $adef->allowed_tokens, $list;
+  isnt $adef->allowed_tokens, $list2;
+  done $c;
+} n => 3, name => 'allowed_tokens setter allowed tokens';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $adef = $doc->create_attribute_definition ('hoge');
+  my $list = $adef->allowed_tokens;
+  $adef->allowed_tokens ([1, 2, 3]);
+  dies_here_ok {
+    $adef->allowed_tokens (undef);
+  };
+  isa_ok $@, 'Web::DOM::TypeError';
+  is $@->message, "Can't interpret the assigned value as an array reference";
+  is_deeply $list, [1, 2, 3];
+  is $adef->allowed_tokens, $list;
+  done $c;
+} n => 5, name => 'allowed_tokens setter error';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $adef = $doc->create_attribute_definition ('hoge');
+  my $list = $adef->allowed_tokens;
+  $adef->allowed_tokens ([1, 2, 3]);
+  dies_here_ok {
+    $adef->allowed_tokens (124);
+  };
+  isa_ok $@, 'Web::DOM::TypeError';
+  is $@->message, "Can't interpret the assigned value as an array reference";
+  is_deeply $list, [1, 2, 3];
+  is $adef->allowed_tokens, $list;
+  done $c;
+} n => 5, name => 'allowed_tokens setter error';
+
 run_tests;
 
 =head1 LICENSE

@@ -67,10 +67,28 @@ sub declared_type ($;$) {
   return ${$_[0]}->[2]->{declared_type} || NO_TYPE_ATTR;
 } # declared_type
 
-# XXX
-sub allowed_tokens {
-  return [];
-}
+sub allowed_tokens ($;$) {
+  my $arrayref = ${$_[0]}->[2]->{allowed_tokens_arrayref} ||= do {
+    require Web::DOM::StringArray;
+    tie my @array, 'Web::DOM::StringArray',
+        ${$_[0]}->[2]->{allowed_tokens} ||= [], sub { };
+    \@array;
+  };
+  if (@_ > 1) {
+    my $error = do {
+      local $@;
+      eval {
+        @$arrayref = @{$_[1]};
+      };
+      $@;
+    };
+    if ($error) {
+      _throw Web::DOM::TypeError
+          "Can't interpret the assigned value as an array reference";
+    }
+  }
+  return $arrayref;
+} # allowed_tokens
 
 ## |DefaultValueType|
 sub UNKNOWN_DEFAULT () { 0 }

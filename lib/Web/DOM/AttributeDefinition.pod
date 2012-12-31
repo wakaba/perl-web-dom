@@ -14,6 +14,17 @@ methods are available:
 
 =over 4
 
+=item $arrayref = $def->allowed_tokens
+
+Return the array reference containing the allowed tokens of the
+attribute definitions.  The array reference can be modified by the
+application.  [DOMDTDEF] [DOMPERL]
+
+=item $def->allowed_tokens ([$string1, $string2, ...])
+
+Clear the list of allowed tokens and add the strings contained in the
+array reference specified as the argument.  [DOMDTDEF] [DOMPERL]
+
 =item $type = $adef->declared_type
 
 =item $adef->declared_type ($type)
