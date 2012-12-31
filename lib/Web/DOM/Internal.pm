@@ -94,6 +94,7 @@ sub add_data ($$) {
 ## Node data
 ##
 ##   all_declarations_processed     boolean   [all declarations processed]
+##   allowed_tokens                 [string]  Allowed tokens
 ##   attributes                     [attr]    Attributes by index
 ##   attribute_definitions          {node_id} Attribute definitions
 ##   attribute_type                 integer   [attribute type]
@@ -102,6 +103,8 @@ sub add_data ($$) {
 ##   compat_mode                    string    Quirksness
 ##   content_type                   string    MIME type
 ##   data                           \string   Data
+##   declared_type                  integer   Declared type
+##   default_type                   integer   Default type
 ##   element_types                  {node_id} Element types
 ##   encoding                       string    Character encoding
 ##   general_entities               {node_id} General entities
@@ -119,6 +122,7 @@ sub add_data ($$) {
 ##   node_value                     string    Node value
 ##   no_strict_error_checking       boolean   !Strict error checking flag
 ##   notations                      {node_id} Notations
+##   notation_name                  string    Notation name
 ##   owner                          node_id   Owner
 ##   parent_node                    node_id   Parent node
 ##   prefix                         \string   Namespace prefix

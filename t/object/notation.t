@@ -23,8 +23,9 @@ test {
   $node->node_value (undef);
   is $node->node_value, undef;
   is $node->text_content, undef;
+  is $node->owner_document_type_definition, undef;
   done $c;
-} n => 8, name => 'basic node properties';
+} n => 9, name => 'basic node properties';
 
 test {
   my $c = shift;

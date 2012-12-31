@@ -6,11 +6,9 @@ use Web::DOM::Node;
 push our @ISA, qw(Web::DOM::Node);
 use Web::DOM::Internal;
 
-*node_name = \&name;
-
-sub name ($) {
+sub node_name ($) {
   return ${${$_[0]}->[2]->{name}};
-} # name
+} # node_name
 
 sub public_id ($) {
   if (@_ > 1) {
@@ -36,37 +34,54 @@ sub system_id ($) {
 
 sub input_encoding ($) {
   if (@_ > 1) {
-    ${${$_[0]}->[2]->{input_encoding}} = ''.$_[1];
+    # XXX
+    #${$_[0]}->[2]->{encoding} = ''.$_[1];
   }
-  return ${${$_[0]}->[2]->{input_encoding}};
+  return ${$_[0]}->[2]->{input_encoding}; # or undef
 } # input_encoding
 
 sub xml_version ($) {
   if (@_ > 1) {
-    ${${$_[0]}->[2]->{xml_version}} = ''.$_[1];
+    if (defined $_[1]) {
+      ${$_[0]}->[2]->{xml_version} = ''.$_[1];
+    } else {
+      delete ${$_[0]}->[2]->{xml_version};
+    }
   }
-  return ${${$_[0]}->[2]->{xml_version}};
+  return ${$_[0]}->[2]->{xml_version};
 } # xml_version
 
 sub xml_encoding ($) {
   if (@_ > 1) {
-    ${${$_[0]}->[2]->{xml_encoding}} = ''.$_[1];
+    if (defined $_[1]) {
+      ${$_[0]}->[2]->{xml_encoding} = ''.$_[1];
+    } else {
+      delete ${$_[0]}->[2]->{xml_encoding};
+    }
   }
-  return ${${$_[0]}->[2]->{xml_encoding}};
+  return ${$_[0]}->[2]->{xml_encoding}; # or undef
 } # xml_encoding
 
 sub notation_name ($) {
   if (@_ > 1) {
-    ${${$_[0]}->[2]->{notation_name}} = ''.$_[1];
+    if (defined $_[1]) {
+      ${$_[0]}->[2]->{notation_name} = ''.$_[1];
+    } else {
+      delete ${$_[0]}->[2]->{notation_name};
+    }
   }
-  return ${${$_[0]}->[2]->{notation_name}};
+  return ${$_[0]}->[2]->{notation_name};
 } # notation_name
 
 sub is_externally_declared ($) {
   if (@_ > 1) {
-    ${${$_[0]}->[2]->{is_externally_declared}} = ''.$_[1];
+    if ($_[1]) {
+      ${$_[0]}->[2]->{is_externally_declared} = 1;
+    } else {
+      delete ${$_[0]}->[2]->{is_externally_declared};
+    }
   }
-  return ${${$_[0]}->[2]->{is_externally_declared}};
+  return ${$_[0]}->[2]->{is_externally_declared};
 } # is_externally_declared
 
 sub manakai_charset ($;$) {
@@ -80,7 +95,7 @@ sub manakai_charset ($;$) {
   return ${$_[0]}->[2]->{manakai_charset};
 } # manakai_charset
 
-sub manakai_has_dom {
+sub manakai_has_bom {
   if (@_ > 1) {
     if ($_[1]) {
       ${$_[0]}->[2]->{manakai_has_bom} = 1;
@@ -89,7 +104,7 @@ sub manakai_has_dom {
     }
   }
   return ${$_[0]}->[2]->{manakai_has_bom};
-} # manakai_has_dom
+} # manakai_has_bom
 
 sub owner_document_type_definition ($) {
   if (my $id = ${$_[0]}->[2]->{owner}) {
@@ -109,7 +124,7 @@ sub node_value ($;$) {
 
 *text_content = \&node_value;
 
-# XXX has_replacement_tree
+sub has_replacement_tree ($) { 0 }
 
 1;
 

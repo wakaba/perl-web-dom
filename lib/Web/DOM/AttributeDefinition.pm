@@ -60,10 +60,12 @@ push @EXPORT, qw(
   UNKNOWN_ATTR
 );
 
-# XXX
-sub declared_type {
-  return NO_TYPE_ATTR;
-}
+sub declared_type ($;$) {
+  if (@_ > 1) {
+    ${$_[0]}->[2]->{declared_type} = $_[1] % 2**16;
+  }
+  return ${$_[0]}->[2]->{declared_type} || NO_TYPE_ATTR;
+} # declared_type
 
 # XXX
 sub allowed_tokens {
@@ -77,10 +79,17 @@ sub REQUIRED_DEFAULT () { 2 }
 sub IMPLIED_DEFAULT () { 3 }
 sub EXPLICIT_DEFAULT () { 4 }
 
-# XXX
-sub default_type {
-  return UNKNOWN_DEFAULT;
-}
+push @EXPORT, qw(
+  UNKNOWN_DEFAULT FIXED_DEFAULT REQUIRED_DEFAULT IMPLIED_DEFAULT
+  EXPLICIT_DEFAULT
+);
+
+sub default_type ($;$) {
+  if (@_ > 1) {
+    ${$_[0]}->[2]->{default_type} = $_[1] % 2**16;
+  }
+  return ${$_[0]}->[2]->{default_type} || UNKNOWN_DEFAULT;
+} # default_type
 
 1;
 

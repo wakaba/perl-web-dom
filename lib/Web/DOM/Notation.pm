@@ -6,11 +6,9 @@ use Web::DOM::Node;
 push our @ISA, qw(Web::DOM::Node);
 use Web::DOM::Internal;
 
-*node_name = \&name;
-
-sub name ($) {
+sub node_name ($) {
   return ${${$_[0]}->[2]->{name}};
-} # name
+} # node_name
 
 sub public_id ($) {
   if (@_ > 1) {

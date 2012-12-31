@@ -24,6 +24,11 @@ definitions.  [DOMDTDEF]
 Return the attribute definition (L<Web::DOM::AttributeDefinition>)
 with the specified name, if any, or C<undef>.  [DOMDTDEF]
 
+=item $dt = $et->owner_document_type_definition
+
+Return the document type (L<Web::DOM::DocumentType>) to which the
+element type belongs, if any, or C<undef>.  [DOMDTDEF]
+
 =item $node = $et->remove_attribute_definition_node ($node)
 
 Remove the specified attribute definition from the element type.  The

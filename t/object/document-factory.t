@@ -350,7 +350,6 @@ test {
   isa_ok $dt, 'Web::DOM::Entity';
   is $dt->node_type, $dt->ENTITY_NODE;
   is $dt->node_name, 'hoge';
-  is $dt->name, 'hoge';
   is $dt->public_id, '';
   is $dt->system_id, '';
   is $dt->child_nodes->length, 0;
@@ -358,7 +357,7 @@ test {
   is $dt->owner_document_type_definition, undef;
   is $dt->owner_document, $doc;
   done $c;
-} n => 10, name => 'create_general_entity';
+} n => 9, name => 'create_general_entity';
 
 test {
   my $c = shift;
@@ -367,7 +366,6 @@ test {
   isa_ok $dt, 'Web::DOM::Entity';
   is $dt->node_type, $dt->ENTITY_NODE;
   is $dt->node_name, ':hoge';
-  is $dt->name, ':hoge';
   is $dt->public_id, '';
   is $dt->system_id, '';
   is $dt->child_nodes->length, 0;
@@ -375,7 +373,7 @@ test {
   is $dt->owner_document_type_definition, undef;
   is $dt->owner_document, $doc;
   done $c;
-} n => 10, name => 'create_general_entity not qname';
+} n => 9, name => 'create_general_entity not qname';
 
 test {
   my $c = shift;
@@ -385,7 +383,6 @@ test {
   isa_ok $dt, 'Web::DOM::Entity';
   is $dt->node_type, $dt->ENTITY_NODE;
   is $dt->node_name, '120hoge';
-  is $dt->name, '120hoge';
   is $dt->public_id, '';
   is $dt->system_id, '';
   is $dt->child_nodes->length, 0;
@@ -393,7 +390,7 @@ test {
   is $dt->owner_document_type_definition, undef;
   is $dt->owner_document, $doc;
   done $c;
-} n => 10, name => 'create_general_entity not strict';
+} n => 9, name => 'create_general_entity not strict';
 
 test {
   my $c = shift;
@@ -403,7 +400,6 @@ test {
   isa_ok $dt, 'Web::DOM::Entity';
   is $dt->node_type, $dt->ENTITY_NODE;
   is $dt->node_name, '';
-  is $dt->name, '';
   is $dt->public_id, '';
   is $dt->system_id, '';
   is $dt->child_nodes->length, 0;
@@ -411,7 +407,7 @@ test {
   is $dt->owner_document_type_definition, undef;
   is $dt->owner_document, $doc;
   done $c;
-} n => 10, name => 'create_general_entity not strict';
+} n => 9, name => 'create_general_entity not strict';
 
 test {
   my $c = shift;
@@ -444,7 +440,6 @@ test {
   isa_ok $dt, 'Web::DOM::Notation';
   is $dt->node_type, $dt->NOTATION_NODE;
   is $dt->node_name, 'hoge';
-  is $dt->name, 'hoge';
   is $dt->public_id, '';
   is $dt->system_id, '';
   is $dt->child_nodes->length, 0;
@@ -452,7 +447,7 @@ test {
   is $dt->owner_document_type_definition, undef;
   is $dt->owner_document, $doc;
   done $c;
-} n => 10, name => 'create_notation';
+} n => 9, name => 'create_notation';
 
 test {
   my $c = shift;
@@ -461,7 +456,6 @@ test {
   isa_ok $dt, 'Web::DOM::Notation';
   is $dt->node_type, $dt->NOTATION_NODE;
   is $dt->node_name, ':hoge';
-  is $dt->name, ':hoge';
   is $dt->public_id, '';
   is $dt->system_id, '';
   is $dt->child_nodes->length, 0;
@@ -469,7 +463,7 @@ test {
   is $dt->owner_document, $doc;
   is $dt->owner_document_type_definition, undef;
   done $c;
-} n => 10, name => 'create_notation not qname';
+} n => 9, name => 'create_notation not qname';
 
 test {
   my $c = shift;
@@ -479,7 +473,6 @@ test {
   isa_ok $dt, 'Web::DOM::Notation';
   is $dt->node_type, $dt->NOTATION_NODE;
   is $dt->node_name, '120hoge';
-  is $dt->name, '120hoge';
   is $dt->public_id, '';
   is $dt->system_id, '';
   is $dt->child_nodes->length, 0;
@@ -487,7 +480,7 @@ test {
   is $dt->owner_document, $doc;
   is $dt->owner_document_type_definition, undef;
   done $c;
-} n => 10, name => 'create_notation not strict';
+} n => 9, name => 'create_notation not strict';
 
 test {
   my $c = shift;
@@ -497,7 +490,6 @@ test {
   isa_ok $dt, 'Web::DOM::Notation';
   is $dt->node_type, $dt->NOTATION_NODE;
   is $dt->node_name, '';
-  is $dt->name, '';
   is $dt->public_id, '';
   is $dt->system_id, '';
   is $dt->child_nodes->length, 0;
@@ -505,7 +497,7 @@ test {
   is $dt->owner_document, $doc;
   is $dt->owner_document_type_definition, undef;
   done $c;
-} n => 10, name => 'create_notation not strict';
+} n => 9, name => 'create_notation not strict';
 
 test {
   my $c = shift;

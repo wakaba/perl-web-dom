@@ -1,0 +1,69 @@
+=head1 NAME
+
+Web::DOM::Notation - The DOM |Notation| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Notation> class implements the DOM C<Notation> interface.
+
+=head1 METHODS
+
+In addition to the methods of the L<Web::DOM::Node> class, following
+methods are available:
+
+=over 4
+
+=item $dt = $notation->owner_document_type_definition
+
+Return the document type (L<Web::DOM::DocumentType>) to which the
+notation belongs, if any, or C<undef>.  [DOMDTDEF]
+
+=item $string = $notation->public_id
+
+=item $notation->public_id = $string
+
+Return or set the public ID of the notation.  [DOM3CORE] [DOMDTDEF]
+
+=item $string = $notation->system_id
+
+=item $notation->system_id = $string
+
+Return or set the system ID of the notation.  [DOM3CORE] [DOMDTDEF]
+
+=back
+
+The notation name can be accessed by the C<< $notation->node_name >>
+method.
+
+=head1 SPECIFICATIONS
+
+=over 4
+
+=item DOM3CORE
+
+Document Object Model (DOM) Level 3 Core Specification
+<http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html>.
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>, L<Web::DOM::DocumentType>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

@@ -202,7 +202,7 @@ test {
 
   isa_ok $nl->item (0), 'Web::DOM::Notation';
   my $el = $nl->item (0);
-  is $el->name, 'fuga';
+  is $el->node_name, 'fuga';
   is $el->public_id, '3';
 
   is $nl->item (1), undef;
@@ -344,7 +344,7 @@ test {
 
   my $attr1 = $col->get_named_item ('hoge');
   isa_ok $attr1, 'Web::DOM::Notation';
-  is $attr1->name, 'hoge';
+  is $attr1->node_name, 'hoge';
   is $attr1->public_id, '112';
 
   my $attr2 = $col->get_named_item ('fuga:aa');
@@ -393,7 +393,7 @@ for my $method (qw(set_named_item)) {
     is GET ($el, 'b'), '';
     isa_ok $attr2, 'Web::DOM::Notation';
     is $attr2->owner_document_type_definition, undef;
-    is $attr2->name, 'b';
+    is $attr2->node_name, 'b';
     is $attr2->public_id, '21';
 
     done $c;
@@ -409,7 +409,7 @@ for my $method (qw(set_named_item)) {
     my $attr = $col->$method ($col->[0]);
     is $attr->node_type, $attr->NOTATION_NODE;
     is $attr->owner_document_type_definition, $el;
-    is $attr->name, 'fuga';
+    is $attr->node_name, 'fuga';
     is $attr->public_id, 'abc';
     is GET ($el, 'fuga'), 'abc';
 
@@ -637,7 +637,7 @@ test {
 
   my $node = $col->remove_named_item ('hoge');
   isa_ok $node, 'Web::DOM::Notation';
-  is $node->name, 'hoge';
+  is $node->node_name, 'hoge';
   is $node->public_id, 'abc';
   is $node->owner_document_type_definition, undef;
   is GET ($el, 'hoge'), undef;

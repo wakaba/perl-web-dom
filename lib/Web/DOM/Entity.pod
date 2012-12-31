@@ -1,0 +1,113 @@
+=head1 NAME
+
+Web::DOM::Entity - The DOM |Entity| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Entity> class implements the DOM C<Entity> interface.
+
+=head1 METHODS
+
+In addition to the methods of the L<Web::DOM::Node> class, following
+methods are available:
+
+=over 4
+
+=item false = $ent->has_replacement_tree
+
+Return whether the entity has the replacement tree or not.  It always
+returns false.  [DOMDTDEF]
+
+=item $string = $ent->input_encoding
+
+Return the encoding of the entity, if it is an external parsed entity
+and has been read, or C<undef>.  [DOM3CORE]
+
+=item $boolean = $ent->is_externally_declared
+
+=item $ent->is_externally_declared ($boolean)
+
+Return or set whether the entity has been externally declared or not.
+[DOMDTDEF]
+
+=item $name = $ent->notation_name
+
+=item $ent->notation_name = $name
+
+Return or set the notation name of the entity, if specified, or
+C<undef>.  [DOM3CORE] [DOMDTDEF]
+
+=item $dt = $ent->owner_document_type_definition
+
+Return the document type (L<Web::DOM::DocumentType>) to which the
+entity belongs, if any, or C<undef>.  [DOMDTDEF]
+
+=item $string = $ent->public_id
+
+=item $ent->public_id = $string
+
+Return or set the public ID of the entity.  [DOM3CORE] [DOMDTDEF]
+
+=item $string = $ent->system_id
+
+=item $ent->system_id = $string
+
+Return or set the system ID of the entity.  [DOM3CORE] [DOMDTDEF]
+
+=item $string = $ent->xml_encoding
+
+=item $ent->xml_encoding ($string)
+
+Return or set the value of the C<encoding> pseudo-attribute of the
+text declaration of the entity, if it is an external parsed entity and
+has been read, or C<undef>.  [DOM3CORE] [MANAKAI]
+
+=item $string = $ent->xml_version
+
+=item $ent->xml_version ($string)
+
+Return or set the value of the C<version> pseudo-attribute of the text
+declaration of the entity, if it is an external parsed entity and has
+been read, or C<undef>.  [DOM3CORE] [MANAKAI]
+
+=back
+
+The entity name can be accessed by the C<< $ent->node_name >> method.
+
+=head1 SPECIFICATIONS
+
+=over 4
+
+=item DOM3CORE
+
+Document Object Model (DOM) Level 3 Core Specification
+<http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/DOM3-Core.html>.
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai++DOM%20Extensions>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Node>, L<Web::DOM::DocumentType>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

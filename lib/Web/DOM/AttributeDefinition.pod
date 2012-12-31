@@ -14,13 +14,51 @@ methods are available:
 
 =over 4
 
-XXX
+=item $type = $adef->declared_type
+
+=item $adef->declared_type ($type)
+
+Return or set the declared type of the attribute definition, using one
+of the constants for the declared type as described in the later
+section.  [DOMDTDEF]
+
+=item $type = $adef->default_type
+
+=item $adef->default_type ($type)
+
+Return or set the default type of the attribute definition, using one
+of the constants for the default type as described in the later
+section.  [DOMDTDEF]
+
+=item $dt = $adef->owner_element_type_definition
+
+Return the element type (L<Web::DOM::ElementTypeDefinition>) to which
+the attribute definition belongs, if any, or C<undef>.  [DOMDTDEF]
 
 =back
 
 The attribute definition name can be accessed by the C<<
 $adef->node_name >> method.  The default value can be returned or set
 by the C<< $adef->node_value >> method.
+
+=head1 CONSTANTS
+
+Constants are exported from the L<Web::DOM::AttributeDefinition>
+module by default.  In addition, they are accessible as methods of
+C<AttributeDefinition> objects.
+
+Following declared type constants used by the C<declared_type>
+attribute are exported [DOMDTDEF]:
+
+NO_TYPE_ATTR CDATA_ATTR ID_ATTR IDREF_ATTR IDREFS_ATTR ENTITY_ATTR
+ENTITIES_ATTR NMTOKEN_ATTR NMTOKENS_ATTR NOTATION_ATTR
+ENUMERATION_ATTR UNKNOWN_ATTR
+
+Following default type constants used by the C<default_type> attribute
+are exported [DOMDTDEF]:
+
+UNKNOWN_DEFAULT FIXED_DEFAULT REQUIRED_DEFAULT IMPLIED_DEFAULT
+EXPLICIT_DEFAULT
 
 =head1 SPECIFICATION
 

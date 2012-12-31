@@ -74,7 +74,7 @@ Constants are exported from the L<Web::DOM::Attr> module by default.
 In addition, they are accessible as methods of C<Attr> objects.
 
 Following declared type constants used by the
-C<manakai_attribute_type> attribute are exported:
+C<manakai_attribute_type> attribute are exported [DOMDTDEF]:
 
 NO_TYPE_ATTR CDATA_ATTR ID_ATTR IDREF_ATTR IDREFS_ATTR ENTITY_ATTR
 ENTITIES_ATTR NMTOKEN_ATTR NMTOKENS_ATTR NOTATION_ATTR
@@ -91,6 +91,11 @@ DOM Living Standard <http://dom.spec.whatwg.org/#interface-attr>.
 =item DOMATTREXODUS, DOMNODEEXODUS
 
 DOM Standard <view-source:http://dom.spec.whatwg.org/>.
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
 
 =item MANAKAI
 
