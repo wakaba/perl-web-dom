@@ -928,9 +928,69 @@ sub is_equal_node ($$) {
     return 0 unless $node1->name eq $node2->name;
     return 0 unless $node1->public_id eq $node2->public_id;
     return 0 unless $node1->system_id eq $node2->system_id;
+
+    for (qw(element_types general_entities notations)) {
+      my $objs1 = $node1->$_->to_a;
+      my $objs2 = $node2->$_->to_a;
+      return 0 unless @$objs1 == @$objs2;
+      my %objs1;
+      for (@$objs1) {
+        $objs1{$_->node_name} = $_;
+      }
+      for (@$objs2) {
+        my $obj1 = $objs1{$_->node_name} or return 0;
+        return 0 unless $obj1->is_equal_node ($_);
+      }
+    }
   } elsif ($nt1 == PROCESSING_INSTRUCTION_NODE) {
     return 0 unless $node1->target eq $node2->target;
     return 0 unless $node1->data eq $node2->data;
+  } elsif ($nt1 == ELEMENT_TYPE_DEFINITION_NODE) {
+    return 0 unless $node1->node_name eq $node2->node_name;
+
+    my $objs1 = $node1->attribute_definitions->to_a;
+    my $objs2 = $node2->attribute_definitions->to_a;
+    return 0 unless @$objs1 == @$objs2;
+    my %objs1;
+    for (@$objs1) {
+      $objs1{$_->node_name} = $_;
+    }
+    for (@$objs2) {
+      my $obj1 = $objs1{$_->node_name} or return 0;
+      return 0 unless $obj1->is_equal_node ($_);
+    }
+  } elsif ($nt1 == ATTRIBUTE_DEFINITION_NODE) {
+    return 0 unless $node1->node_name eq $node2->node_name;
+    return 0 unless $node1->node_value eq $node2->node_value;
+    return 0 unless $node1->declared_type eq $node2->declared_type;
+    return 0 unless $node1->default_type eq $node2->default_type;
+    
+    my $tokens1 = $node1->allowed_tokens;
+    my $tokens2 = $node2->allowed_tokens;
+    return 0 unless @$tokens1 == @$tokens2;
+
+    my %tokens1 = map { $_ => 1 } @$tokens1;
+    for (@$tokens2) {
+      return 0 unless $tokens1{$_};
+    }
+    my %tokens2 = map { $_ => 1 } @$tokens2;
+    for (@$tokens1) {
+      return 0 unless $tokens2{$_};
+    }
+  } elsif ($nt1 == ENTITY_NODE) {
+    return 0 unless $node1->node_name eq $node2->node_name;
+    return 0 unless $node1->node_value eq $node2->node_value;
+    return 0 unless $node1->public_id eq $node2->public_id;
+    return 0 unless $node1->system_id eq $node2->system_id;
+    my $nn1 = $node1->notation_name;
+    my $nn2 = $node2->notation_name;
+    return 0 if defined $nn1 and not defined $nn2;
+    return 0 if not defined $nn1 and defined $nn2;
+    return 0 if defined $nn1 and not $nn1 eq $nn2;
+  } elsif ($nt1 == NOTATION_NODE) {
+    return 0 unless $node1->node_name eq $node2->node_name;
+    return 0 unless $node1->public_id eq $node2->public_id;
+    return 0 unless $node1->system_id eq $node2->system_id;
   }
 
   my @child1 = $node1->child_nodes->to_list;

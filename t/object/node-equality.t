@@ -776,6 +776,518 @@ equal_test
     },
     equal => 0;
 
+equal_test
+    name => 'doctype with and without notation',
+    1 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('foo'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+    },
+    equal => 0;
+
+equal_test
+    name => 'doctype with notation',
+    1 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('foo'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('foo'));
+    },
+    equal => 1;
+
+equal_test
+    name => 'doctype with notations',
+    1 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('bar'));
+      $_->set_notation_node ($_[0]->create_notation ('foo'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('foo'));
+      $_->set_notation_node ($_[0]->create_notation ('bar'));
+    },
+    equal => 1;
+
+equal_test
+    name => 'doctype with notations, entities, element types',
+    1 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('bar'));
+      $_->set_general_entity_node ($_[0]->create_general_entity ('foo'));
+      $_->set_element_type_definition_node
+          ($_[0]->create_element_type_definition ('bar'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('bar'));
+      $_->set_general_entity_node ($_[0]->create_general_entity ('foo'));
+      $_->set_element_type_definition_node
+          ($_[0]->create_element_type_definition ('bar'));
+    },
+    equal => 1;
+
+equal_test
+    name => 'doctype with notations, entities, element types',
+    1 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('bar'));
+      $_->set_element_type_definition_node
+          ($_[0]->create_element_type_definition ('bar'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('bar'));
+      $_->set_general_entity_node ($_[0]->create_general_entity ('foo'));
+      $_->set_element_type_definition_node
+          ($_[0]->create_element_type_definition ('bar'));
+    },
+    equal => 0;
+
+equal_test
+    name => 'doctype with different notations',
+    1 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('foo'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('FOO'));
+    },
+    equal => 0;
+
+equal_test
+    name => 'doctype with notation and entity',
+    1 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_notation_node ($_[0]->create_notation ('foo'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_document_type_definition ('hoge');
+      $_->set_general_entity_node ($_[0]->create_general_entity ('foo'));
+    },
+    equal => 0;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+    },
+    equal => 1;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('fuga');
+    },
+    equal => 0;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->public_id ('hoge');
+    },
+    equal => 0;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->public_id ('abc');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->public_id ('abc');
+    },
+    equal => 1;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->system_id ('abc');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->system_id ('abc');
+    },
+    equal => 1;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->notation_name ('abc');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->public_id ('abc');
+    },
+    equal => 0;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->notation_name ('abc');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->notation_name ('abc');
+    },
+    equal => 1;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->notation_name ('abc');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->notation_name ('');
+    },
+    equal => 0;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->notation_name (undef);
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->notation_name ('');
+    },
+    equal => 0;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->node_value ('abc');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->node_value ('');
+    },
+    equal => 0;
+
+equal_test
+    name => 'entities',
+    1 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->node_value ('abc');
+    },
+    2 => sub {
+      $_ = $_[0]->create_general_entity ('hoge');
+      $_->node_value ('abc');
+    },
+    equal => 1;
+
+equal_test
+    name => 'notations',
+    1 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+    },
+    equal => 1;
+
+equal_test
+    name => 'notations',
+    1 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_notation ('hoge2');
+    },
+    equal => 0;
+
+equal_test
+    name => 'notations',
+    1 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+      $_->public_id ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+      $_->public_id ('hoge');
+    },
+    equal => 1;
+
+equal_test
+    name => 'notations',
+    1 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+      $_->public_id ('hoge');
+    },
+    equal => 0;
+
+equal_test
+    name => 'notations',
+    1 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+      $_->system_id ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+      $_->system_id ('hoge');
+    },
+    equal => 1;
+
+equal_test
+    name => 'notations',
+    1 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_notation ('hoge');
+      $_->system_id ('hoge');
+    },
+    equal => 0;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+    },
+    equal => 1;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge2');
+    },
+    equal => 0;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('abc'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+    },
+    equal => 0;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('abc'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('abc'));
+    },
+    equal => 1;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('abc'));
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('def'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('def'));
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('abc'));
+    },
+    equal => 1;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('abc'));
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('def'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('def'));
+    },
+    equal => 0;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      $_->set_attribute_definition_node
+          ($_[0]->create_attribute_definition ('abc'));
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->node_value ('hoge');
+    },
+    equal => 0;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->node_value ('hoge');
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->node_value ('hoge');
+    },
+    equal => 1;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->declared_type (5);
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->declared_type (5);
+    },
+    equal => 1;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->declared_type (3);
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->declared_type (5);
+    },
+    equal => 0;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->default_type (5);
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->default_type (5);
+    },
+    equal => 1;
+
+equal_test
+    name => 'element types',
+    1 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->default_type (3);
+    },
+    2 => sub {
+      $_ = $_[0]->create_element_type_definition ('hoge');
+      my $adef = $_[0]->create_attribute_definition ('abc');
+      $_->set_attribute_definition_node ($adef);
+      $adef->default_type (5);
+    },
+    equal => 0;
+
+equal_test
+    name => 'attribute definitions',
+    1 => sub {
+      $_ = $_[0]->create_attribute_definition ('abc');
+      push @{$_->allowed_tokens}, 'hoge', 'fuga';
+    },
+    2 => sub {
+      $_ = $_[0]->create_attribute_definition ('abc');
+      push @{$_->allowed_tokens}, 'fuga', 'hoge';
+    },
+    equal => 1;
+
+equal_test
+    name => 'attribute definitions',
+    1 => sub {
+      $_ = $_[0]->create_attribute_definition ('abc');
+      push @{$_->allowed_tokens}, 'hoge', 'fuga';
+    },
+    2 => sub {
+      $_ = $_[0]->create_attribute_definition ('abc');
+      push @{$_->allowed_tokens}, 'fuga', 'hoge', 'hoge';
+    },
+    equal => 0;
+
+equal_test
+    name => 'attribute definitions',
+    1 => sub {
+      $_ = $_[0]->create_attribute_definition ('abc');
+      push @{$_->allowed_tokens}, 'hoge', 'fuga', 'hoge';
+    },
+    2 => sub {
+      $_ = $_[0]->create_attribute_definition ('abc');
+      push @{$_->allowed_tokens}, 'fuga', 'hoge';
+    },
+    equal => 0;
+
+equal_test
+    name => 'attribute definitions',
+    1 => sub {
+      $_ = $_[0]->create_attribute_definition ('abc');
+      push @{$_->allowed_tokens}, '120';
+    },
+    2 => sub {
+      $_ = $_[0]->create_attribute_definition ('abc');
+      push @{$_->allowed_tokens}, '120', '';
+    },
+    equal => 0;
+
 run_tests;
 
 =head1 LICENSE
