@@ -812,6 +812,33 @@ sub _clone {
   } elsif ($nt == DOCUMENT_TYPE_NODE) {
     $copy = $od->implementation->create_document_type
         ($node->name, $node->public_id, $node->system_id);
+    for my $sub ($node->element_types->to_list) {
+      my $copy_sub = $od->create_element_type_definition ($sub->node_name);
+      for my $sub_sub ($sub->attribute_definitions->to_list) {
+        my $copy_sub_sub = $od->create_attribute_definition
+            ($sub_sub->node_name);
+        $copy_sub_sub->node_value ($sub_sub->node_value);
+        $copy_sub_sub->declared_type ($sub_sub->declared_type);
+        $copy_sub_sub->default_type ($sub_sub->default_type);
+        $copy_sub_sub->allowed_tokens ($sub_sub->allowed_tokens);
+        $copy_sub->set_attribute_definition_node ($copy_sub_sub);
+      }
+      $copy->set_element_type_definition_node ($copy_sub);
+    }
+    for my $sub ($node->general_entities->to_list) {
+      my $copy_sub = $od->create_general_entity ($sub->node_name);
+      $copy_sub->public_id ($sub->public_id);
+      $copy_sub->system_id ($sub->system_id);
+      $copy_sub->notation_name ($sub->notation_name);
+      $copy_sub->node_value ($sub->node_value);
+      $copy->set_general_entity_node ($copy_sub);
+    }
+    for my $sub ($node->notations->to_list) {
+      my $copy_sub = $od->create_notation ($sub->node_name);
+      $copy_sub->public_id ($sub->public_id);
+      $copy_sub->system_id ($sub->system_id);
+      $copy->set_notation_node ($copy_sub);
+    }
   } elsif ($nt == ATTRIBUTE_NODE) {
     $copy = $od->create_attribute_ns ($node->namespace_uri, $node->name);
     $copy->value ($node->value);
@@ -839,6 +866,32 @@ sub _clone {
     $od->dom_config->{manakai_allow_doctype_children} = 1;
   } elsif ($nt == DOCUMENT_FRAGMENT_NODE) {
     $copy = $od->create_document_fragment;
+  } elsif ($nt == ELEMENT_TYPE_DEFINITION_NODE) {
+    $copy = $od->create_element_type_definition ($node->node_name);
+    for my $sub ($node->attribute_definitions->to_list) {
+      my $copy_sub = $od->create_attribute_definition ($sub->node_name);
+      $copy_sub->node_value ($sub->node_value);
+      $copy_sub->declared_type ($sub->declared_type);
+      $copy_sub->default_type ($sub->default_type);
+      $copy_sub->allowed_tokens ($sub->allowed_tokens);
+      $copy->set_attribute_definition_node ($copy_sub);
+    }
+  } elsif ($nt == ATTRIBUTE_DEFINITION_NODE) {
+    $copy = $od->create_attribute_definition ($node->node_name);
+    $copy->node_value ($node->node_value);
+    $copy->declared_type ($node->declared_type);
+    $copy->default_type ($node->default_type);
+    $copy->allowed_tokens ($node->allowed_tokens);
+  } elsif ($nt == ENTITY_NODE) {
+    $copy = $od->create_general_entity ($node->node_name);
+    $copy->public_id ($node->public_id);
+    $copy->system_id ($node->system_id);
+    $copy->notation_name ($node->notation_name);
+    $copy->node_value ($node->node_value);
+  } elsif ($nt == NOTATION_NODE) {
+    $copy = $od->create_notation ($node->node_name);
+    $copy->public_id ($node->public_id);
+    $copy->system_id ($node->system_id);
   } else {
     die "Unknown node type $nt";
   }

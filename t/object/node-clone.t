@@ -476,6 +476,179 @@ test {
   done $c;
 } n => 5, name => 'strict_error_checking';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $ent = $doc->create_general_entity ('hoge');
+  $ent->public_id ('foo');
+  $ent->system_id ('bar');
+  $ent->notation_name ('hoge1');
+  $ent->node_value ('ab d');
+
+  my $ent2 = $ent->clone_node;
+  isa_ok $ent2, 'Web::DOM::Entity';
+  is $ent2->node_name, 'hoge';
+  is $ent2->public_id, 'foo';
+  is $ent2->system_id, 'bar';
+  is $ent2->notation_name, 'hoge1';
+  is $ent2->node_value, 'ab d';
+
+  done $c;
+} n => 6, name => 'entity';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $ent = $doc->create_notation ('hoge');
+  $ent->public_id ('foo');
+  $ent->system_id ('bar');
+
+  my $ent2 = $ent->clone_node;
+  isa_ok $ent2, 'Web::DOM::Notation';
+  is $ent2->node_name, 'hoge';
+  is $ent2->public_id, 'foo';
+  is $ent2->system_id, 'bar';
+
+  done $c;
+} n => 4, name => 'notation';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $adef = $doc->create_attribute_definition ('hoge');
+  $adef->declared_type (4);
+  $adef->default_type (55);
+  push @{$adef->allowed_tokens}, 'hoge', 'aab';
+  $adef->node_value ('ab c');
+
+  my $adef2 = $adef->clone_node;
+  isa_ok $adef2, 'Web::DOM::AttributeDefinition';
+  is $adef2->node_name, 'hoge';
+  is $adef2->declared_type, 4;
+  is $adef2->default_type, 55;
+  is_deeply $adef2->allowed_tokens, ['hoge', 'aab'];
+  isnt $adef2->allowed_tokens, $adef->allowed_tokens;
+  is $adef2->node_value, 'ab c';
+
+  done $c;
+} n => 7, name => 'attribute_definition';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $et = $doc->create_element_type_definition ('hoge');
+
+  my $et2 = $et->clone_node;
+  isa_ok $et2, 'Web::DOM::ElementTypeDefinition';
+  is $et2->node_name, 'hoge';
+  is scalar @{$et2->attribute_definitions}, 0;
+
+  done $c;
+} n => 3, name => 'element_type empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $et = $doc->create_element_type_definition ('hoge');
+  my $adef = $doc->create_attribute_definition ('hoge');
+  $adef->declared_type (4);
+  $adef->default_type (55);
+  push @{$adef->allowed_tokens}, 'hoge', 'aab';
+  $adef->node_value ('ab c');
+  $et->set_attribute_definition_node ($adef);
+
+  my $et2 = $et->clone_node;
+  isnt $et2, $et;
+  isa_ok $et2, 'Web::DOM::ElementTypeDefinition';
+  is $et2->node_name, 'hoge';
+  is scalar @{$et2->attribute_definitions}, 1;
+
+  my $adef2 = $et2->attribute_definitions->[0];
+  isnt $adef2, $adef;
+  isa_ok $adef2, 'Web::DOM::AttributeDefinition';
+  is $adef2->node_name, 'hoge';
+  is $adef2->declared_type, 4;
+  is $adef2->default_type, 55;
+  is_deeply $adef2->allowed_tokens, ['hoge', 'aab'];
+  isnt $adef2->allowed_tokens, $adef->allowed_tokens;
+  is $adef2->node_value, 'ab c';
+
+  done $c;
+} n => 12, name => 'element_type non-empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $dt = $doc->create_document_type_definition ('aa');
+
+  my $ent = $doc->create_general_entity ('hoge1');
+  $ent->public_id ('foo1');
+  $ent->system_id ('bar1');
+  $ent->notation_name ('hoge11');
+  $ent->node_value ('ab d1');
+
+  my $not = $doc->create_notation ('hoge2');
+  $not->public_id ('foo2');
+  $not->system_id ('bar2');
+
+  my $et = $doc->create_element_type_definition ('hoge3');
+  my $adef = $doc->create_attribute_definition ('hoge4');
+  $adef->declared_type (4);
+  $adef->default_type (55);
+  push @{$adef->allowed_tokens}, 'hoge', 'aab';
+  $adef->node_value ('ab c');
+  $et->set_attribute_definition_node ($adef);
+
+  my $pi = $doc->create_processing_instruction ('bb', 'cc');
+
+  $dt->set_element_type_definition_node ($et);
+  $dt->set_general_entity_node ($ent);
+  $dt->set_notation_node ($not);
+  {
+    local $doc->dom_config->{manakai_allow_doctype_children} = 1;
+    $dt->append_child ($pi);
+  }
+
+  my $dt2 = $dt->clone_node;
+  isnt $dt2, $dt;
+  isa_ok $dt2, 'Web::DOM::DocumentType';
+  is $dt2->child_nodes->length, 0;
+
+  my $et2 = $dt2->element_types->[0];
+  isnt $et2, $et;
+  isa_ok $et2, 'Web::DOM::ElementTypeDefinition';
+  is $et2->node_name, 'hoge3';
+  is scalar @{$et2->attribute_definitions}, 1;
+
+  my $adef2 = $et2->attribute_definitions->[0];
+  isnt $adef2, $adef;
+  isa_ok $adef2, 'Web::DOM::AttributeDefinition';
+  is $adef2->node_name, 'hoge4';
+  is $adef2->declared_type, 4;
+  is $adef2->default_type, 55;
+  is_deeply $adef2->allowed_tokens, ['hoge', 'aab'];
+  isnt $adef2->allowed_tokens, $adef->allowed_tokens, 'copied allowed_tokens';
+  is $adef2->node_value, 'ab c';
+
+  my $ent2 = $dt2->general_entities->[0];
+  isnt $ent2, $ent;
+  isa_ok $ent2, 'Web::DOM::Entity';
+  is $ent2->node_name, 'hoge1';
+  is $ent2->public_id, 'foo1';
+  is $ent2->system_id, 'bar1';
+  is $ent2->notation_name, 'hoge11';
+  is $ent2->node_value, 'ab d1';
+
+  my $not2 = $dt2->notations->[0];
+  isnt $not2, $not;
+  isa_ok $not2, 'Web::DOM::Notation';
+  is $not2->node_name, 'hoge2';
+  is $not2->public_id, 'foo2';
+  is $not2->system_id, 'bar2';
+
+  done $c;
+} n => 27, name => 'document type';
+
 run_tests;
 
 =head1 LICENSE
