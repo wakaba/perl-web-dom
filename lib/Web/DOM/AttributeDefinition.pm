@@ -75,17 +75,16 @@ sub allowed_tokens ($;$) {
     \@array;
   };
   if (@_ > 1) {
-    my $error = do {
-      local $@;
-      eval {
-        @$arrayref = @{$_[1]};
-      };
-      $@;
-    };
-    if ($error) {
+    require Scalar::Util;
+    require overload;
+    if (not defined $_[1] or
+        not (ref $_[1] eq 'ARRAY' or
+             Scalar::Util::reftype ($_[1]) eq 'ARRAY' or
+             overload::Method ($_[1], '@{}'))) {
       _throw Web::DOM::TypeError
           "Can't interpret the assigned value as an array reference";
     }
+    @$arrayref = @{$_[1]};
   }
   return $arrayref;
 } # allowed_tokens
