@@ -47,6 +47,8 @@ C<undef> is returned.  [DOM]
 Return or set the markup representation of the content of the node.
 [DOMPARSING] [HTML] [DOCUMENTINNERHTML] [MANAKAI]
 
+See also L<Web::DOM/DEPENDENCY>.
+
 =item $child = $node->last_element_child
 
 Return the last element child of the node.  If there is no such node,
@@ -94,7 +96,7 @@ Wakaba <wakaba@suikawiki.org>.
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

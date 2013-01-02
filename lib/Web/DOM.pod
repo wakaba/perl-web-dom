@@ -124,17 +124,20 @@ The only dependency is the perl-charclass package
 <https://github.com/wakaba/perl-charclass>, which is the submodule of
 the Git repository.
 
-XXX But some features will require additional modules.  For example,
-base URL resolution will require URL parsing modules.  innerHTML will
-require HTML parser modules.
+Following feature requires the perl-web-markup package
+<https://github.com/manakai/perl-web-markup> (L<Web::HTML::Parser> and
+its family): C<inner_html>.
+
+XXX And some features will require additional modules.  For example,
+base URL resolution will require URL parsing modules.
 
 =head1 DEVELOPMENT
 
 Latest version of the modules is available from the GitHub repository:
-<https://github.com/wakaba/perl-web-dom>.
+<https://github.com/manakai/perl-web-dom>.
 
 Test results can be reviewed at:
-<https://travis-ci.org/wakaba/perl-web-dom>.
+<https://travis-ci.org/manakai/perl-web-dom>.
 
 =head1 HISTORY
 
@@ -191,7 +194,8 @@ prepend, append, before, after, replace, remove
 
 =item DOM Parsing and Serialization
 
-=item Document.prototype.innerHTML
+DOMParser, XMLSerializer, outerHTML, insertAdjacentHTML,
+serializeAsCDATA, createContextualFragment
 
 =item DOM Events [DOM]
 
@@ -222,7 +226,7 @@ Wakaba <wakaba@suikawiki.org>.
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

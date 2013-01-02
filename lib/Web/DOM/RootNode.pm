@@ -185,31 +185,57 @@ sub child_element_count ($) {
 # XXX prepend append
 
 sub inner_html ($;$) {
+  my $self = $_[0];
   if (@_ > 1) {
-    # XXX mutation, ranges
-    if (${$_[0]}->[0]->{data}->[0]->{is_html}) {
+    ## For elements:
+    ##   - <http://domparsing.spec.whatwg.org/#innerhtml>
+    ##   - <http://domparsing.spec.whatwg.org/#parsing>
+    ## For documents:
+    ##   - <http://html5.org/tools/web-apps-tracker?from=6531&to=6532>
+    ##   - <https://github.com/whatwg/domparsing/commit/59301cd77d4badbe16489087132a35621a2d460c>
+    ## For document fragments:
+    ##   - <http://suika.fam.cx/~wakaba/wiki/sw/n/manakai++DOM%20Extensions#anchor-143>
+    
+    my $parser;
+    my $context;
+    my $nt = $self->node_type;
+    if ($$self->[0]->{data}->[0]->{is_html}) {
       require Web::HTML::Parser;
-      my $nt = $_[0]->node_type;
-      Web::HTML::Parser->new->parse_char_string_with_context
-          (defined $_[1] ? ''.$_[1] : '',
-           $nt == ELEMENT_NODE ? $_[0] :
-           $nt == DOCUMENT_NODE ? undef :
-           $_[0]->owner_document->create_element ('div'),
-           $_[0],
-           'innerHTML');
+      $parser = Web::HTML::Parser->new;
+      $context =
+          $nt == ELEMENT_NODE ? $self :
+          $nt == DOCUMENT_NODE ? undef :
+          $self->owner_document->create_element ('div');
     } else {
       require Web::XML::Parser;
-      Web::XML::Parser->new->set_inner_html ($_[0], defined $_[1] ? ''.$_[1] : '');
+      $parser = Web::XML::Parser->new;
+      $context =
+          $nt == ELEMENT_NODE ? $self :
+          $nt == DOCUMENT_NODE ? undef :
+          $self->owner_document->create_element_ns (undef, 'div');
     }
+    my $new_children = $parser->parse_char_string_with_context
+        (defined $_[1] ? ''.$_[1] : '', $context, new Web::DOM::Document);
+
+    if ($nt == DOCUMENT_NODE) {
+      # XXX If the document has an active parser, abort the parser.
+    }
+
+    # XXX mutation, ranges
+    for ($self->child_nodes->to_list) {
+      $self->remove_child ($_);
+    }
+    $self->append_child ($_) for $new_children->to_list;
+
     return unless defined wantarray;
   }
   
-  if (${$_[0]}->[0]->{data}->[0]->{is_html}) {
+  if ($$self->[0]->{data}->[0]->{is_html}) {
     require Web::HTML::Serializer;
-    return ${ Web::HTML::Serializer->new->get_inner_html ($_[0]) };
+    return ${ Web::HTML::Serializer->new->get_inner_html ($self) };
   } else {
     require Web::XML::Serializer;
-    return ${ Web::XML::Serializer->new->get_inner_html ($_[0]) };
+    return ${ Web::XML::Serializer->new->get_inner_html ($self) };
   }
 } # inner_html
 
