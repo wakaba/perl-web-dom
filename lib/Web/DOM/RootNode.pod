@@ -40,6 +40,13 @@ Return the number of child elements.  [DOM]
 Return the first element child of the node.  If there is no such node,
 C<undef> is returned.  [DOM]
 
+=item $node->inner_html ($string)
+
+=item $string = $node->inner_html
+
+Return or set the markup representation of the content of the node.
+[DOMPARSING] [HTML] [DOCUMENTINNERHTML] [MANAKAI]
+
 =item $child = $node->last_element_child
 
 Return the last element child of the node.  If there is no such node,
@@ -55,10 +62,24 @@ C<undef> is returned.  [DOM]
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-rootnode>.
 
+=item HTML
+
+HTML Living Standard
+<http://www.whatwg.org/specs/web-apps/current-work/>.
+
+=item DOMPARSING
+
+DOM Parsing and Serialization <http://domparsing.spec.whatwg.org/>.
+
+=item DOCUMENTINNERHTML
+
+Document innerHTML
+<http://html5.org/tools/web-apps-tracker?from=6531&to=6532>.
+
 =item MANAKAI
 
-manakai DOM Extensions
-<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%20DOM%20Node%20Extensions>.
+manakai's DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai++DOM%20Extensions>.
 
 =back
 

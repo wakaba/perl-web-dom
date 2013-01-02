@@ -184,6 +184,35 @@ sub child_element_count ($) {
 
 # XXX prepend append
 
+sub inner_html ($;$) {
+  if (@_ > 1) {
+    # XXX mutation, ranges
+    if (${$_[0]}->[0]->{data}->[0]->{is_html}) {
+      require Web::HTML::Parser;
+      my $nt = $_[0]->node_type;
+      Web::HTML::Parser->new->parse_char_string_with_context
+          (defined $_[1] ? ''.$_[1] : '',
+           $nt == ELEMENT_NODE ? $_[0] :
+           $nt == DOCUMENT_NODE ? undef :
+           $_[0]->owner_document->create_element ('div'),
+           $_[0],
+           'innerHTML');
+    } else {
+      require Web::XML::Parser;
+      Web::XML::Parser->new->set_inner_html ($_[0], defined $_[1] ? ''.$_[1] : '');
+    }
+    return unless defined wantarray;
+  }
+  
+  if (${$_[0]}->[0]->{data}->[0]->{is_html}) {
+    require Web::HTML::Serializer;
+    return ${ Web::HTML::Serializer->new->get_inner_html ($_[0]) };
+  } else {
+    require Web::XML::Serializer;
+    return ${ Web::XML::Serializer->new->get_inner_html ($_[0]) };
+  }
+} # inner_html
+
 1;
 
 =head1 LICENSE
