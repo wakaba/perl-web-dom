@@ -676,8 +676,6 @@ sub remove_child ($$) {
 
 # XXX mutators
 
-# XXX manakai_append_text (accepts scalarref)
-
 sub node_value ($;$) {
   return undef;
 } # node_value
@@ -685,6 +683,10 @@ sub node_value ($;$) {
 sub text_content ($;$) {
   return undef;
 } # text_content
+
+sub manakai_append_text ($$) {
+  return $_[0];
+} # manakai_append_text
 
 sub normalize ($) {
   my $self = shift;
@@ -1493,7 +1495,7 @@ sub DESTROY ($) {
 
 =head1 LICENSE
 
-Copyright 2007-2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2007-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

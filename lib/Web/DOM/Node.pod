@@ -18,6 +18,10 @@ Following methods are available:
 
 Append the specified node to the list of child nodes.  [DOM]
 
+=iem $node = $node->manakai_append_text ($string)
+
+Append the string to the C<text_content> of the node.  [MANAKAI]
+
 =item $node_list = $node->child_nodes
 
 Return the live list, i.e. L<Web::DOM::NodeList>, of the child nodes
@@ -282,7 +286,7 @@ Wakaba <wakaba@suikawiki.org>.
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

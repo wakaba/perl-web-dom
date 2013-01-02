@@ -131,6 +131,19 @@ sub text_content ($;$) {
   return join '', map { $_->data } @text;
 } # text_content
 
+sub manakai_append_text ($$) {
+  my $lc = $_[0]->last_child;
+  if ($lc and $lc->node_type == TEXT_NODE) {
+    $lc->manakai_append_text ($_[1]);
+  } else {
+    my $text = ($_[0]->owner_document || $_[0])->create_text_node ($_[1]);
+    if (length $text->data) {
+      $_[0]->append_child ($text);
+    }
+  }
+  return $_[0];
+} # manakai_append_text
+
 sub children ($) {
   my $self = shift;
   return $$self->[0]->collection ('children', $self, sub {
@@ -175,7 +188,7 @@ sub child_element_count ($) {
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

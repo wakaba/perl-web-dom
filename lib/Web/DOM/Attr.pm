@@ -45,6 +45,12 @@ sub value ($;$) {
 *node_value = \&value;
 *text_content = \&value;
 
+sub manakai_append_text ($$) {
+  # XXX mutation?
+  ${$_[0]}->[2]->{value} .= ref $_[1] eq 'SCALAR' ? ${$_[1]} : $_[1];
+  return $_[0];
+} # manakai_append_text
+
 sub specified ($) { 1 }
 
 sub owner_element ($) {
@@ -86,7 +92,7 @@ sub manakai_attribute_type ($;$) {
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

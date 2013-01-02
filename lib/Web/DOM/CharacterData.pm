@@ -44,6 +44,11 @@ sub append_data ($$) {
   return;
 } # append_data
 
+sub manakai_append_text ($$) {
+  $_[0]->append_data (ref $_[1] eq 'SCALAR' ? ${$_[1]} : $_[1]);
+  return $_[0];
+} # manakai_append_text
+
 sub substring_data ($$$) {
   # WebIDL: unsigned long
   my $offset = $_[1] % 2**32;
@@ -185,7 +190,7 @@ sub replace_data ($$$$) {
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

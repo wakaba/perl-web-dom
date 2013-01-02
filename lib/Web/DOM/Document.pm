@@ -38,6 +38,13 @@ sub text_content ($;$) {
   }
 } # text_content
 
+sub manakai_append_text ($$) {
+  if (${$_[0]}->[0]->{config}->{not_manakai_strict_document_children}) {
+    $_[0]->SUPER::manakai_append_text ($_[1]);
+  }
+  return $_[0];
+} # manakai_append_text
+
 sub manakai_is_html ($;$) {
   my $self = $_[0];
   if (@_ > 1) {
@@ -738,7 +745,7 @@ sub body ($;$) {
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

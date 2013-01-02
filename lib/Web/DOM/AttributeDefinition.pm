@@ -40,6 +40,11 @@ sub node_value ($;$) {
 
 *text_content = \&node_value;
 
+sub manakai_append_text ($$) {
+  ${$_[0]}->[2]->{node_value} .= ref $_[1] eq 'SCALAR' ? ${$_[1]} : $_[1];
+  return $_[0];
+} # manakai_append_text
+
 ## |DeclaredValueType|
 sub NO_TYPE_ATTR () { 0 }
 sub CDATA_ATTR () { 1 }
@@ -112,7 +117,7 @@ sub default_type ($;$) {
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
