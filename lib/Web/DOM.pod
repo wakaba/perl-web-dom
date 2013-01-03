@@ -163,8 +163,8 @@ implemented by these modules unless they are reintroduced by some DOM
 specification or found to be necessary for backward compatibility:
 
 DOMImplementationRegistry, DOMImplementationSource,
-DOMImplementationList, DOMStringList, StringExtended, read-only nodes,
-EntityReference, CDATASection, replaceWholeText,
+DOMImplementationList, DOM features, DOMStringList, StringExtended,
+read-only nodes, EntityReference, CDATASection, replaceWholeText,
 isElementContentWhitespace, specified setter, hasReplacementTree
 setter, DOM3 configuration parameters, configuration parameters for
 DOM3 spec compatible DTD-based node operations, DOM3 DOMError,
