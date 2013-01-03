@@ -155,6 +155,38 @@ as non-standard manakai extensions.  It should be possible for
 applications using the old implementation to migrate to the new
 implementation by just replacing class name and as such.
 
+=head2 Obsolete features
+
+Following features fully or partially implemented in previous versions
+of manakai DOM implementations are considered obsolete and will not be
+implemented by these modules unless they are reintroduced by some DOM
+specification or found to be necessary for backward compatibility:
+
+DOMImplementationRegistry, DOMImplementationSource,
+DOMImplementationList, DOMStringList, StringExtended, read-only nodes,
+EntityReference, CDATASection, replaceWholeText,
+isElementContentWhitespace, specified setter, hasReplacementTree
+setter, DOM3 configuration parameters, configuration parameters for
+DOM3 spec compatible DTD-based node operations, DOM3 DOMError,
+DOMErrorHandler, UserDataHandler, DOMLocator, isId and family,
+internalSubset, TypeInfo and schemaTypeInfo, DOM3 LS, namespaces for
+DOM3 events, DocumentType->implementation, URIReference,
+InternetMediaType, SerialWalker, overloaded operators C<==>, C<!=>,
+and C<.=>, write operations through overloaded C<@{}> and C<%{}>
+operators for NodeList, NamedNodeMap, and HTMLCollection.  Attr,
+Entity, and AttributeDefinition nodes can no longer contain Text
+nodes.
+
+By default the C<DocumentType> node can no longer contain
+C<ProcessingInstruction> nodes as children.  The old behavior can be
+restored by setting a true value to the
+C<manakai-allow-doctype-children> configuration parameter (See
+L<Web::DOM::Configuration>).
+
+The C<strict_error_checking> attribute no longer disables random
+exceptions as defined in DOM3 specification; its scope is formally
+defined in the manakai DOM Extensions specification [MANAKAI].
+
 =head1 TODO
 
 The initial milestone of the project is reimplementing the subset of
