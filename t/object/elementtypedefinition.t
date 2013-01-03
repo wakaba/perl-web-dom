@@ -27,6 +27,22 @@ test {
   done $c;
 } n => 9, name => 'basic node properties';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $et = $doc->create_element_type_definition ('hoge');
+  
+  is $et->content_model_text, undef;
+  
+  $et->content_model_text ('hoge | fuga');
+  is $et->content_model_text, 'hoge | fuga';
+
+  $et->content_model_text (undef);
+  is $et->content_model_text, undef;
+
+  done $c;
+} n => 3, name => 'content_model_text';
+
 run_tests;
 
 =head1 LICENSE

@@ -65,11 +65,23 @@ sub remove_attribute_definition_node ($$) {
   return $obj;
 } # remove_attribute_definition_node
 
+sub content_model_text ($;$) {
+  if (@_ > 1) {
+    if (defined $_[1]) {
+      # XXX normalization
+      ${$_[0]}->[2]->{content_model_text} = ''.$_[1];
+    } else {
+      delete ${$_[0]}->[2]->{content_model_text};
+    }
+  }
+  return ${$_[0]}->[2]->{content_model_text};
+} # content_model_text
+
 1;
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
