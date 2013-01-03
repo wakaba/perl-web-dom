@@ -112,6 +112,33 @@ test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
   my $node = $doc->create_element ('a');
+  my $node2 = $doc->create_attribute ('a');
+  my $node3 = $doc->create_attribute ('a');
+  $node->set_attribute_node ($node3);
+
+  my $nl = $node->attributes;
+
+  dies_here_ok {
+    $nl->[0] = $node2;
+  };
+  ok not ref $@;
+  like $@, qr{^Modification of a read-only value attempted};
+
+  is scalar @$nl, 1;
+  is $nl->[0], $node3;
+  is $node3->owner_element, $node;
+  is $node2->owner_element, undef;
+
+  $$node3->[100] = 14;
+  is $$node3->[100], 14;
+
+  done $c;
+} n => 8, name => 'attributes read-only';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('a');
 
   my $nl = $node->attributes;
   my $nl_s = $nl . '';
@@ -546,11 +573,202 @@ test {
   done $c;
 } n => 5, name => 'remove_named_item_ns node attr';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+  is $map->{hoge}, undef;
+  is $map->{120}, undef;
+  is $map->{+undef}, undef;
+  dies_here_ok {
+    $map->{foo} = 'bar';
+  };
+  like $@, qr{^Modification of a read-only value attempted};
+  ok not exists $map->{foo};
+  is $map->{foo}, undef;
+  is scalar keys %$map, 0;
+  done $c;
+} n => 8, name => '%{} empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+  $node->set_attribute (hoge => '12');
+  $node->set_attribute_ns ('http://foo/', 'hoge:aaa', 'aa');
+  is $map->{120}, undef;
+  isa_ok $map->{hoge}, 'Web::DOM::Attr';
+  is $map->{hoge}->value, '12';
+  isa_ok $map->{'hoge:aaa'}, 'Web::DOM::Attr';
+  is $map->{'hoge:aaa'}->value, 'aa';
+  is_deeply [sort { $a cmp $b } keys %$map], ['hoge', 'hoge:aaa'];
+  is $map->{120}, undef;
+  is $map->{+undef}, undef;
+  dies_here_ok {
+    $map->{hoge} = 'bar';
+  };
+  like $@, qr{^Modification of a read-only value attempted};
+  ok not exists $map->{foo};
+  ok exists $map->{'hoge:aaa'};
+  is scalar keys %$map, 2;
+  dies_here_ok {
+    %$map = ();
+  };
+  like $@, qr{^Modification of a read-only value attempted};
+  is scalar keys %$map, 2;
+  is_deeply [sort { $a cmp $b } keys %$map], ['hoge', 'hoge:aaa'];
+  my $item = [];
+  while (defined (my $v = each %$map)) {
+    push @$item, $map->{$v};
+  }
+  is scalar @$item, 2;
+  ok $item->[0]->node_name eq 'hoge' || $item->[0]->node_name eq 'hoge:aaa';
+  ok $item->[1]->node_name eq 'hoge' || $item->[1]->node_name eq 'hoge:aaa';
+  isnt $item->[0], $item->[1];
+  done $c;
+} n => 21, name => '%{} non empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+  $node->set_attribute (hoge => '12');
+  $node->set_attribute_ns ('http://foo/', 'hoge', 'aa');
+
+  is $map->{hoge}->value, '12';
+
+  done $c;
+} n => 1, name => '%{} multiple';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+  $node->set_attribute_ns ('http://foo/', 'hoge', 'aa');
+  $node->set_attribute_ns (undef, hoge => '12');
+
+  is $map->{hoge}->value, 'aa';
+
+  done $c;
+} n => 1, name => '%{} multiple';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+
+  is $map->{hoge}, undef;
+
+  $node->set_attribute_ns (undef, hoge => '12');
+
+  is $map->{hoge}->value, '12';
+
+  done $c;
+} n => 2, name => '%{} mutation';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+
+  is $map->[0], undef;
+
+  $node->set_attribute (hoge => '12');
+
+  is $map->[0]->value, '12';
+
+  done $c;
+} n => 2, name => '@{} mutation set_attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+
+  is $map->[0], undef;
+
+  $node->set_attribute_ns (undef, hoge => '12');
+
+  is $map->[0]->value, '12';
+
+  done $c;
+} n => 2, name => '@{} mutation set_attribute_ns';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+
+  is $map->[0], undef;
+
+  $node->set_attribute_node ($doc->create_attribute ('hoge'));
+
+  is $map->[0]->value, '';
+
+  done $c;
+} n => 2, name => '@{} mutation set_attribute_node';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+  $node->set_attribute_ns (undef, hoge => '12');
+
+  is $map->[0]->value, '12';
+
+  $node->remove_attribute ('hoge');
+
+  is $map->[0], undef;
+
+  done $c;
+} n => 2, name => '@{} mutation remove_attribute';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+  $node->set_attribute_ns (undef, hoge => '12');
+
+  is $map->[0]->value, '12';
+
+  $node->remove_attribute_ns (undef, 'hoge');
+
+  is $map->[0], undef;
+
+  done $c;
+} n => 2, name => '@{} mutation remove_attribute_ns';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('hoge');
+  my $map = $node->attributes;
+  $node->set_attribute_ns (undef, hoge => '12');
+
+  is $map->[0]->value, '12';
+
+  $node->remove_attribute_node ($node->get_attribute_node ('hoge'));
+
+  is $map->[0], undef;
+
+  done $c;
+} n => 2, name => '@{} mutation remove_attribute_node';
+
 run_tests;
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

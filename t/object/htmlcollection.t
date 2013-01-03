@@ -112,6 +112,32 @@ test {
   my $c = shift;
   my $doc = new Web::DOM::Document;
   my $node = $doc->create_element ('a');
+  my $node2 = $doc->create_element ('a');
+  my $node3 = $doc->create_element ('a');
+  $node->append_child ($node3);
+
+  my $nl = $node->children;
+
+  dies_here_ok {
+    $nl->[0] = $node2;
+  };
+  ok not ref $@;
+  like $@, qr{^Modification of a read-only value attempted};
+  is scalar @$nl, 1;
+  is $nl->[0], $node3;
+  is $node3->parent_node, $node;
+  ok not $node2->parent_node;
+
+  $$node3->[100] = 13;
+  is $$node3->[100], 13;
+
+  done $c;
+} n => 8, name => 'child_nodes read-only';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $node = $doc->create_element ('a');
 
   my $nl = $node->children;
   my $nl_s = $nl . '';

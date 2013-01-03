@@ -253,6 +253,8 @@ sub set_attribute ($$$) {
     $name =~ tr/A-Z/a-z/; ## ASCII lowercase
   }
 
+  $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE);
+
   # 3.
   for (@{$$node->[2]->{attributes} or []}) {
     if (ref $_) {
@@ -393,6 +395,8 @@ sub set_attribute_ns ($$$$) {
     }
   } # strict
 
+  $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE);
+
   # 9. Set an attribute
   {
     # Set 1.-4.
@@ -466,6 +470,8 @@ sub set_attribute_node ($$) {
 
   # 3. Adopt (simplified)
   $$node->[0]->adopt ($attr);
+
+  $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE);
 
   # 4.
   my $nsurl = ${$$attr->[2]->{namespace_uri} || \''};
@@ -553,6 +559,8 @@ sub remove_attribute ($$) {
       }
     } @{$$node->[2]->{attributes} or []};
 
+    $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE) if $found;
+
     # Remove 3.
     # XXX attribute is removed
   }
@@ -569,6 +577,8 @@ sub remove_attribute_ns ($$$) {
   if (defined $attr_id) {
     # Remove 1.
     # XXX mutation
+
+    $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE);
 
     # Remove 2.
     if (ref $attr_id) {
@@ -602,6 +612,8 @@ sub remove_attribute_node ($$) {
         'The specified attribute is not an attribute of the element';
   }
 
+  $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE);
+  
   delete $$node->[2]->{attrs}->{${$$attr->[2]->{namespace_uri} || \''}}->{${$$attr->[2]->{local_name}}};
   @{$$node->[2]->{attributes}} = grep {
     $_ != $$attr->[1];
@@ -634,7 +646,7 @@ sub manakai_base_uri ($;$) {
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

@@ -167,7 +167,7 @@ sub NEXTKEY ($$) {
 } # NEXTKEY
 
 sub SCALAR ($) {
-  return 1;
+  return scalar @$PerlNames;
 } # SCALAR
 
 sub DESTROY ($) {
@@ -182,7 +182,7 @@ sub DESTROY ($) {
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

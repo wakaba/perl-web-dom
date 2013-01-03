@@ -385,7 +385,7 @@ test {
   my $doc = new Web::DOM::Document;
   my $config = $doc->dom_config;
   
-  ok scalar keys %$config;
+  is scalar keys %$config, 5;
 
   done $c;
 } n => 1, name => 'scalar';

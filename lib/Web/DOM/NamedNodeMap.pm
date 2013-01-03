@@ -7,9 +7,20 @@ our $VERSION = '1.0';
 push our @CARP_NOT, qw(
   Web::DOM::Element Web::DOM::DocumentType Web::DOM::ElementTypeDefinition
 );
+use Web::DOM::Internal;
 use Web::DOM::Node;
 use Web::DOM::TypeError;
 use Web::DOM::Exception;
+
+use overload
+    '%{}' => sub {
+      return ${$_[0]}->[4] ||= do {
+        my %data = map { $_->node_name => $_ } reverse $_[0]->to_list;
+        tie my %hash, 'Web::DOM::Internal::ReadOnlyHash', \%data;
+        \%hash;
+      };
+    },
+    fallback => 1;
 
 my $GetMethod = {
   attributes => 'get_attribute_node',

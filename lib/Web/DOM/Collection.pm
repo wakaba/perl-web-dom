@@ -9,6 +9,7 @@ use overload
       return ${$_[0]}->[2] ||= do {
         my $list = $_[0]->to_a;
         Internals::SvREADONLY (@$list, 1);
+        Internals::SvREADONLY ($_, 1) for @$list;
         $list;
       };
       ## Strictly speaking, $obj->[$index]'s $index has to be

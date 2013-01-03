@@ -177,6 +177,7 @@ sub node ($$) {
 ##   1 - Filter
 ##   2 - List of the nodes in the collection
 ##   3 - Collection key
+##   4 - Hash reference for %{} operation
 ##
 ## $self->{cols}->[$root_node_id]->
 ## 
@@ -215,8 +216,15 @@ sub collection ($$$$) {
 sub children_changed ($$$) {
   my $cols = $_[0]->{cols};
   for ($cols->[$_[1]]->{child_nodes},
-       $cols->[$_[1]]->{children}) {
-    delete $$_->[2] if $_;
+       $cols->[$_[1]]->{children},
+       $cols->[$_[1]]->{attributes},
+       $cols->[$_[1]]->{element_types},
+       $cols->[$_[1]]->{general_entities},
+       $cols->[$_[1]]->{notations},
+       $cols->[$_[1]]->{attribute_definitions}) {
+    next unless $_;
+    delete $$_->[2];
+    delete $$_->[4];
   }
 
   if ($_[2] == 1) { # old child node is ELEMENT_NODE
@@ -225,7 +233,9 @@ sub children_changed ($$$) {
       my $id = shift @id;
       next unless defined $id;
       for my $key (keys %{$cols->[$id] or {}}) {
-        delete ${$cols->[$id]->{$key}}->[2] if $cols->[$id]->{$key};
+        next unless $cols->[$id]->{$key};
+        delete ${$cols->[$id]->{$key}}->[2];
+        delete ${$cols->[$id]->{$key}}->[4];
       }
       push @id, $_[0]->{data}->[$id]->{parent_node};
     }
@@ -344,6 +354,7 @@ sub adopt ($$) {
       $new_int->{cols}->[$new_id] = $cols;
       for (values %$cols) {
         delete $$_->[2] if defined $_;
+        delete $$_->[4] if defined $_;
       }
     }
 
@@ -406,11 +417,59 @@ sub DESTROY ($) {
   }
 } # DESTROY
 
+package Web::DOM::Internal::ReadOnlyHash;
+use Carp;
+
+sub TIEHASH ($$) {
+  return bless $_[1], $_[0]
+} # TIEHASH
+
+sub FETCH ($$) {
+  return $_[0]->{$_[1]}; # or undef
+} # FETCH
+
+sub STORE ($$$) {
+  croak 'Modification of a read-only value attempted';
+} # STORE
+
+sub DELETE ($$) {
+  croak 'Modification of a read-only value attempted';
+} # DELETE
+
+sub CLEAR ($) {
+  croak 'Modification of a read-only value attempted';
+} # CLEAR
+
+sub EXISTS ($$) {
+  return exists $_[0]->{$_[1]};
+} # EXISTS
+
+sub FIRSTKEY ($) {
+  keys %{$_[0]};
+  return each %{$_[0]}; # or undef
+} # FIRSTKEY
+
+sub NEXTKEY ($$) {
+  return each %{$_[0]}; # or undef
+} # NEXTKEY
+
+sub SCALAR ($) {
+  return scalar %{$_[0]};
+} # SCALAR
+
+sub DESTROY ($) {
+  {
+    local $@;
+    eval { die };
+    warn "Potential memory leak detected" if $@ =~ /during global destruction/;
+  }
+} # DESTROY
+
 1;
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

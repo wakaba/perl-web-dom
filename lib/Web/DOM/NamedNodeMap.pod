@@ -13,10 +13,12 @@ Following methods are available:
 
 =over 4
 
+=item $node = $col->{$name}
+
 =item $node = $col->get_named_item ($name)
 
 Return the first node in the list whose name is equal to the argument.
-[DOMATTREXODUS] [DOM3CORE]
+[DOMATTREXODUS] [DOM3CORE] [DOMPERL]
 
 =item $node = $col->get_named_item_ns ($nsurl, $local_name)
 
@@ -38,6 +40,8 @@ ways to access items, such as negative indexing, while C<< $col->[-1]
 >> works as you intended.
 
 =item $number = @$col
+
+=item $number = keys %$col
 
 =item $number = $col->length
 
@@ -84,7 +88,8 @@ Return the list of the nodes contained in the collection.  [DOMPERL]
 =back
 
 The object supports Perl standard read-only operations for array
-references, e.g. C<< exists $col->[4] >>.  [DOMPERL]
+references, e.g. C<< exists $col->[4] >> or for hash references,
+e.g. C<< exists $col->{class} >>.  [DOMPERL]
 
 =head1 SPECIFICATIONS
 
@@ -126,7 +131,7 @@ Wakaba <wakaba@suikawiki.org>.
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
