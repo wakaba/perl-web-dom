@@ -1,0 +1,56 @@
+=head1 NAME
+
+Web::DOM::Parser - The DOM |DOMParser| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::Parser> class implements the DOM C<DOMParser>
+interface.
+
+=head1 METHODS
+
+The class has following methods:
+
+=over 4
+
+=item $parser = new Web::DOM::Parser
+
+Create a new C<DOMParser> object.  [DOMPARSING]
+
+=item $doc = $parser->parse_from_string ($string, $type)
+
+Parse the given character string as an HTML or XML document and return
+the L<Web::DOM::Document> object for the document.  The second
+argument must specify the MIME type of the document, which is one of
+followings: C<text/html>, C<text/xml>, C<application/xml>,
+C<application/xhtml+xml>, or C<images/svg+xml>.  If the document is an
+XML document and is not well-formed, a short document containing the
+error message is returned instead.  [DOMPARSING]
+
+See also L<Web::DOM/DEPENDENCY>.
+
+=back
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item DOMPARSING
+
+DOM Parsing and Serialization Standard
+<http://domparsing.spec.whatwg.org/>.
+
+=back
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2013 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

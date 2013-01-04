@@ -37,6 +37,13 @@ object, using standard DOM methods:
 Please note that DOM attributes and methods are available in
 perllish_underscored_name rather than domSpecificationsCamelCaseName.
 
+Alternatively, you can instantiate the document object from an HTML or
+XML string, using the C<DOMParser> interface:
+
+  my $parser = new Web::DOM::Parser;
+  my $doc = $parser->parse_from_string ($string, 'text/html');
+  my $doc = $parser->parse_from_string ($string, 'application/xhtml+xml');
+
 For more information, see documentation of relevant modules.  For
 example, methods available on the document object is listed in the
 L<Web::DOM::Document> documentation.  Frequently used modules include:
@@ -58,6 +65,10 @@ The C<DOMException> interface.
 =item L<Web::DOM::HTMLCollection>
 
 The C<HTMLCollection> interface.
+
+=item L<Web::DOM::Parser>
+
+The C<DOMParser> interface.
 
 =back
 
@@ -81,6 +92,34 @@ as the C<Document> interface implements the C<RootNode> interface
 according to the DOM Standard, but applications should not test C<<
 $node->isa ('Web::DOM::RootNode') >>.
 
+The constructor of a DOM interface, if any, is implemented as the
+C<new> class method.  For example, the constructor of the C<Document>
+interface can be invoked by C<< Web::DOM::Document->new >>.
+
+Attributes, methods, and constants of a DOM interface can be
+accessible as methods of the object implementing the interface.  For
+example, the C<innerHTML> attribute of the C<Element> interface is
+accessible as the C<inner_html> method of the element objects.  If a
+method corresponding to the attribute is invoked with no argument, it
+acts as the getter of the attribute.  If the method is invoked with an
+argument, it acts as the setter of the attribute.
+
+  $string_returned_by_getter = $el->inner_html;
+  $el->inner_html ($string_received_by_setter);
+  
+  $string_returned_by_method = $el->get_attribute ($string);
+  
+  $el->node_type == $el->ELEMENT_NODE;
+
+Some objects accept array operations:
+
+  @children = @{$el->child_nodes};
+  $length = @{$el->child_nodes};
+  
+  $first_child = $el->child_nodes->[0];
+  $second_child = $el->child_nodes->[1];
+  $second_last_child = $el->child_nodes->[-2];
+
 =head1 SPECIFICATIONS
 
 Specifications defining features supported by the modules include:
@@ -89,7 +128,12 @@ Specifications defining features supported by the modules include:
 
 =item DOM
 
-DOM Living Standard <http://dom.spec.whatwg.org/>.
+DOM Standard <http://dom.spec.whatwg.org/>.
+
+=item DOMPARSING
+
+DOM Parsing and Serialization Standard
+<http://domparsing.spec.whatwg.org/>.
 
 =item DOM3CORE
 
@@ -98,8 +142,12 @@ Document Object Model (DOM) Level 3 Core Specification
 
 =item HTML
 
-HTML Living Standard
-<http://www.whatwg.org/specs/web-apps/current-work/>.
+HTML Standard <http://www.whatwg.org/specs/web-apps/current-work/>.
+
+=item DOMDTDEF
+
+DOM Document Type Definitions
+<http://suika.fam.cx/www/markup/xml/domdtdef/domdtdef>.
 
 =item DOMPERL
 
@@ -126,8 +174,8 @@ the Git repository.
 
 Following features require the perl-web-markup package
 <https://github.com/manakai/perl-web-markup> (L<Web::HTML::Parser> and
-its family): C<inner_html>, C<outer_html>, and
-C<insert_adjacent_html>.
+its family): C<inner_html>, C<outer_html>, C<insert_adjacent_html>,
+and C<DOMParser>.
 
 XXX And some features will require additional modules.  For example,
 base URL resolution will require URL parsing modules.
@@ -203,15 +251,9 @@ the initial phase of the development include:
 getElementById, getElementsByClassName, id, className, classList,
 HTMLCollection.prototype.namedItem, HTMLCollection.prototype.%{} [DOM]
 
-entities, notations [DOM3CORE]
-
 =item baseURI and related methods [DOM] [HTML] [MANAKAI]
 
 =item Mutation observers [DOM]
-
-=item Notation [DOM3CORE]
-
-=item Entity [DOM3CORE]
 
 =item Selectors API
 
@@ -221,18 +263,17 @@ entities, notations [DOM3CORE]
 
 prepend, append, before, after, replace, remove
 
-=item manakai_append_text [MANAKAI]
-
-=item [DOMDTDDEF]
-
 =item DOM Parsing and Serialization
 
-DOMParser, XMLSerializer, outerHTML, insertAdjacentHTML,
-serializeAsCDATA, createContextualFragment
+XMLSerializer [DOMPARSING]
 
 =item DOM Events [DOM]
 
-=item DOM Ranges [DOM]
+=item DOM Ranges
+
+DOM Ranges interfaces and methods [DOM]; Ranges support in DOM Core
+methods and attributes [DOM]; Range.prototype.createContextualFragment
+[DOMPARSING].
 
 =item DOM Traversal [DOM]
 
