@@ -69,6 +69,28 @@ and local name or not.  [DOM]
 Return the array reference containing the ID of the element, if any,
 or the empty array reference, otherwise.  [MANAKAI]
 
+=item $el->insert_adjacent_html ($position, $markup)
+
+Parse the specified string and insert somewhere near the element.  The
+first argument must be one of followings: C<beforebegin> (before the
+start tag of the element), C<afterbegin> (after the start tag of the
+element), C<beforeend> (before the end tag of the element), or
+C<afterend> (after the end tag of the element).  The markup must be a
+character string in HTML or XML, depending on the type of the
+document.  [DOMPARSING]
+
+If the document is an XML document and the given string is not
+well-formed, the method throws an exception.
+
+However, even if the document is an XML document and the node can't be
+serialized into the well-formed XML fragment, the method does not
+throw and does return an ill-formed XML fragment instead.  This is a
+willful violation to the HTML Living Standard, to match current
+browsers' behavior.  Future version of the module might throw an
+exception if browsers start to throw an exception.
+
+See also L<Web::DOM/DEPENDENCY>.
+
 =item $name = $el->local_name
 
 =item $name = $el->manakai_local_name (DEPRECATED)
@@ -97,6 +119,8 @@ throw and does return an ill-formed XML fragment instead.  This is a
 willful violation to the HTML Living Standard, to match current
 browsers' behavior.  Future version of the module might throw an
 exception if browsers start to throw an exception.
+
+See also L<Web::DOM/DEPENDENCY>.
 
 =item $prefix = $el->prefix
 

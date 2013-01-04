@@ -643,7 +643,7 @@ sub manakai_base_uri ($;$) {
 } # manakai_base_uri
 
 sub outer_html ($;$) {
-  ## See also: RootNode->inner_html
+  ## See also: RootNode->inner_html, Element->insert_adjacent_html
   my $self = $_[0];
   if (@_ > 1) {
     # 1.-2.
@@ -700,6 +700,77 @@ sub outer_html ($;$) {
     return ${ Web::XML::Serializer->new->get_inner_html ([$self]) };
   }
 } # outer_html
+
+sub insert_adjacent_html ($$$) {
+  ## See also: RootNode->inner_html, Element->outer_html
+  my $self = $_[0];
+
+  # 1.
+  my $position = ''.$_[1];
+  $position =~ tr/A-Z/a-z/;
+  my $context;
+  if ($position eq 'beforebegin' or $position eq 'afterend') {
+    $context = $self->parent_node;
+    if (not defined $context or $context->node_type == DOCUMENT_NODE) {
+      my $v = ''.$_[2];
+      _throw Web::DOM::Exception 'NoModificationAllowedError',
+          'Cannot insert before or after the root element';
+    }
+  } elsif ($position eq 'afterbegin' or $position eq 'beforeend') {
+    $context = $self;
+  } else {
+    my $v = ''.$_[2];
+    _throw Web::DOM::Exception 'SyntaxError',
+        'Unknown position is specified';
+  }
+
+  # 2.
+  if (not $context->node_type == ELEMENT_NODE or
+      ($$self->[0]->{data}->[0]->{is_html} and
+       $context->manakai_element_type_match (HTML_NS, 'html'))) {
+    $context = $self->owner_document->create_element ('body');
+  }
+
+  # 3.
+  my $parser;
+  if ($$self->[0]->{data}->[0]->{is_html}) {
+    require Web::HTML::Parser;
+    $parser = Web::HTML::Parser->new;
+  } else {
+    require Web::XML::Parser;
+    $parser = Web::XML::Parser->new;
+    my $orig_onerror = $parser->onerror;
+    $parser->onerror (sub {
+      my %args = @_;
+      $orig_onerror->(@_);
+      if (($args{level} || 'm') eq 'm') {
+        $parser->throw (sub {
+          _throw Web::DOM::Exception 'SyntaxError',
+              'The given string is ill-formed as XML';
+        });
+      }
+    });
+  }
+  # XXX errors should be redirected to the Console object.
+  my $new_children = $parser->parse_char_string_with_context
+      (defined $_[2] ? ''.$_[2] : '', $context, new Web::DOM::Document);
+  my $fragment = $self->owner_document->create_document_fragment;
+  $fragment->append_child ($_) for $new_children->to_list;
+
+  # 4.
+  if ($position eq 'beforebegin') {
+    $self->parent_node->insert_before ($fragment, $self);
+  } elsif ($position eq 'afterbegin') {
+    $self->insert_before ($fragment, $self->first_child);
+  } elsif ($position eq 'beforeend') {
+    $self->append_child ($fragment);
+  } elsif ($position eq 'afterend') {
+    $self->parent_node->insert_before ($fragment, $self->next_sibling);
+  }
+  return;
+} # insert_adjacent_html
+
+# XXX scripting enabled flag consideration...
 
 1;
 

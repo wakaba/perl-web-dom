@@ -47,8 +47,6 @@ C<undef> is returned.  [DOM]
 Return or set the markup representation of the content of the node.
 [DOMPARSING] [HTML] [DOCUMENTINNERHTML] [MANAKAI]
 
-See also L<Web::DOM/DEPENDENCY>.
-
 If the document is an XML document and the given string is not
 well-formed, the method throws an exception.
 
@@ -58,6 +56,8 @@ throw and does return an ill-formed XML fragment instead.  This is a
 willful violation to the HTML Living Standard, to match current
 browsers' behavior.  Future version of the module might throw an
 exception if browsers start to throw an exception.
+
+See also L<Web::DOM/DEPENDENCY>.
 
 =item $child = $node->last_element_child
 

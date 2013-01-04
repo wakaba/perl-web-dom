@@ -190,7 +190,7 @@ sub child_element_count ($) {
 # XXX prepend append
 
 sub inner_html ($;$) {
-  ## See also: Element->outer_html
+  ## See also: Element->outer_html, Element->insert_adjacent_html
   my $self = $_[0];
   if (@_ > 1) {
     ## For elements:
