@@ -14,6 +14,13 @@ methods are available:
 
 =over 4
 
+=item $boolean = $text->serialize_as_cdata
+
+=item $text->serialize_as_cdata ($boolean)
+
+Return or set whether the text node should be serialized as one or
+more C<CDATA> sections or not.  [DOMPARSING]
+
 =item $text2 = $text1->split_text ($offset)
 
 Split the text node into two text nodes at the specified location.
@@ -36,6 +43,10 @@ adjacent text nodes.  [DOM]
 
 DOM Living Standard <http://dom.spec.whatwg.org/#interface-text>.
 
+=item DOMPARSING
+
+DOM Parsing and Serialization <http://domparsing.spec.whatwg.org/>.
+
 =item DOMPERL
 
 manakai's DOM Perl Binding
@@ -53,7 +64,7 @@ Wakaba <wakaba@suikawiki.org>.
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

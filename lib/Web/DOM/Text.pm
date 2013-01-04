@@ -78,11 +78,22 @@ sub whole_text ($) {
   die "The node not found...";
 } # whole_text
 
+sub serialize_as_cdata ($;$) {
+  if (@_ > 1) {
+    if ($_[1]) {
+      ${$_[0]}->[2]->{serialize_as_cdata} = 1;
+    } else {
+      delete ${$_[0]}->[2]->{serialize_as_cdata};
+    }
+  }
+  return ${$_[0]}->[2]->{serialize_as_cdata};
+} # serialize_as_cdata
+
 1;
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

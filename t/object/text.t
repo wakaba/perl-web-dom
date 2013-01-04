@@ -289,11 +289,26 @@ test {
   done $c;
 } n => 7, name => 'split_text no parent';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $text = $doc->create_text_node ('hoge');
+  ok not $text->serialize_as_cdata;
+  
+  $text->serialize_as_cdata (1);
+  ok $text->serialize_as_cdata;
+
+  $text->serialize_as_cdata (undef);
+  ok not $text->serialize_as_cdata;
+
+  done $c;
+} n => 3, name => 'serialize_as_cdata';
+
 run_tests;
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

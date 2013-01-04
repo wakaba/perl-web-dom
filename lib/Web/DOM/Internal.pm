@@ -127,6 +127,7 @@ sub add_data ($$) {
 ##   parent_node                    node_id   Parent node
 ##   prefix                         \string   Namespace prefix
 ##   public_id                      \string   Public ID
+##   serialize_as_cdata             boolean   CDATA section?
 ##   system_id                      \string   System ID
 ##   target                         \string   Target
 ##   url                            string    Document URL
