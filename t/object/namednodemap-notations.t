@@ -738,8 +738,8 @@ test {
   $node->set_notation_node
       ($doc->create_notation ('hoge:aaa'));
   is $map->{120}, undef;
-  isa_ok $map->{hoge}, 'Web::DOM::Entity';
-  isa_ok $map->{'hoge:aaa'}, 'Web::DOM::Entity';
+  isa_ok $map->{hoge}, 'Web::DOM::Notation';
+  isa_ok $map->{'hoge:aaa'}, 'Web::DOM::Notation';
   is_deeply [sort { $a cmp $b } keys %$map], ['hoge', 'hoge:aaa'];
   is $map->{120}, undef;
   is $map->{+undef}, undef;
