@@ -1,0 +1,64 @@
+=head1 NAME
+
+Web::DOM::XMLSerializer - The DOM |XMLSerializer| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::XMLSerializer> class implements the DOM
+C<XMLSerializer> interface.
+
+=head1 METHODS
+
+The class has following methods:
+
+=over 4
+
+=item $serializer = new Web::DOM::XMLSerializer
+
+Create a new C<XMLSerializer> object.  [DOMPARSING]
+
+=item $string = $serializer->serialize_to_string ($node)
+
+Serialize the specified node into a character string (HTML or XML
+fragment, depending on the type of the document).  [DOMPARSING]
+[MANAKAI]
+
+If the document is an XML document and the node can't be serialized
+into the well-formed XML fragment, the method does not throw and does
+return an ill-formed XML fragment instead.  This is a willful
+violation to the HTML Living Standard, to match current browsers'
+behavior.  Future version of the module might throw an exception if
+browsers start to throw an exception.
+
+See also L<Web::DOM/DEPENDENCY>.
+
+=back
+
+=head1 SPECIFICATIONS
+
+=over 4
+
+=item DOMPARSING
+
+DOM Parsing and Serialization Standard
+<http://domparsing.spec.whatwg.org/>.
+
+=item MANAKAI
+
+manakai DOM Extensions
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai++DOM%20Extensions>.
+
+=back
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2013 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

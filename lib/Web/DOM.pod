@@ -120,6 +120,22 @@ Some objects accept array operations:
   $second_child = $el->child_nodes->[1];
   $second_last_child = $el->child_nodes->[-2];
 
+=head1 CONSTRUCTORS
+
+Following classes have the constructor (i.e. the C<new> method):
+
+=over 4
+
+=item L<Web::DOM::Document>
+
+=item L<Web::DOM::Implementation>
+
+=item L<Web::DOM::Parser>
+
+=item L<Web::DOM::XMLSerializer>
+
+=back
+
 =head1 SPECIFICATIONS
 
 Specifications defining features supported by the modules include:
@@ -262,10 +278,6 @@ HTMLCollection.prototype.namedItem, HTMLCollection.prototype.%{} [DOM]
 =item New mutation methods [DOM]
 
 prepend, append, before, after, replace, remove
-
-=item DOM Parsing and Serialization
-
-XMLSerializer [DOMPARSING]
 
 =item DOM Events [DOM]
 
