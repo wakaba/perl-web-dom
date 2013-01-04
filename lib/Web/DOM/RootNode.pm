@@ -4,6 +4,11 @@ use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
 use Web::DOM::Internal;
+our @CARP_NOT = qw(
+  Web::DOM::Exception Web::XML::Parser Web::HTML::Parser
+  Web::HTML::Serializer Web::XML::Serializer
+);
+use Web::DOM::Exception;
 
 sub get_elements_by_tag_name ($$) {
   my $self = $_[0];
@@ -202,6 +207,7 @@ sub inner_html ($;$) {
     if ($$self->[0]->{data}->[0]->{is_html}) {
       require Web::HTML::Parser;
       $parser = Web::HTML::Parser->new;
+      # XXX errors should be redirected to the Console object.
       $context =
           $nt == ELEMENT_NODE ? $self :
           $nt == DOCUMENT_NODE ? undef :
@@ -209,6 +215,18 @@ sub inner_html ($;$) {
     } else {
       require Web::XML::Parser;
       $parser = Web::XML::Parser->new;
+      # XXX errors should be redirected to the Console object.
+      my $orig_onerror = $parser->onerror;
+      $parser->onerror (sub {
+        my %args = @_;
+        $orig_onerror->(@_);
+        if (($args{level} || 'm') eq 'm') {
+          $parser->throw (sub {
+            _throw Web::DOM::Exception 'SyntaxError',
+                'The given string is ill-formed as XML';
+          });
+        }
+      });
       $context =
           $nt == ELEMENT_NODE ? $self :
           $nt == DOCUMENT_NODE ? undef :
@@ -229,7 +247,7 @@ sub inner_html ($;$) {
 
     return unless defined wantarray;
   }
-  
+
   if ($$self->[0]->{data}->[0]->{is_html}) {
     require Web::HTML::Serializer;
     return ${ Web::HTML::Serializer->new->get_inner_html ($self) };

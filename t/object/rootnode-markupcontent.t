@@ -2,8 +2,10 @@ use strict;
 use warnings;
 use Path::Class;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', '*', 'lib')->stringify;
+use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'lib')->stringify;
 use Test::X1;
 use Test::More;
+use Test::DOM::Exception;
 use Web::DOM::Document;
 
 test {
@@ -107,7 +109,133 @@ test {
   is $doc->inner_html, '<!DOCTYPE html><html><head><title>ho&lt;&gt;&amp;ge</title></head><body></body></html>';
 
   done $c;
-} n => 5, name => 'doc.inner_html';
+} n => 5, name => 'doc.inner_html html';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+
+  is $el->inner_html, '';
+
+  dies_here_ok {
+    $el->inner_html ('<p title>ho&ge</P>foo<p>bar');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'SyntaxError';
+  is $@->message, 'The given string is ill-formed as XML';
+  is $el->inner_html, '';
+
+  $el->inner_html ('<p title="">ho&amp;ge</p>foo<p>bar</p>');
+  is $el->inner_html, '<p xmlns="http://www.w3.org/1999/xhtml" title="">ho&amp;ge</p>foo<p xmlns="http://www.w3.org/1999/xhtml">bar</p>';
+
+  dies_here_ok {
+    $el->inner_html ('<tr><td>hoge<th>foo');
+  };
+  is $@->name, 'SyntaxError';
+  is $@->message, 'The given string is ill-formed as XML';
+  is $el->inner_html, '<p xmlns="http://www.w3.org/1999/xhtml" title="">ho&amp;ge</p>foo<p xmlns="http://www.w3.org/1999/xhtml">bar</p>';
+
+  $el->inner_html ('<tr><td xmlns="">hoge<th xmlns="http://ns1/">foo</th></td></tr >');
+  is $el->inner_html, '<tr xmlns="http://www.w3.org/1999/xhtml"><td xmlns="">hoge<th xmlns="http://ns1/">foo</th></td></tr>';
+
+  $el->inner_html (undef);
+  is $el->inner_html, '';
+
+  done $c;
+} n => 13, name => 'element.inner_html xml';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element_ns ('http://www.w3.org/2000/svg', 'g');
+
+  is $el->inner_html, '';
+
+  dies_here_ok {
+    $el->inner_html ('<p title>ho&ge</P>foo<p>bar');
+  };
+  is $@->name, 'SyntaxError';
+  is $@->message, 'The given string is ill-formed as XML';
+  is $el->inner_html, '';
+
+  $el->inner_html ('<p title="">ho&amp;ge</p>foo<p>bar</p>');
+  is $el->inner_html, '<p xmlns="http://www.w3.org/2000/svg" title="">ho&amp;ge</p>foo<p xmlns="http://www.w3.org/2000/svg">bar</p>';
+
+  $el->inner_html (undef);
+  is $el->inner_html, '';
+
+  $el->inner_html ('<tr><td>hoge<th>fo<![CDATA[o]]></th></td></tr>');
+  is $el->inner_html, '<tr xmlns="http://www.w3.org/2000/svg"><td>hoge<th>foo</th></td></tr>';
+
+  done $c;
+} n => 8, name => 'element.inner_html xml svg';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $df = $doc->create_document_fragment;
+
+  is $df->inner_html, '';
+
+  dies_here_ok {
+    $df->inner_html ('hoge<p>foo');
+  };
+  is $@->name, 'SyntaxError';
+  is $@->message, 'The given string is ill-formed as XML';
+  is $df->inner_html, '';
+
+  $df->inner_html ('hoge<p>foo</p>');
+  is $df->inner_html, 'hoge<p xmlns="">foo</p>';
+
+  $df->inner_html (undef);
+  is $df->inner_html, '';
+
+  $df->inner_html ('hoge<p>foo<tr>aa</tr></p>');
+  is $df->inner_html, 'hoge<p xmlns="">foo<tr>aa</tr></p>';
+
+  done $c;
+} n => 8, name => 'df.inner_html xml';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  is $doc->inner_html, '';
+
+  dies_here_ok {
+    $doc->inner_html ('hoge<p>foo<p>bar');
+  };
+  is $@->name, 'SyntaxError';
+  is $@->message, 'The given string is ill-formed as XML';
+  is $doc->inner_html, '';
+
+  dies_here_ok {
+    $doc->inner_html ('hoge<p>foo<p>bar</p></p>');
+  };
+  is $doc->inner_html, '';
+
+  $doc->inner_html ('<!--hoge--><p>foo<p>bar</p></p>');
+  is $doc->inner_html, '<!--hoge--><p xmlns="">foo<p>bar</p></p>';
+
+  dies_here_ok {
+    $doc->inner_html (undef);
+  };
+  is $doc->inner_html, '<!--hoge--><p xmlns="">foo<p>bar</p></p>';
+
+  $doc->inner_html ('<P>foo<tr>aa</tr></P>');
+  is $doc->inner_html, '<P xmlns="">foo<tr>aa</tr></P>';
+
+  dies_here_ok {
+    $doc->inner_html ('<!DOCTYPE HTML><title>ho<>&amp;ge');
+  };
+  is $doc->inner_html, '<P xmlns="">foo<tr>aa</tr></P>';
+
+  $doc->inner_html ('<!DOCTYPE HTML><title>ho&lt;>&amp;ge</title>');
+  is $doc->inner_html, '<!DOCTYPE HTML><title xmlns="">ho&lt;&gt;&amp;ge</title>';
+
+  done $c;
+} n => 14, name => 'doc.inner_html xml';
 
 run_tests;
 
