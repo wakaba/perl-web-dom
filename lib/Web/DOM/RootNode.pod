@@ -49,6 +49,16 @@ Return or set the markup representation of the content of the node.
 
 See also L<Web::DOM/DEPENDENCY>.
 
+If the document is an XML document and the given string is not
+well-formed, the method throws an exception.
+
+However, even if the document is an XML document and the node can't be
+serialized into the well-formed XML fragment, the method does not
+throw and does return an ill-formed XML fragment instead.  This is a
+willful violation to the HTML Living Standard, to match current
+browsers' behavior.  Future version of the module might throw an
+exception if browsers start to throw an exception.
+
 =item $child = $node->last_element_child
 
 Return the last element child of the node.  If there is no such node,

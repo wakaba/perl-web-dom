@@ -190,6 +190,7 @@ sub child_element_count ($) {
 # XXX prepend append
 
 sub inner_html ($;$) {
+  ## See also: Element->outer_html
   my $self = $_[0];
   if (@_ > 1) {
     ## For elements:
@@ -202,20 +203,12 @@ sub inner_html ($;$) {
     ##   - <http://suika.fam.cx/~wakaba/wiki/sw/n/manakai++DOM%20Extensions#anchor-143>
     
     my $parser;
-    my $context;
-    my $nt = $self->node_type;
     if ($$self->[0]->{data}->[0]->{is_html}) {
       require Web::HTML::Parser;
       $parser = Web::HTML::Parser->new;
-      # XXX errors should be redirected to the Console object.
-      $context =
-          $nt == ELEMENT_NODE ? $self :
-          $nt == DOCUMENT_NODE ? undef :
-          $self->owner_document->create_element ('div');
     } else {
       require Web::XML::Parser;
       $parser = Web::XML::Parser->new;
-      # XXX errors should be redirected to the Console object.
       my $orig_onerror = $parser->onerror;
       $parser->onerror (sub {
         my %args = @_;
@@ -227,11 +220,13 @@ sub inner_html ($;$) {
           });
         }
       });
-      $context =
-          $nt == ELEMENT_NODE ? $self :
-          $nt == DOCUMENT_NODE ? undef :
-          $self->owner_document->create_element_ns (undef, 'div');
     }
+    # XXX errors should be redirected to the Console object.
+    my $nt = $self->node_type;
+    my $context =
+        $nt == ELEMENT_NODE ? $self :
+        $nt == DOCUMENT_NODE ? undef :
+        $self->owner_document->create_element ('body');
     my $new_children = $parser->parse_char_string_with_context
         (defined $_[1] ? ''.$_[1] : '', $context, new Web::DOM::Document);
 

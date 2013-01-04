@@ -78,7 +78,25 @@ Return the local name of the element.  [DOM] [MANAKAI]
 =item $url = $el->namespace_uri
 
 Return the namespace URL of the element.  If the element does not
-belong to any namespace, C<undef> is returned. [DOM]
+belong to any namespace, C<undef> is returned.  [DOM]
+
+=item $string = $el->outer_html
+
+=item $el->outer_html ($string)
+
+Replace the element by the specified fragment of the markup.  The
+markup must be a character string in HTML or XML, depending on the
+type of the document.  [DOMPARSING]
+
+If the document is an XML document and the given string is not
+well-formed, the method throws an exception.
+
+However, even if the document is an XML document and the node can't be
+serialized into the well-formed XML fragment, the method does not
+throw and does return an ill-formed XML fragment instead.  This is a
+willful violation to the HTML Living Standard, to match current
+browsers' behavior.  Future version of the module might throw an
+exception if browsers start to throw an exception.
 
 =item $prefix = $el->prefix
 
@@ -158,6 +176,10 @@ DOM Living Standard <http://dom.spec.whatwg.org/#interface-element>.
 DOM Living Standard, commented out
 <view-source:http://dom.spec.whatwg.org/>.
 
+=item DOMPARSING
+
+DOM Parsing and Serialization <http://domparsing.spec.whatwg.org/>.
+
 =item DOM3CORE
 
 Document Object Model (DOM) Level 3 Core Specification
@@ -185,7 +207,7 @@ Wakaba <wakaba@suikawiki.org>.
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

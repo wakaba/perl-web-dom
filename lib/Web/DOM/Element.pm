@@ -642,6 +642,65 @@ sub manakai_base_uri ($;$) {
   return ${$_[0]}->[2]->{manakai_base_uri};
 } # manakai_base_uri
 
+sub outer_html ($;$) {
+  ## See also: RootNode->inner_html
+  my $self = $_[0];
+  if (@_ > 1) {
+    # 1.-2.
+    my $parent = $self->parent_node or do { my $v = ''.$_[1]; return };
+    my $parent_nt = $parent->node_type;
+    my $context = $parent;
+
+    if ($parent_nt == DOCUMENT_NODE) {
+      # 3.
+      _throw Web::DOM::Exception 'NoModificationAllowedError',
+          'Cannot set outer_html of the document element';
+    } elsif ($parent_nt == DOCUMENT_FRAGMENT_NODE) {
+      # 4.
+      $context = $parent->owner_document->create_element ('body');
+    }
+
+    # 5.
+    my $parser;
+    if ($$self->[0]->{data}->[0]->{is_html}) {
+      require Web::HTML::Parser;
+      $parser = Web::HTML::Parser->new;
+    } else {
+      require Web::XML::Parser;
+      $parser = Web::XML::Parser->new;
+      my $orig_onerror = $parser->onerror;
+      $parser->onerror (sub {
+        my %args = @_;
+        $orig_onerror->(@_);
+        if (($args{level} || 'm') eq 'm') {
+          $parser->throw (sub {
+            _throw Web::DOM::Exception 'SyntaxError',
+                'The given string is ill-formed as XML';
+          });
+        }
+      });
+    }
+    # XXX errors should be redirected to the Console object.
+    my $new_children = $parser->parse_char_string_with_context
+        (defined $_[1] ? ''.$_[1] : '', $context, new Web::DOM::Document);
+    my $fragment = $self->owner_document->create_document_fragment;
+    $fragment->append_child ($_) for $new_children->to_list;
+
+    # 6.
+    $parent->replace_child ($fragment, $self);
+    
+    return undef unless defined wantarray;
+  }
+
+  if ($$self->[0]->{data}->[0]->{is_html}) {
+    require Web::HTML::Serializer;
+    return ${ Web::HTML::Serializer->new->get_inner_html ([$self]) };
+  } else {
+    require Web::XML::Serializer;
+    return ${ Web::XML::Serializer->new->get_inner_html ([$self]) };
+  }
+} # outer_html
+
 1;
 
 =head1 LICENSE

@@ -186,13 +186,13 @@ test {
   is $df->inner_html, '';
 
   $df->inner_html ('hoge<p>foo</p>');
-  is $df->inner_html, 'hoge<p xmlns="">foo</p>';
+  is $df->inner_html, 'hoge<p xmlns="http://www.w3.org/1999/xhtml">foo</p>';
 
   $df->inner_html (undef);
   is $df->inner_html, '';
 
   $df->inner_html ('hoge<p>foo<tr>aa</tr></p>');
-  is $df->inner_html, 'hoge<p xmlns="">foo<tr>aa</tr></p>';
+  is $df->inner_html, 'hoge<p xmlns="http://www.w3.org/1999/xhtml">foo<tr>aa</tr></p>';
 
   done $c;
 } n => 8, name => 'df.inner_html xml';
