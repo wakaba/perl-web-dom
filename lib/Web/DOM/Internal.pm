@@ -100,6 +100,7 @@ sub add_data ($$) {
 ##   attribute_type                 integer   [attribute type]
 ##   attrs                          {{attr}}  Attributes by name
 ##   child_nodes                    [node_id] Child nodes
+##   classes                        [string]  Classes
 ##   compat_mode                    string    Quirksness
 ##   content_type                   string    MIME type
 ##   data                           \string   Data

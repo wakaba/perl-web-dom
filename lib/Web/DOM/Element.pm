@@ -162,7 +162,7 @@ sub get_attribute ($$) {
 
 sub get_attribute_ns ($$$) {
   my $node = $_[0];
-  my $nsurl = defined $_[1] ? ''.$_[1] : undef;
+  my $nsurl = defined $_[1] ? ''.$_[1] : undef; # can be empty
   my $ln = ''.$_[2];
 
   # 1., 2. / Get an attribute 1., 2.
@@ -207,7 +207,7 @@ sub get_attribute_node ($$) {
 
 sub get_attribute_node_ns ($$$) {
   my $node = $_[0];
-  my $nsurl = defined $_[1] ? ''.$_[1] : undef;
+  my $nsurl = defined $_[1] ? ''.$_[1] : undef; # can be empty
   my $ln = ''.$_[2];
 
   # 1., 2. / Get an attribute 1., 2.
@@ -268,7 +268,7 @@ sub set_attribute ($$$) {
           $$node->[2]->{attrs}->{''}->{$name} = \$value;
 
           # Change 3.
-          # XXX attribute is set, attribute is changed
+          $node->_attribute_is (undef, \$name, set => 1, changed => 1);
         }
         return;
       }
@@ -284,7 +284,10 @@ sub set_attribute ($$$) {
           $$attr_node->[2]->{value} = $value;
 
           # Change 3.
-          # XXX attribute is set, attribute is changed
+          $node->_attribute_is
+              ($$attr_node->[2]->{namespace_uri},
+               $$attr_node->[2]->{local_name},
+               set => 1, changed => 1);
         }
         return;
       }
@@ -302,7 +305,7 @@ sub set_attribute ($$$) {
     $$node->[2]->{attrs}->{''}->{$name} = \$value;
 
     # Append 3.
-    # XXX attribute is set, attribute is added
+    $node->_attribute_is (undef, \$name, set => 1, added => 1);
   }
   return;
 } # set_attribute
@@ -315,7 +318,8 @@ sub set_attribute_ns ($$$$) {
   my $not_strict = $$node->[0]->{data}->[0]->{no_strict_error_checking};
 
   # WebIDL / 1.
-  my $nsurl = defined $_[1] ? length $_[1] ? ''.$_[1] : undef : undef;
+  my $nsurl = defined $_[1] ? ''.$_[1] : undef;
+  $nsurl = undef unless defined $nsurl and length $nsurl;
 
   # DOMPERL
   if (defined $_[2] and ref $_[2] eq 'ARRAY') {
@@ -415,7 +419,8 @@ sub set_attribute_ns ($$$$) {
         }
 
         # Change 3.
-        # XXX attribute is set, attribute is changed
+        $node->_attribute_is (defined $nsurl ? \$nsurl : undef, \$ln,
+                              set => 1, changed => 1);
       }
     } else {
       # 5.
@@ -442,7 +447,8 @@ sub set_attribute_ns ($$$$) {
         }
 
         # Append 3.
-        # XXX attribute is set, attribute is added
+        $node->_attribute_is (defined $nsurl ? \$nsurl : undef, \$ln,
+                              set => 1, added => 1);
       }
     }
   }
@@ -508,6 +514,18 @@ sub set_attribute_node ($$) {
   # 7.
   $$attr->[2]->{owner} = $$node->[1];
   $$node->[0]->connect ($$attr->[1] => $$node->[1]);
+
+  if (defined $old_attr_id) {
+    # 9.
+    $node->_attribute_is
+        ($$attr->[2]->{namespace_uri}, $$attr->[2]->{local_name},
+         set => 1, changed => 1);
+  } else {
+    # 8.
+    $node->_attribute_is
+        ($$attr->[2]->{namespace_uri}, $$attr->[2]->{local_name},
+         set => 1, added => 1);
+  }
   
   return $$node->[0]->node ($old_attr_id)
       if defined $old_attr_id and not ref $old_attr_id;
@@ -529,16 +547,19 @@ sub remove_attribute ($$) {
   # 2. Remove
   {
     # Remove 1.
-    # XXX mutation
+    # XXX mutation if $found
 
     # Remove 2.
     my $found;
+    my $nsref;
+    my $lnref;
     @{$$node->[2]->{attributes} or []} = map {
       if ($found) {
         $_;
       } elsif (ref $_) {
         if ($$_ eq $name) {
           $found = 1;
+          ($nsref, $lnref) = (undef, $_);
           delete $$node->[2]->{attrs}->{''}->{$name};
           ();
         } else {
@@ -548,9 +569,10 @@ sub remove_attribute ($$) {
         my $attr_node = $$node->[0]->node ($_);
         if ($attr_node->name eq $name) {
           $found = 1;
-          my $nsurl = $attr_node->namespace_uri;
-          $nsurl = '' unless defined $nsurl;
-          delete $$node->[2]->{attrs}->{$nsurl}->{$attr_node->local_name};
+          ($nsref, $lnref) = ($$attr_node->[2]->{namespace_uri},
+                              $$attr_node->[2]->{local_name});
+          delete $$node->[2]->{attrs}
+              ->{defined $nsref ? $$nsref : ''}->{$$lnref};
           $$node->[0]->disconnect ($_);
           ();
         } else {
@@ -559,10 +581,12 @@ sub remove_attribute ($$) {
       }
     } @{$$node->[2]->{attributes} or []};
 
-    $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE) if $found;
+    if ($found) {
+      $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE);
 
-    # Remove 3.
-    # XXX attribute is removed
+      # Remove 3.
+      $node->_attribute_is ($nsref, $lnref, removed => 1);
+    }
   }
   return;
 } # remove_attribute
@@ -572,11 +596,12 @@ sub remove_attribute_ns ($$$) {
   my $ln = ''.$_[2];
   
   # 1., 2.
-  my $nsurl = $_[1];
+  my $nsurl = defined $_[1] ? ''.$_[1] : undef;
+  $nsurl = undef unless length $nsurl;
   my $attr_id = $$node->[2]->{attrs}->{defined $nsurl ? $nsurl : ''}->{$ln};
   if (defined $attr_id) {
     # Remove 1.
-    # XXX mutation
+    # XXX mutation if found
 
     $$node->[0]->children_changed ($$node->[1], ATTRIBUTE_NODE);
 
@@ -590,7 +615,8 @@ sub remove_attribute_ns ($$$) {
     delete $$node->[2]->{attrs}->{defined $nsurl ? $nsurl : ''}->{$ln};
 
     # Remove 3.
-    # XXX attribute is removed
+    $node->_attribute_is
+        (defined $nsurl ? \$nsurl : undef, \$ln, removed => 1);
   }
   return;
 } # remove_attribute_ns
@@ -621,8 +647,28 @@ sub remove_attribute_node ($$) {
   delete $$attr->[2]->{owner};
   $$node->[0]->disconnect ($$attr->[1]);
 
+  $node->_attribute_is ($$attr->[2]->{namespace_uri},
+                        $$attr->[2]->{local_name},
+                        removed => 1);
+
   return $attr;
 } # remove_attribute_node
+
+sub _attribute_is ($$$%) {
+  my ($self, $nsref, $lnref, %args) = @_;
+  ## - attribute is set
+  ## - attribute is added
+  ## - attribute is changed
+  ## - attribute is removed
+
+  if (not defined $nsref and defined $lnref and $$lnref eq 'class') {
+    my $value = $self->get_attribute_ns (undef, $$lnref);
+    my %found;
+    $$self->[2]->{classes} = [grep { length $_ and not $found{$_}++ }
+                              split /[\x09\x0A\x0C\x0D\x20]+/,
+                              (defined $value ? $value : '')];
+  }
+} # _attribute_is
 
 # XXX id / class attrs
 
@@ -630,6 +676,11 @@ sub manakai_ids ($) {
   my $id = $_[0]->get_attribute ('id');
   return defined $id ? [$id] : [];
 } # manakai_ids
+
+# XXX
+sub class_list {
+  return ${$_[0]}->[2]->{classes} ||= [];
+} # class_list
 
 sub manakai_base_uri ($;$) {
   if (@_ > 1) {

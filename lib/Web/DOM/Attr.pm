@@ -38,6 +38,11 @@ sub value ($;$) {
   if (@_ > 1) {
     # XXX mutation?
     ${$_[0]}->[2]->{value} = defined $_[1] ? ''.$_[1] : '';
+    if (my $oe = $_[0]->owner_element) {
+      $oe->_attribute_is
+          (${$_[0]}->[2]->{namespace_uri}, ${$_[0]}->[2]->{local_name},
+           set => 1, changed => 1);
+    }
   }
   return ${$_[0]}->[2]->{value};
 } # value
@@ -48,6 +53,11 @@ sub value ($;$) {
 sub manakai_append_text ($$) {
   # XXX mutation?
   ${$_[0]}->[2]->{value} .= ref $_[1] eq 'SCALAR' ? ${$_[1]} : $_[1];
+  if (my $oe = $_[0]->owner_element) {
+    $oe->_attribute_is
+        (${$_[0]}->[2]->{namespace_uri}, ${$_[0]}->[2]->{local_name},
+         set => 1, changed => 1);
+  }
   return $_[0];
 } # manakai_append_text
 
