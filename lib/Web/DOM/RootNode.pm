@@ -87,7 +87,7 @@ sub get_elements_by_class_name ($$) {
   return $$self->[0]->collection ('by_class_name'. $; . $cns, $self, sub {
     my $node = $_[0];
     my $is_quirks = (${$_[0]}->[0]->{data}->[0]->{compat_mode} || '') eq 'quirks';
-    %$classes = map { my $v = $_; $v =~ tr/A-Z/a-z/; $v => 1; } keys %$classes;
+    my %class = $is_quirks ? (map { my $v = $_; $v =~ tr/A-Z/a-z/; $v => 1; } keys %$classes) : %$classes;
 
     my $data = $$node->[0]->{data};
     my @node_id = @{$data->[$$node->[1]]->{child_nodes} or []};
@@ -101,14 +101,14 @@ sub get_elements_by_class_name ($$) {
         for (@{$data->[$id]->{class_list} || []}) {
           my $v = $_;
           $v =~ tr/A-Z/a-z/; ## ASCII case-insensitive.
-          $found->{$v} = 1 if $classes->{$v};
+          $found->{$v} = 1 if $class{$v};
         }
       } else {
         for (@{$data->[$id]->{class_list} || []}) {
-          $found->{$_} = 1 if $classes->{$_};
+          $found->{$_} = 1 if $class{$_};
         }
       }
-      next unless keys %$found == keys %$classes;
+      next unless keys %$found == keys %class;
       push @id, $id;
     }
     return @id;

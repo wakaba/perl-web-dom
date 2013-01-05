@@ -321,11 +321,272 @@ test {
   done $c;
 } n => 14, name => 'children perl binding not empty';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->set_attribute (id => 'abc');
+  my $el2 = $doc->create_element ('fuga');
+  $el2->set_attribute (name => 'def');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->length, 2;
+  
+  is $col->named_item ('abc'), $el1;
+  is $col->{abc}, $el1;
+
+  is $col->named_item ('def'), $el2;
+  is $col->{def}, $el2;
+  ok exists $col->{def};
+
+  is $col->named_item ('fuga'), undef;
+  is $col->{fuga}, undef;
+  ok not exists $col->{fuga};
+
+  dies_here_ok {
+    delete $col->{abc};
+  };
+  like $@, qr{^Modification of a read-only value attempted};
+
+  dies_here_ok {
+    $col->{fuga} = $el2;
+  };
+  like $@, qr{^Modification of a read-only value attempted};
+
+  ok 2 == keys %$col;
+  is_deeply [sort { $a cmp $b } keys %$col], ['abc', 'def'];
+  
+  done $c;
+} n => 15, name => 'named_items';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->set_attribute (id => 'abc');
+  my $el2 = $doc->create_element ('fuga');
+  $el2->set_attribute (id => 'abc');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{abc}, $el1;
+
+  done $c;
+} n => 1, name => 'named_item duplicate';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->set_attribute (id => 'abc');
+  my $el2 = $doc->create_element ('fuga');
+  $el2->set_attribute (name => 'abc');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{abc}, $el1;
+
+  done $c;
+} n => 1, name => 'named_item duplicate';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->set_attribute (name => 'abc');
+  my $el2 = $doc->create_element ('fuga');
+  $el2->set_attribute (id => 'abc');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{abc}, $el1;
+
+  done $c;
+} n => 1, name => 'named_item duplicate';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->set_attribute (name => 'abc');
+  my $el2 = $doc->create_element ('fuga');
+  $el2->set_attribute (name => 'abc');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{abc}, $el1;
+
+  done $c;
+} n => 1, name => 'named_item duplicate';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->set_attribute (name => 'def');
+  $el1->set_attribute (id => 'abc');
+  my $el2 = $doc->create_element ('fuga');
+  $el2->set_attribute (name => 'abc');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{abc}, $el1;
+
+  done $c;
+} n => 1, name => 'named_item duplicate';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->set_attribute (id => '');
+  $doc->append_child ($el1);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{''}, undef;
+
+  done $c;
+} n => 1, name => 'named_item empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->set_attribute (name => '');
+  $doc->append_child ($el1);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{''}, undef;
+  is $col->{'  '}, undef;
+
+  done $c;
+} n => 2, name => 'named_item empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element_ns (undef, 'hoge');
+  $el1->set_attribute (id => 'abc');
+  my $el2 = $doc->create_element ('fuga');
+  $el2->set_attribute (name => 'abc');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{abc}, $el1;
+
+  done $c;
+} n => 1, name => 'named_item duplicate';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element_ns (undef, 'hoge');
+  $el1->set_attribute (name => 'abc');
+  my $el2 = $doc->create_element ('fuga');
+  $el2->set_attribute (id => 'abc');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name ('*');
+  is $col->{abc}, $el2;
+
+  done $c;
+} n => 1, name => 'named_item duplicate';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('aa');
+  my $el2 = $doc->create_element ('aa');
+  $el2->set_attribute (id => 'hoge');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_tag_name_ns ('*', '*');
+  is $col->length, 2;
+  is $col->{hoge}, $el2;
+  is $col->{fuga}, undef;
+
+  $el1->set_attribute (id => 'fuga');
+  is $col->length, 2;
+  is $col->{hoge}, $el2;
+  is $col->{fuga}, $el1;
+
+  $el2->id ('fuga');
+  is $col->length, 2;
+  is $col->{hoge}, undef;
+  is $col->{fuga}, $el1;
+
+  done $c;
+} n => 9, name => 'mutation';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $el1->class_name ('fuga');
+  $el1->id ('aa');
+  my $el2 = $doc->create_element ('hoge');
+  $el2->class_name ('Fuga');
+  $el2->id ('aa');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_class_name ('Fuga');
+  is $col->length, 1;
+  is $col->[0], $el2;
+  is $col->{fuga}, undef;
+  is $col->{aa}, $el2;
+
+  $doc->manakai_is_html (1);
+  $doc->manakai_compat_mode ('quirks');
+
+  is $col->length, 2;
+  is $col->{aa}, $el1;
+
+  done $c;
+} n => 6, name => 'mutation';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  my $el1 = $doc->create_element ('hoge');
+  $el1->class_name ('fuga');
+  $el1->id ('aa');
+  my $el2 = $doc->create_element ('hoge');
+  $el2->class_name ('Fuga');
+  $el2->id ('aa');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  my $col = $doc->get_elements_by_class_name ('Fuga');
+  is $col->length, 1;
+  is $col->[0], $el2;
+  is $col->{fuga}, undef;
+  is $col->{aa}, $el2;
+
+  $doc->manakai_compat_mode ('quirks');
+
+  is $col->length, 2;
+  is $col->{aa}, $el1;
+
+  done $c;
+} n => 6, name => 'mutation';
+
 run_tests;
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

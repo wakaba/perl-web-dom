@@ -30,6 +30,18 @@ $col->[-1] >> works as intended.
 
 Return the number of the nodes in the collection.  [DOM] [DOMPERL]
 
+=item $node = $col->{$key}
+
+=item $node = $col->named_item ($key)
+
+Return the node whose ID or the C<name> attribute is equal to the
+argument, if any, or C<undef>.  [DOM]
+
+The method does not examine the C<name> attribute of the elements
+whose namespace is different from the HTML namespace.  This is a
+willful violation to the DOM Standard for consistency with the named
+properties and compatibility with browsers.
+
 =item $arrayref = $col->to_a
 
 Return the new static array reference containing the nodes in the

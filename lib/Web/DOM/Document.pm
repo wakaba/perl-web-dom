@@ -61,6 +61,7 @@ sub manakai_is_html ($;$) {
       for my $key (keys %$cols) {
         next unless $cols->{$key};
         delete ${$cols->{$key}}->[2];
+        delete ${$cols->{$key}}->[4];
       }
     }
   }
@@ -134,6 +135,7 @@ sub manakai_compat_mode ($;$) {
         for my $key (keys %$cols) {
           next unless $cols->{$key};
           delete ${$cols->{$key}}->[2];
+          delete ${$cols->{$key}}->[4];
         }
       }
     }
