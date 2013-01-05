@@ -264,8 +264,8 @@ the initial phase of the development include:
 
 =item DOM Core methods
 
-getElementById, getElementsByClassName,
-HTMLCollection.prototype.namedItem, HTMLCollection.prototype.%{} [DOM]
+getElementById, HTMLCollection.prototype.namedItem,
+HTMLCollection.prototype.%{} [DOM]
 
 =item baseURI and related methods [DOM] [HTML] [MANAKAI]
 
@@ -273,7 +273,7 @@ HTMLCollection.prototype.namedItem, HTMLCollection.prototype.%{} [DOM]
 
 =item Selectors API
 
-=item DOMTokenList, DOMSettableTokenList interface [DOM]
+=item DOMSettableTokenList interface [DOM]
 
 =item New mutation methods [DOM]
 

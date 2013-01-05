@@ -187,16 +187,17 @@ sub node ($$) {
 ##
 ## $self->{cols}->[$root_node_id]->
 ## 
-##   - {child_nodes}           - $node->child_nodes
-##   - {attributes}            - $node->attributes
-##   - {attribute_definitions} - $node->attribute_definitions
-##   - {element_types}         - $node->element_types
-##   - {general_entities}      - $node->general_entities
-##   - {notations}             - $node->notations
-##   - {children}              - $node->children
-##   - {"by_tag_name$;$ln"}    - $node->get_elements_by_tag_name ($ln)
-##   - {"by_tag_name_ns$;$ns$;$ln"} - $node->get_elements_by_tag_name_ns ($ns, $ln)
-##   - {images}                - $node->images
+##   - {child_nodes}              - $node->child_nodes
+##   - {attributes}               - $node->attributes
+##   - {attribute_definitions}    - $node->attribute_definitions
+##   - {element_types}            - $node->element_types
+##   - {general_entities}         - $node->general_entities
+##   - {notations}                - $node->notations
+##   - {children}                 - $node->children
+##   - {"by_class_name$;$cls"}    - $node->get_elements_by_class_name ($cls)
+##   - {"by_tag_name$;$ln"}       - $node->get_elements_by_tag_name ($ln)
+##   - {"by_tag_name_ns$;$n$;$l"} - $node->get_elements_by_tag_name_ns ($n, $l)
+##   - {images}                   - $node->images
 
 my $CollectionClass = {
   child_nodes => 'Web::DOM::NodeList',
@@ -282,7 +283,7 @@ sub children_changed ($$$) {
     delete $$_->[4];
   }
 
-  if ($_[2] == 1) { # old child node is ELEMENT_NODE
+  if ($_[2] == 1 or $_[2] == 2) { # old child is ELEMENT_NODE or ATTRIBUTE_NODE
     my @id = ($_[1]);
     while (@id) {
       my $id = shift @id;

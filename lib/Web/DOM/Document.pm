@@ -129,6 +129,13 @@ sub manakai_compat_mode ($;$) {
     if (@_ > 1 and defined $_[1] and
         {'no quirks' => 1, 'limited quirks' => 1, 'quirks' => 1}->{$_[1]}) {
       $$self->[2]->{compat_mode} = $_[1];
+      for my $cols (@{$$self->[0]->{cols} or []}) {
+        next unless $cols;
+        for my $key (keys %$cols) {
+          next unless $cols->{$key};
+          delete ${$cols->{$key}}->[2];
+        }
+      }
     }
     return $$self->[2]->{compat_mode} || 'no quirks';
   } else {

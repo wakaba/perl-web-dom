@@ -768,11 +768,287 @@ test {
   done $c;
 } n => 2, name => 'get_elements_by_tag_name_ns mutation';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+
+  my $col1 = $el1->get_elements_by_class_name ('fuga');
+  isa_ok $col1, 'Web::DOM::HTMLCollection';
+  is $col1->length, 0;
+
+  my $el2 = $doc->create_element ('fyuga');
+  $el2->class_name ('fuga abc');
+  $el1->append_child ($el2);
+
+  my $el3 = $doc->create_element ('fyuga');
+  $el3->class_name ('Fuga abc');
+  $el1->append_child ($el3);
+
+  my $el4 = $doc->create_element ('fyuga');
+  $el4->class_name ('fuga abc');
+  $el3->append_child ($el4);
+
+  is $col1->length, 2;
+  is $col1->[0], $el2;
+  is $col1->[1], $el4;
+
+  $el1->remove_child ($el2);
+
+  is $col1->length, 1;
+  is $col1->[0], $el4;
+
+  done $c;
+} n => 7, name => 'get_elements_by_class_name a class';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+
+  my $col1 = $el1->get_elements_by_class_name ('fuga fuga  ');
+  isa_ok $col1, 'Web::DOM::HTMLCollection';
+  is $col1->length, 0;
+
+  my $el2 = $doc->create_element ('fyuga');
+  $el2->class_name ('fuga abc');
+  $el1->append_child ($el2);
+
+  my $el3 = $doc->create_element ('fyuga');
+  $el3->class_name ('Fuga abc');
+  $el1->append_child ($el3);
+
+  my $el4 = $doc->create_element ('fyuga');
+  $el4->class_name ('fuga abc');
+  $el3->append_child ($el4);
+
+  is $col1->length, 2;
+  is $col1->[0], $el2;
+  is $col1->[1], $el4;
+
+  $el1->remove_child ($el2);
+
+  is $col1->length, 1;
+  is $col1->[0], $el4;
+
+  done $c;
+} n => 7, name => 'get_elements_by_class_name a class';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+
+  my $col1 = $el1->get_elements_by_class_name ('fuga abc ');
+  isa_ok $col1, 'Web::DOM::HTMLCollection';
+  is $col1->length, 0;
+
+  my $el2 = $doc->create_element ('fyuga');
+  $el2->class_name ('fuga abc');
+  $el1->append_child ($el2);
+
+  my $el3 = $doc->create_element ('fyuga');
+  $el3->class_name ('Fuga abc');
+  $el1->append_child ($el3);
+
+  my $el4 = $doc->create_element ('fyuga');
+  $el4->class_name ('fuga abcd');
+  $el3->append_child ($el4);
+
+  is $col1->length, 1;
+  is $col1->[0], $el2;
+
+  $el1->remove_child ($el2);
+
+  is $col1->length, 0;
+
+  $el4->class_list->add ('abc');
+
+  is $col1->length, 1;
+  is $col1->[0], $el4;
+
+  done $c;
+} n => 7, name => 'get_elements_by_class_name two classes';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  
+  my $col1 = $el->get_elements_by_class_name ('  ');
+  isa_ok $col1, 'Web::DOM::HTMLCollection';
+  is $col1->length, 0;
+
+  my $el2 = $doc->create_element ('ff');
+  $el2->set_attribute (class => '  ');
+  $el->append_child ($el2);
+
+  is $col1->length, 0;
+
+  done $c;
+} n => 3, name => 'get_elements_by_class_name empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  $doc->append_child ($el1);
+
+  my $col1 = $doc->get_elements_by_class_name ('fuga abc ');
+  isa_ok $col1, 'Web::DOM::HTMLCollection';
+  is $col1->length, 0;
+
+  my $el2 = $doc->create_element ('fyuga');
+  $el2->class_name ('fuga abc');
+  $el1->append_child ($el2);
+
+  my $el3 = $doc->create_element ('fyuga');
+  $el3->class_name ('Fuga abc');
+  $el1->append_child ($el3);
+
+  my $el4 = $doc->create_element ('fyuga');
+  $el4->class_name ('fuga abcd');
+  $el3->append_child ($el4);
+
+  is $col1->length, 1;
+  is $col1->[0], $el2;
+
+  $el1->remove_child ($el2);
+
+  is $col1->length, 0;
+
+  $el4->class_list->add ('abc');
+
+  is $col1->length, 1;
+  is $col1->[0], $el4;
+
+  done $c;
+} n => 7, name => 'get_elements_by_class_name two classes document';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_document_fragment;
+
+  my $col1 = $el1->get_elements_by_class_name ('fuga abc ');
+  isa_ok $col1, 'Web::DOM::HTMLCollection';
+  is $col1->length, 0;
+
+  my $el2 = $doc->create_element ('fyuga');
+  $el2->class_name ('fuga abc');
+  $el1->append_child ($el2);
+
+  my $el3 = $doc->create_element ('fyuga');
+  $el3->class_name ('Fuga abc');
+  $el1->append_child ($el3);
+
+  my $el4 = $doc->create_element ('fyuga');
+  $el4->class_name ('fuga abcd');
+  $el3->append_child ($el4);
+
+  is $col1->length, 1;
+  is $col1->[0], $el2;
+
+  $el1->remove_child ($el2);
+
+  is $col1->length, 0;
+
+  $el4->class_list->add ('abc');
+
+  is $col1->length, 1;
+  is $col1->[0], $el4;
+
+  done $c;
+} n => 7, name => 'get_elements_by_class_name two classes df';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  $doc->manakai_compat_mode ('quirks');
+
+  my $el1 = $doc->create_element ('foo');
+  my $el2 = $doc->create_element ('bar');
+  $el1->append_child ($el2);
+  $el2->class_name ('hOGe');
+
+  my $col1 = $el1->get_elements_by_class_name ('HoGe');
+  is $col1->length, 1;
+
+  $doc->manakai_compat_mode ('limited quirks');
+
+  is $col1->length, 0;
+
+  done $c;
+} n => 2, name => 'get_elements_by_class_name quirksness';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  $doc->manakai_compat_mode ('quirks');
+
+  my $el1 = $doc->create_element ('foo');
+  my $el2 = $doc->create_element ('bar');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+  $el2->class_name ('hOGe');
+
+  my $col1 = $doc->get_elements_by_class_name ('HoGe');
+  is $col1->length, 1;
+
+  $doc->manakai_compat_mode ('no quirks');
+
+  is $col1->length, 0;
+
+  done $c;
+} n => 2, name => 'get_elements_by_class_name quirksness document';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  $doc->manakai_is_html (1);
+  $doc->manakai_compat_mode ('quirks');
+
+  my $el1 = $doc->create_element ('foo');
+  my $el2 = $doc->create_element ('bar');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+  $el2->class_name ('hOGe');
+
+  my $col1 = $doc->get_elements_by_class_name ('HoGe');
+  is $col1->length, 1;
+
+  $doc->manakai_is_html (0);
+
+  is $col1->length, 0;
+
+  done $c;
+} n => 2, name => 'get_elements_by_class_name quirksness df';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+
+  my $col1 = $doc->get_elements_by_class_name ('hoge');
+  my $col2 = $doc->get_elements_by_class_name ('hoge');
+  is $col2, $col1;
+
+  my $col3 = $doc->get_elements_by_class_name ('HOGE');
+  isnt $col3, $col1;
+
+  my $el = $doc->create_element ('foo');
+  my $col4 = $el->get_elements_by_class_name ('hoge');
+  isnt $col4, $col1;
+
+  done $c;
+} n => 3, name => 'get_elements_by_class_name equality';
+
 run_tests;
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

@@ -69,7 +69,51 @@ sub get_elements_by_tag_name_ns ($$$) {
   });
 } # get_elements_by_tag_name_ns
 
-# XXX get_elements_by_class_name
+sub get_elements_by_class_name ($$) {
+  my $self = $_[0];
+  my $cns = ''.$_[1];
+
+  # 1.
+  my $classes = {map { $_ => 1 } grep { length $_ } split /[\x09\x0A\x0C\x0D\x20]+/, $cns};
+
+  # 2.
+  unless (keys %$classes) {
+    return $$self->[0]->collection ('by_class_name'. $; . $cns, $self, sub {
+      return ();
+    });
+  }
+
+  # 3.
+  return $$self->[0]->collection ('by_class_name'. $; . $cns, $self, sub {
+    my $node = $_[0];
+    my $is_quirks = (${$_[0]}->[0]->{data}->[0]->{compat_mode} || '') eq 'quirks';
+    %$classes = map { my $v = $_; $v =~ tr/A-Z/a-z/; $v => 1; } keys %$classes;
+
+    my $data = $$node->[0]->{data};
+    my @node_id = @{$data->[$$node->[1]]->{child_nodes} or []};
+    my @id;
+    while (@node_id) {
+      my $id = shift @node_id;
+      next unless $data->[$id]->{node_type} == ELEMENT_NODE;
+      unshift @node_id, @{$data->[$id]->{child_nodes} or []};
+      my $found = {};
+      if ($is_quirks) {
+        for (@{$data->[$id]->{class_list} || []}) {
+          my $v = $_;
+          $v =~ tr/A-Z/a-z/; ## ASCII case-insensitive.
+          $found->{$v} = 1 if $classes->{$v};
+        }
+      } else {
+        for (@{$data->[$id]->{class_list} || []}) {
+          $found->{$_} = 1 if $classes->{$_};
+        }
+      }
+      next unless keys %$found == keys %$classes;
+      push @id, $id;
+    }
+    return @id;
+  });
+} # get_elements_by_class_name
 
 sub text_content ($;$) {
   if (@_ > 1) {

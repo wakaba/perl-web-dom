@@ -18,13 +18,20 @@ C<Web::DOM::Document>.
 Return the L<Web::DOM::HTMLCollection> containg the child elements of
 the node.  [DOM]
 
+=item $col = $node->get_elements_by_class_name ($class_names)
+
+Return the L<Web::DOM::HTMLCollection> containing the descendant
+elements which have all classes specified as the argument.  The
+argument must be a space-separated list of class names.  [DOM]
+[MANAKAI]
+
 =item $col = $node->get_elements_by_tag_name ($local_name)
 
 Return the L<Web::DOM::HTMLCollection> containing the descendant
 elements whose local name is equal to the argument.  If the argument
 is C<*>, all descendant elements are contained.  [DOM] [MANAKAI]
 
-=item $col = $node->get_elements_by_tag_namens ($nsurl, $local_name)
+=item $col = $node->get_elements_by_tag_name_ns ($nsurl, $local_name)
 
 Return the L<Web::DOM::HTMLCollection> containing the descendant
 elements whose namespace URL and local name matching to the specified

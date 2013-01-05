@@ -669,6 +669,8 @@ sub _attribute_is ($$$%) {
           split /[\x09\x0A\x0C\x0D\x20]+/,
           (defined $value ? $value : '');
   }
+
+  $$self->[0]->children_changed ($$self->[1], ATTRIBUTE_NODE);
 } # _attribute_is
 
 sub _define_reflect_string ($$) {
