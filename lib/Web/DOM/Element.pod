@@ -27,6 +27,12 @@ attributes for the element.  [DOM] [DOMATTREXODUS]
 Return or set the explicit [base URI] property value of the element.
 [MANAKAI]
 
+=item $string = $el->class_name
+
+=item $el->class_name ($string)
+
+Return or set the C<class> attribute.  [DOM]
+
 =item $bool = $el->manakai_element_type_match ($nsurl, $local_name)
 
 Return whether the namespace URL and local name are equal to the
@@ -63,6 +69,12 @@ Return whether there is the specified attribute or not.  [DOM]
 
 Return whether there is the attribute with the specified namespace URL
 and local name or not.  [DOM]
+
+=item $string = $el->id
+
+=item $el->id ($string)
+
+Return or set the C<id> attribute.  [DOM]
 
 =item $arrayref = $el->manakai_ids
 

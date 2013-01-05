@@ -664,9 +664,10 @@ sub _attribute_is ($$$%) {
   if (not defined $nsref and defined $lnref and $$lnref eq 'class') {
     my $value = $self->get_attribute_ns (undef, $$lnref);
     my %found;
-    $$self->[2]->{classes} = [grep { length $_ and not $found{$_}++ }
-                              split /[\x09\x0A\x0C\x0D\x20]+/,
-                              (defined $value ? $value : '')];
+    @{$$self->[2]->{classes} ||= []}
+        = grep { length $_ and not $found{$_}++ }
+          split /[\x09\x0A\x0C\x0D\x20]+/,
+          (defined $value ? $value : '');
   }
 } # _attribute_is
 
@@ -676,6 +677,26 @@ sub manakai_ids ($) {
   my $id = $_[0]->get_attribute ('id');
   return defined $id ? [$id] : [];
 } # manakai_ids
+
+sub _define_reflect_string ($$) {
+  my ($perl_name, $content_name) = @_;
+  my $class = caller;
+  eval sprintf q{
+    sub %s::%s ($;$) {
+      if (@_ > 1) {
+        $_[0]->set_attribute_ns (undef, '%s', $_[1]);
+        return unless defined wantarray;
+      }
+
+      my $v = $_[0]->get_attribute_ns (undef, '%s');
+      return defined $v ? $v : '';
+    }
+    1;
+  }, $class, $perl_name, $content_name, $content_name or die $@;
+} # _define_reflect_string
+
+_define_reflect_string id => 'id';
+_define_reflect_string class_name => 'class';
 
 # XXX
 sub class_list {

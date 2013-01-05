@@ -264,7 +264,7 @@ the initial phase of the development include:
 
 =item DOM Core methods
 
-getElementById, getElementsByClassName, id, className, classList,
+getElementById, getElementsByClassName, classList,
 HTMLCollection.prototype.namedItem, HTMLCollection.prototype.%{} [DOM]
 
 =item baseURI and related methods [DOM] [HTML] [MANAKAI]

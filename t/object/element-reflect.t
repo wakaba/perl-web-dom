@@ -87,6 +87,51 @@ test {
   done $c;
 } n => 16, name => 'class_list / attribute is set / attribute is removed';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+
+  is $el->id, '';
+
+  $el->id ('hoge');
+  is $el->id, 'hoge';
+
+  $el->id (0);
+  is $el->id, '0';
+
+  $el->id (undef);
+  is $el->id, '';
+
+  done $c;
+} n => 4, name => 'id';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+
+  is $el->class_name, '';
+
+  $el->class_name ('hoge');
+  is $el->class_name, 'hoge';
+  is_deeply [@{$el->class_list}], ['hoge'];
+
+  $el->class_name (0);
+  is $el->class_name, '0';
+  is_deeply [@{$el->class_list}], ['0'];
+
+  $el->class_name (undef);
+  is $el->class_name, '';
+  is_deeply [@{$el->class_list}], [];
+
+  $el->class_name ('hoge fuga  ');
+  is $el->class_name, 'hoge fuga  ';
+  is_deeply [@{$el->class_list}], ['hoge', 'fuga'];
+
+  done $c;
+} n => 9, name => 'class_name';
+
 run_tests;
 
 =head1 LICENSE
