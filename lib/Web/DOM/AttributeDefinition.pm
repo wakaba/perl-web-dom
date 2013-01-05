@@ -76,7 +76,7 @@ sub allowed_tokens ($;$) {
   my $arrayref = ${$_[0]}->[2]->{allowed_tokens_arrayref} ||= do {
     require Web::DOM::StringArray;
     tie my @array, 'Web::DOM::StringArray',
-        ${$_[0]}->[2]->{allowed_tokens} ||= [], sub { };
+        ${$_[0]}->[2]->{allowed_tokens} ||= [], sub { }, sub { $_[0] };
     \@array;
   };
   if (@_ > 1) {

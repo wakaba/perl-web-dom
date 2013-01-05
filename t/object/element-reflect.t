@@ -132,6 +132,25 @@ test {
   done $c;
 } n => 9, name => 'class_name';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  my $tokens = $el->class_list;
+
+  isa_ok $tokens, 'Web::DOM::TokenList';
+  is scalar @$tokens, 0;
+
+  push @$tokens, 'aaa';
+  is $el->class_name, 'aaa';
+
+  $el->set_attribute (class => 'bb  ccc  ');
+  is ''.$tokens, 'bb ccc';
+  is $el->get_attribute ('class'), 'bb  ccc  ';
+  
+  done $c;
+} n => 5, name => 'class_list';
+
 run_tests;
 
 =head1 LICENSE

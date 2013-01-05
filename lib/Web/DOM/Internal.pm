@@ -38,6 +38,7 @@ sub import ($;@) {
 
 package Web::DOM::Internal::Objects;
 use Scalar::Util qw(weaken);
+push our @CARP_NOT, qw(Web::DOM::Exception Web::DOM::StringArray);
 
 ## Nodes of a DOM document share an object store, which is represented
 ## by this class.  Each node in the store is distinguished by the node
@@ -63,6 +64,9 @@ sub new ($) {
 
     ## Collections
     # cols
+
+    ## Token lists
+    # tokens
 
     ## Other objects
     # impl
@@ -100,7 +104,7 @@ sub add_data ($$) {
 ##   attribute_type                 integer   [attribute type]
 ##   attrs                          {{attr}}  Attributes by name
 ##   child_nodes                    [node_id] Child nodes
-##   classes                        [string]  Classes
+##   class_list                     [string]  Classes
 ##   compat_mode                    string    Quirksness
 ##   content_type                   string    MIME type
 ##   data                           \string   Data
@@ -214,6 +218,55 @@ sub collection ($$$$) {
   weaken ($self->{cols}->[$id]->{$key} = $nl);
   return $nl;
 } # collection
+
+## Live token data structure
+##
+##   \ DOMStringArray
+##
+## $self->{tokens}->[$node_id]->
+## 
+##   - {class_list}           - $el->class_list
+##
+## $element->class_name ------------------------------------------->+
+## $$element->[2]->{attr...}... = class attribute <--------------<--+
+##   |                                                              |
+##   v $element->_attribute_is                                      |
+## $$element->[2]->{class_list} = classes arrayref                  |
+## $$element->[0]->{tokenlists}->{class_list}->[$id] =weak= bless [ |
+##   ::DOMStringArray::                                             |
+##   0 - classes arrayref                                           |
+##   1 - update steps --------------------------------------------->+
+## ], DOMTokenList
+
+our $TokenListClass = {};
+
+sub tokens ($$$$) {
+  my ($self, $key, $node, $updater) = @_;
+  my $id = $$node->[1];
+  return $self->{tokens}->[$id]->{$key}
+      if $self->{tokens}->[$id]->{$key};
+
+  require Web::DOM::StringArray;
+  require Web::DOM::Exception;
+  tie my @array, 'Web::DOM::StringArray', $$node->[2]->{$key} ||= [], $updater,
+      sub {
+        if ($_[0] eq '') {
+          _throw Web::DOM::Exception 'SyntaxError',
+              'The token cannot be the empty string';
+        } elsif ($_[0] =~ /[\x09\x0A\x0C\x0D\x20]/) {
+          _throw Web::DOM::Exception 'InvalidCharacterError',
+              'The token cannot contain any ASCII white space character';
+        }
+        return $_[0];
+      };
+
+  my $class = $TokenListClass->{$key} || 'Web::DOM::TokenList';
+  eval qq{ require $class } or die $@;
+  my $nl = bless \@array, $class;
+  weaken ($self->{tokens}->[$id]->{$key} = $nl);
+
+  return $nl;
+} # tokens
 
 sub children_changed ($$$) {
   my $cols = $_[0]->{cols};

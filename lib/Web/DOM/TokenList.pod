@@ -1,0 +1,95 @@
+=head1 NAME
+
+Web::DOM::TokenList - The DOM |DOMTokenList| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::TokenList> class implements the DOM C<DOMTokenList>
+interface.
+
+=head1 METHODS
+
+Following methods are available:
+
+=over 4
+
+=item push @$tokens, $token1, $token2, ...
+
+=item $tokens->add ($token1, $token2, ...)
+
+Append specified tokens to the list.  [DOM] [DOMPERL]
+
+=item $boolean = $tokens->contains ($token)
+
+Return whether the list contains the specified token or not.  [DOM]
+
+=item $string = $tokens->[$index]
+
+=item $string = $tokens->item ($index)
+
+Return the token in the list, specified by its index.  [DOM] [DOMPERL]
+
+Use of the C<item> method is discouraged as it doesn't support
+Perl-ish ways to access items, such as negative indexing, while C<<
+$node_list->[-1] >> works as intended.
+
+=item $number = @$tokens
+
+=item $number = $tokens->length
+
+Return the number of the tokens in the list.  [DOM] [DOMPERL]
+
+=item $tokens->remove ($token1, $token2, ...)
+
+Remove the specified tokens from the list.  [DOM]
+
+=item $bool = $tokens->toggle ($token)
+
+=item $bool = $tokens->toggle ($token, $bool)
+
+Change whether the token appears in the list or not.  If the second
+argument is specified, the status is set to match that value.
+Otherwise, the status is changed to not equal to the current status.
+The method returns the new status.  [DOM]
+
+=item $string = '' . $tokens
+
+Return the serialized representation of the tokens, joined by the
+space character.  [DOM] [DOMPERL]
+
+=back
+
+The object supports Perl standard operations for array references,
+e.g. C<< pop @$tokens >>.  [DOMPERL]
+
+=head1 SPECIFICATIONS
+
+=over 4
+
+=item DOM
+
+DOM Living Standard <http://dom.spec.whatwg.org/>.
+
+=item DOMPERL
+
+manakai's DOM Perl Binding
+<http://suika.fam.cx/~wakaba/wiki/sw/n/manakai%27s%20DOM%20Perl%20Binding>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Element>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2013 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

@@ -27,6 +27,11 @@ attributes for the element.  [DOM] [DOMATTREXODUS]
 Return or set the explicit [base URI] property value of the element.
 [MANAKAI]
 
+=item $tokens = $el->class_list
+
+Return the L<Web::DOM::TokenList> object for the C<class> attribute.
+[DOM]
+
 =item $string = $el->class_name
 
 =item $el->class_name ($string)

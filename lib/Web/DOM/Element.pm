@@ -664,19 +664,12 @@ sub _attribute_is ($$$%) {
   if (not defined $nsref and defined $lnref and $$lnref eq 'class') {
     my $value = $self->get_attribute_ns (undef, $$lnref);
     my %found;
-    @{$$self->[2]->{classes} ||= []}
+    @{$$self->[2]->{class_list} ||= []}
         = grep { length $_ and not $found{$_}++ }
           split /[\x09\x0A\x0C\x0D\x20]+/,
           (defined $value ? $value : '');
   }
 } # _attribute_is
-
-# XXX id / class attrs
-
-sub manakai_ids ($) {
-  my $id = $_[0]->get_attribute ('id');
-  return defined $id ? [$id] : [];
-} # manakai_ids
 
 sub _define_reflect_string ($$) {
   my ($perl_name, $content_name) = @_;
@@ -696,11 +689,20 @@ sub _define_reflect_string ($$) {
 } # _define_reflect_string
 
 _define_reflect_string id => 'id';
+
+sub manakai_ids ($) {
+  my $id = $_[0]->get_attribute ('id');
+  return defined $id ? [$id] : [];
+} # manakai_ids
+
 _define_reflect_string class_name => 'class';
 
-# XXX
-sub class_list {
-  return ${$_[0]}->[2]->{classes} ||= [];
+sub class_list ($) {
+  my $self = $_[0];
+  return $$self->[0]->tokens ('class_list', $self, sub {
+    $self->set_attribute_ns
+        (undef, class => join ' ', @{$$self->[2]->{class_list} ||= []});
+  });
 } # class_list
 
 sub manakai_base_uri ($;$) {
