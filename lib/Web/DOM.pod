@@ -262,10 +262,6 @@ the initial phase of the development include:
 
 =over 4
 
-=item DOM Core methods
-
-getElementById
-
 =item baseURI and related methods [DOM] [HTML] [MANAKAI]
 
 =item Mutation observers [DOM]

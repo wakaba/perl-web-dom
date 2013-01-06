@@ -748,13 +748,25 @@ sub body ($;$) {
   return undef;
 } # body
 
-# XXX getElementById
+# XXX need O(1) implementation...
+sub get_element_by_id ($$) {
+  my $id = ''.$_[1];
+  return undef unless length $id;
+  my @nodes = $_[0]->child_nodes->to_list;
+   while (@nodes) {
+    my $node = shift @nodes;
+    next unless $node->node_type == ELEMENT_NODE;
+    return $node if $node->id eq $id;
+    unshift @nodes, $node->child_nodes->to_list;
+  }
+  return undef;
+} # get_element_by_id
 
 1;
 
 =head1 LICENSE
 
-Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
+Copyright 2007-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
