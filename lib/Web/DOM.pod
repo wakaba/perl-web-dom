@@ -142,9 +142,12 @@ Specifications defining features supported by the modules include:
 
 =over
 
-=item DOM
+=item DOM and Selectors API
 
 DOM Standard <http://dom.spec.whatwg.org/>.
+
+DOM Standard - Selectors API
+<https://github.com/whatwg/dom/pull/4/files>.
 
 =item DOMPARSING
 
