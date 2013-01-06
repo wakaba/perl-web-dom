@@ -168,6 +168,11 @@ Return the document element of the document, if any.  [DOM]
 Return the L<Web::DOM::Configuration> object for the document.
 [DOM3CORE] [MANAKAI]
 
+=item $el = $doc->get_element_by_id ($id)
+
+Return the element whose ID is equal to the argument, if any, or
+C<undef>.  [DOM]
+
 =item $bool = $doc->manakai_has_bom
 
 =item $doc->manakai_has_bom ($bool)
@@ -299,7 +304,7 @@ Wakaba <wakaba@suikawiki.org>.
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

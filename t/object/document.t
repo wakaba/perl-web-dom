@@ -505,11 +505,98 @@ test {
   done $c;
 } n => 4, name => 'html structure, html, head, frameset, body';
 
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hoge');
+  $el->id ('foo');
+  $doc->append_child ($el);
+
+  is $doc->get_element_by_id ('foo'), $el;
+  is $doc->get_element_by_id ('FOO'), undef;
+
+  done $c;
+} n => 2, name => 'get_element_by_id';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  my $el2 = $doc->create_element ('hoge');
+  $el2->id ('foo');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  is $doc->get_element_by_id ('foo'), $el2;
+  is $doc->get_element_by_id ('FOO'), undef;
+
+  done $c;
+} n => 2, name => 'get_element_by_id';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  my $el2 = $doc->create_element ('hoge');
+  my $el3 = $doc->create_element ('hoge');
+  $el2->id ('foo');
+  $el3->id ('foo');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+  $el1->append_child ($el3);
+
+  is $doc->get_element_by_id ('foo'), $el2;
+
+  done $c;
+} n => 1, name => 'get_element_by_id';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  my $el2 = $doc->create_element ('hoge');
+  $el2->id ('');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  is $doc->get_element_by_id (''), undef;
+
+  done $c;
+} n => 1, name => 'get_element_by_id';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  my $el2 = $doc->create_element ('hoge');
+  $el2->id ('120');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  is $doc->get_element_by_id ('120'), $el2;
+
+  done $c;
+} n => 1, name => 'get_element_by_id';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el1 = $doc->create_element ('hoge');
+  my $el2 = $doc->create_element ('hoge');
+  $el2->id ('abc  def');
+  $doc->append_child ($el1);
+  $el1->append_child ($el2);
+
+  is $doc->get_element_by_id ('abc  def'), $el2;
+
+  done $c;
+} n => 1, name => 'get_element_by_id';
+
 run_tests;
 
 =head1 LICENSE
 
-Copyright 2012 Wakaba <wakaba@suikawiki.org>.
+Copyright 2012-2013 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
