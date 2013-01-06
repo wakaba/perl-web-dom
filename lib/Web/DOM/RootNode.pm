@@ -115,6 +115,51 @@ sub get_elements_by_class_name ($$) {
   });
 } # get_elements_by_class_name
 
+sub query_selector ($$;$) {
+  require Web::CSS::Selectors::API;
+  my $api = Web::CSS::Selectors::API->new;
+  $api->is_html (${$_[0]}->[0]->{data}->[0]->{is_html});
+  $api->root_node ($_[0]);
+  $api->set_selectors (''.$_[1], $_[2]);
+  # XXX DOM Perl Binding for coderef
+  if (not defined $api->selectors) {
+    if ($api->selectors_has_ns_error) {
+      _throw Web::DOM::Exception 'NamespaceError',
+          'The specified selectors has unresolvable namespace prefix';
+    } else {
+      _throw Web::DOM::Exception 'SyntaxError',
+          'The specified selectors has syntax error';
+    }
+  }
+  return $api->get_elements; # or undef
+} # query_selector
+
+sub query_selector_all ($$;$) {
+  require Web::CSS::Selectors::API;
+  my $api = Web::CSS::Selectors::API->new;
+  $api->is_html (${$_[0]}->[0]->{data}->[0]->{is_html});
+  $api->root_node ($_[0]);
+  $api->return_all (1);
+  $api->set_selectors (''.$_[1], $_[2]);
+  # XXX DOM Perl Binding for coderef
+  if (not defined $api->selectors) {
+    if ($api->selectors_has_ns_error) {
+      _throw Web::DOM::Exception 'NamespaceError',
+          'The specified selectors has unresolvable namespace prefix';
+    } else {
+      _throw Web::DOM::Exception 'SyntaxError',
+          'The specified selectors has syntax error';
+    }
+  }
+
+  # 0, 3 - Keys for comparison
+  # 1 - Items
+  # 2 - Unused
+  require Web::DOM::StaticNodeList;
+  return bless \[''.$_[0], $api->get_elements, undef, ''.$api],
+      'Web::DOM::StaticNodeList';
+} # query_selector_all
+
 sub text_content ($;$) {
   if (@_ > 1) {
     my $self = $_[0];

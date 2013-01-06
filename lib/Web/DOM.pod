@@ -193,8 +193,9 @@ Following features require the perl-web-markup package
 its family): C<inner_html>, C<outer_html>, C<insert_adjacent_html>,
 and C<DOMParser>.
 
-XXX And some features will require additional modules.  For example,
-base URL resolution will require URL parsing modules.
+Following features require the L<Web::CSS::Selectors::API> module in
+the perl-web-css package <https://github.com/manakai/perl-web-css>:
+C<query_selector> and C<query_selector_all>.
 
 =head1 DEVELOPMENT
 
@@ -266,7 +267,7 @@ the initial phase of the development include:
 
 =item Mutation observers [DOM]
 
-=item Selectors API
+=item Selectors API Level 2 features
 
 =item DOMSettableTokenList interface [DOM]
 

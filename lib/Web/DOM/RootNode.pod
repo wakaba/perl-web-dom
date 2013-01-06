@@ -71,6 +71,28 @@ See also L<Web::DOM/DEPENDENCY>.
 Return the last element child of the node.  If there is no such node,
 C<undef> is returned.  [DOM]
 
+=item $element = $node->query_selector ($selectors)
+
+Return the first element identified by the group of selectors
+specified as the argument, if any, or C<undef>.  [SELECTORSAPI]
+[NSRESOLVER]
+
+For the list of supported Selectors features, see the documentation of
+the L<Web::CSS::Selectors::API> module.
+
+See also L<Web::DOM/DEPENDENCY>.
+
+=item $nodelist = $node->query_selector_all ($selectors)
+
+Return a static L<Web::DOM::NodeList> containing the elements
+identified by the group of selectors specified as the argument.
+[SELECTORSAPI] [NSRESOLVER]
+
+For the list of supported Selectors features, see the documentation of
+the L<Web::CSS::Selectors::API> module.
+
+See also L<Web::DOM/DEPENDENCY>.
+
 =back
 
 =head1 SPECIFICATIONS
@@ -94,6 +116,18 @@ DOM Parsing and Serialization <http://domparsing.spec.whatwg.org/>.
 
 Document innerHTML
 <http://html5.org/tools/web-apps-tracker?from=6531&to=6532>.
+
+=item SELECTORSAPI
+
+DOM Standard - Selectors API
+<https://github.com/whatwg/dom/pull/4/files>.
+
+Selectors API Level 2 <http://dev.w3.org/2006/webapi/selectors-api2/>.
+
+=item NSRESOLVER
+
+Selectors API Editor's Draft 29 August 2007
+<http://dev.w3.org/cvsweb/~checkout~/2006/webapi/selectors-api/Overview.html?rev=1.28&content-type=text/html;%20charset=utf-8>.
 
 =item MANAKAI
 

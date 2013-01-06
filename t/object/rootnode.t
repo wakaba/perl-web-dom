@@ -2,8 +2,10 @@ use strict;
 use warnings;
 use Path::Class;
 use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'modules', '*', 'lib')->stringify;
+use lib glob file (__FILE__)->dir->parent->parent->subdir ('t_deps', 'lib')->stringify;
 use Test::X1;
 use Test::More;
+use Test::DOM::Exception;
 use Web::DOM::Document;
 
 {
@@ -1043,6 +1045,229 @@ test {
 
   done $c;
 } n => 3, name => 'get_elements_by_class_name equality';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('ss');
+  is $el->query_selector ('hoge'), undef;
+  my $list = $el->query_selector_all ('hoge');
+  isa_ok $list, 'Web::DOM::NodeList';
+  is $list->length, 0;
+  is_deeply [$list->to_list], [];
+  is_deeply $list->to_a, [];
+  done $c;
+} n => 5, name => 'query_selector, query_selector_all empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('ss');
+  my $el2 = $doc->create_element ('ss');
+  my $el3 = $doc->create_element ('t');
+  my $el4 = $doc->create_element ('ss');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el3->append_child ($el4);
+  is $el->query_selector ('hoge'), undef;
+  is $el->query_selector ('ss'), $el2;
+  my $list = $el->query_selector_all ('ss');
+  isa_ok $list, 'Web::DOM::NodeList';
+  is $list->length, 2;
+  is_deeply [$list->to_list], [$el2, $el4];
+  is_deeply $list->to_a, [$el2, $el4];
+  is $el->query_selector (':nth-child(2) ss'), $el4;
+  is $el->query_selector (':nth-child(2) ss hoge'), undef;
+  done $c;
+} n => 8, name => 'query_selector, query_selector_all not empty';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_document_fragment;
+  my $el2 = $doc->create_element ('ss');
+  my $el3 = $doc->create_element ('t');
+  my $el4 = $doc->create_element ('ss');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el3->append_child ($el4);
+  is $el->query_selector ('hoge'), undef;
+  is $el->query_selector ('ss'), $el2;
+  my $list = $el->query_selector_all ('ss');
+  isa_ok $list, 'Web::DOM::NodeList';
+  is $list->length, 2;
+  is_deeply [$list->to_list], [$el2, $el4];
+  is_deeply $list->to_a, [$el2, $el4];
+  is $el->query_selector (':nth-child(2) ss'), $el4;
+  is $el->query_selector (':nth-child(2) ss hoge'), undef;
+  done $c;
+} n => 8, name => 'query_selector, query_selector_all document_fragment';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('hge');
+  my $el2 = $doc->create_element ('ss');
+  my $el3 = $doc->create_element ('t');
+  my $el4 = $doc->create_element ('ss');
+  $doc->append_child ($el);
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el3->append_child ($el4);
+  is $doc->query_selector ('hoge'), undef;
+  is $doc->query_selector ('ss'), $el2;
+  my $list = $doc->query_selector_all ('ss');
+  isa_ok $list, 'Web::DOM::NodeList';
+  is $list->length, 2;
+  is_deeply [$list->to_list], [$el2, $el4];
+  is_deeply $list->to_a, [$el2, $el4];
+  is $doc->query_selector (':nth-child(2) ss'), $el4;
+  is $doc->query_selector (':nth-child(2) ss hoge'), undef;
+  done $c;
+} n => 8, name => 'query_selector, query_selector_all document';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('ss');
+  my $el2 = $doc->create_element ('ss');
+  my $el3 = $doc->create_element ('t');
+  my $el4 = $doc->create_element ('ss');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el3->append_child ($el4);
+  dies_here_ok {
+    $el->query_selector ('hoge,');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'SyntaxError';
+  is $@->message, 'The specified selectors has syntax error';
+  dies_here_ok {
+    $el->query_selector_all ('hoge,');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'SyntaxError';
+  is $@->message, 'The specified selectors has syntax error';
+  done $c;
+} n => 8, name => 'query_selector, query_selector_all syntax error';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('ss');
+  my $el2 = $doc->create_element ('ss');
+  my $el3 = $doc->create_element ('t');
+  my $el4 = $doc->create_element ('ss');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el3->append_child ($el4);
+  dies_here_ok {
+    $el->query_selector ('fuga|hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'The specified selectors has unresolvable namespace prefix';
+  dies_here_ok {
+    $el->query_selector_all ('fuga|hoge');
+  };
+  isa_ok $@, 'Web::DOM::Exception';
+  is $@->name, 'NamespaceError';
+  is $@->message, 'The specified selectors has unresolvable namespace prefix';
+  done $c;
+} n => 8, name => 'query_selector, query_selector_all namespace error';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('ss');
+  my $el2 = $doc->create_element ('ss');
+  my $el3 = $doc->create_element ('t');
+  my $el4 = $doc->create_element ('ss');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el3->append_child ($el4);
+  my $resolver = sub {
+    my $prefix = $_[0] // '';
+    if ($prefix eq 'html') {
+      return 'http://www.w3.org/1999/xhtml';
+    } elsif ($prefix eq 'svg') {
+      return 'http://www.w3.org/2000/svg';
+    } else {
+      return undef;
+    }
+  };
+  is $el->query_selector ('html|ss', $resolver), $el2;
+  dies_here_ok {
+    $el->query_selector ('HTML|ss', $resolver);
+  };
+  is $@->name, 'NamespaceError';
+  is $el->query_selector ('svg|ss', $resolver), undef;
+  my $list = $el->query_selector_all ('html|ss', $resolver);
+  isa_ok $list, 'Web::DOM::NodeList';
+  is $list->length, 2;
+  is $list->item (0), $el2;
+  is $list->[1], $el4;
+  my $list2 = $el->query_selector_all ('svg|ss', $resolver);
+  is $list2->length, 0;
+  done $c;
+} n => 9, name => 'query_selector, query_selector_all ns resolver';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('ss');
+  my $el2 = $doc->create_element ('ss');
+  my $el3 = $doc->create_element ('t');
+  my $el4 = $doc->create_element ('ss');
+  $el->append_child ($el2);
+  $el->append_child ($el3);
+  $el3->append_child ($el4);
+  my $resolver = sub {
+    return 'http://www.w3.org/1999/xhtml';
+  };
+  is $el->query_selector ('ss', $resolver), $el2;
+  is $el->query_selector ('ss', sub { 'http://hoge/' }), undef;
+  is $el->query_selector ('ss', sub { '' }), undef; # XXX
+  is $el->query_selector ('ss', sub { undef }), $el2; # XXX
+  is $el->query_selector_all ('ss', $resolver)->length, 2;
+  is $el->query_selector_all ('ss', sub { 'http://foo/' })->length, 0;
+  is $el->query_selector_all ('ss', sub { '' })->length, 0; # XXX
+  is $el->query_selector_all ('ss', sub { undef })->length, 2; # XXX
+  done $c;
+} n => 8, name => 'query_selector, query_selector_all ns resolver default';
+
+# XXX exceptions in nsresolver
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('ff');
+  my $nl1 = $el->query_selector_all ('hoge');
+  is $nl1->length, 0;
+  my $el2 = $doc->create_element ('hoge');
+  $el->append_child ($el2);
+  my $nl2 = $el->query_selector_all ('hoge');
+  is $nl1->length, 0;
+  is $nl2->length, 1;
+  isnt $nl2, $nl1;
+  done $c;
+} n => 4, name => 'query_selector_all nodelist equality';
+
+test {
+  my $c = shift;
+  my $doc = new Web::DOM::Document;
+  my $el = $doc->create_element ('aa');
+  my $el1 = $doc->create_element ('a');
+  my $el2 = $doc->create_element ('b');
+  $el->append_child ($el1);
+  $el->append_child ($el2);
+
+  is $el->query_selector ('b, a'), $el1;
+  is $el->query_selector_all ('b, a')->[0], $el1;
+  is $el->query_selector_all ('b, a')->[1], $el2;
+
+  done $c;
+} n => 3, name => 'query_selector, query_selector_all';
 
 run_tests;
 
