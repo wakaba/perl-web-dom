@@ -155,6 +155,54 @@ my $NodeClassByNodeType = {
   81002 => 'Web::DOM::AttributeDefinition',
 };
 
+my $ElementClass = {};
+my $ClassToModule = {};
+
+for (
+  ['*' => 'HTMLUnknownElement'],
+  ['html' => 'HTMLHtmlElement'],
+  ['head' => 'HTMLHeadElement'],
+  ['title' => 'HTMLTitleElement'],
+  ['base' => 'HTMLBaseElement'],
+  ['link' => 'HTMLLinkElement'],
+  ['meta' => 'HTMLMetaElement'],
+  ['style' => 'HTMLStyleElement'],
+  ['script' => 'HTMLScriptElement'],
+  ['noscript' => 'HTMLElement'],
+  ['body' => 'HTMLBodyElement'],
+  ['article' => 'HTMLElement'],
+  ['section' => 'HTMLElement'],
+  ['nav' => 'HTMLElement'],
+  ['aside' => 'HTMLElement'],
+  ['h1' => 'HTMLHeadingElement'],
+  ['h2' => 'HTMLHeadingElement'],
+  ['h3' => 'HTMLHeadingElement'],
+  ['h4' => 'HTMLHeadingElement'],
+  ['h5' => 'HTMLHeadingElement'],
+  ['h6' => 'HTMLHeadingElement'],
+  ['hgroup' => 'HTMLElement'],
+  ['header' => 'HTMLElement'],
+  ['footer' => 'HTMLElement'],
+  ['address' => 'HTMLElement'],
+  ['p' => 'HTMLParagraphElement'],
+  ['hr' => 'HTMLHRElement'],
+  ['pre' => 'HTMLPreElement'],
+  ['blockquote' => 'HTMLQuoteElement'],
+  ['ol' => 'HTMLOListElement'],
+  ['ul' => 'HTMLUListElement'],
+  ['li' => 'HTMLLIElement'],
+  ['dl' => 'HTMLDListElement'],
+  ['dt' => 'HTMLElement'],
+  ['dd' => 'HTMLElement'],
+  ['figure' => 'HTMLElement'],
+  ['figcaption' => 'HTMLElement'],
+  ['div' => 'HTMLDivElement'],
+) {
+  $ElementClass->{Web::DOM::Internal::HTML_NS}->{$_->[0]}
+      = "Web::DOM::$_->[1]";
+  $ClassToModule->{"Web::DOM::$_->[1]"} = "Web::DOM::HTMLElement";
+}
+
 sub node ($$) {
   my ($self, $id) = @_;
   return $self->{nodes}->[$id] if $self->{nodes}->[$id];
@@ -163,15 +211,18 @@ sub node ($$) {
   my $class;
   my $nt = $data->{node_type};
   if ($nt == 1) {
-    $class = 'Web::DOM::Element';
-    # XXX Element subclasses
+    my $ns = $data->{namespace_uri} || \'';
+    $class = $ElementClass->{$$ns}->{${$data->{local_name}}} ||
+        $ElementClass->{$$ns}->{'*'} ||
+        'Web::DOM::Element';
   } elsif ($nt == 9) {
     $class = $data->{is_XMLDocument}
         ? 'Web::DOM::XMLDocument' : 'Web::DOM::Document';
   } else {
     $class = $NodeClassByNodeType->{$nt};
   }
-  eval qq{ require $class } or die $@;
+  my $module = $ClassToModule->{$class} || $class;
+  eval qq{ require $module } or die $@;
   my $node = bless \[$self, $id, $data], $class;
   weaken ($self->{nodes}->[$id] = $node);
   return $node;

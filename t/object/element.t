@@ -7,6 +7,81 @@ use Test::X1;
 use Test::More;
 use Test::DOM::Exception;
 use Web::DOM::Document;
+use Web::DOM::Internal;
+
+for my $test (
+  [[undef, 'hoge'], ['Element'], ['HTMLElement']],
+  [[HTML_NS, 'fuga'], ['Element', 'HTMLElement', 'HTMLUnknownElement'], []],
+  [[HTML_NS, 'html'], ['Element', 'HTMLElement', 'HTMLHtmlElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'head'], ['Element', 'HTMLElement', 'HTMLHeadElement'],
+   ['HTMLUnknownElement', 'HTMLHtmlElement']],
+  [[undef, 'head'], ['Element'],
+   ['HTMLElement', 'HTMLUnknownElement', 'HTMLHtmlElement']],
+  [[HTML_NS, 'noscript'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'article'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'section'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'nav'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'aside'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'h1'], ['Element', 'HTMLElement', 'HTMLHeadingElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'h2'], ['Element', 'HTMLElement', 'HTMLHeadingElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'h3'], ['Element', 'HTMLElement', 'HTMLHeadingElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'h4'], ['Element', 'HTMLElement', 'HTMLHeadingElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'h5'], ['Element', 'HTMLElement', 'HTMLHeadingElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'h6'], ['Element', 'HTMLElement', 'HTMLHeadingElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'hgroup'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'header'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'footer'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'address'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'p'], ['Element', 'HTMLElement', 'HTMLParagraphElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'hr'], ['Element', 'HTMLElement', 'HTMLHRElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'pre'], ['Element', 'HTMLElement', 'HTMLPreElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'ul'], ['Element', 'HTMLElement', 'HTMLUListElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'dl'], ['Element', 'HTMLElement', 'HTMLDListElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'dt'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'dd'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'figure'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'figcaption'], ['Element', 'HTMLElement'],
+   ['HTMLUnknownElement']],
+  [[HTML_NS, 'div'], ['Element', 'HTMLElement', 'HTMLDivElement'],
+   ['HTMLUnknownElement']],
+) {
+  test {
+    my $c = shift;
+    my $doc = new Web::DOM::Document;
+    my $el = $doc->create_element_ns (@{$test->[0]});
+    for (@{$test->[1]}) {
+      ok $el->isa ("Web::DOM::$_");
+    }
+    for (@{$test->[2]}) {
+      ok not $el->isa ("Web::DOM::$_");
+    }
+    done $c;
+  } name => ['interface', @{$test->[0]}], n => @{$test->[1]} + @{$test->[2]};
+}
 
 test {
   my $c = shift;

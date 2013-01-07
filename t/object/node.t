@@ -136,7 +136,7 @@ test {
   my $doc = new Web::DOM::Document;
   like $doc, qr{^Web::DOM::Document=};
 
-  my $el = $doc->create_element ('foo');
+  my $el = $doc->create_element_ns (undef, 'foo');
   like $el, qr{^Web::DOM::Element=};
 
   my $doc_s = $doc . '';
