@@ -8,10 +8,23 @@ use Web::DOM::Node;
 use Web::DOM::ParentNode;
 use Web::DOM::ChildNode;
 push our @ISA, qw(Web::DOM::ParentNode Web::DOM::ChildNode Web::DOM::Node);
+use Carp;
 use Char::Class::XML qw(
   InXMLNameChar InXMLNameStartChar
   InXMLNCNameChar InXMLNCNameStartChar
 );
+
+our @EXPORT;
+sub import ($;@) {
+  my $from_class = shift;
+  my ($to_class, $file, $line) = caller;
+  for (@_ ? @_ : @EXPORT) {
+    my $code = $from_class->can ($_)
+        or croak qq{"$_" is not exported by the $from_class module at $file line $line};
+    no strict 'refs';
+    *{$to_class . '::' . $_} = $code;
+  }
+} # import
 
 *node_name = \&tag_name;
 
@@ -673,6 +686,7 @@ sub _attribute_is ($$$%) {
   $$self->[0]->children_changed ($$self->[1], ATTRIBUTE_NODE);
 } # _attribute_is
 
+push @EXPORT, qw(_define_reflect_string);
 sub _define_reflect_string ($$) {
   my ($perl_name, $content_name) = @_;
   my $class = caller;

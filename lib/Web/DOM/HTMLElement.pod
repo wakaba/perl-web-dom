@@ -1,0 +1,137 @@
+=head1 NAME
+
+Web::DOM::HTMLElement - The DOM |HTMLElement| object
+
+=head1 DESCRIPTION
+
+The C<Web::DOM::HTMLElement> class implements the DOM C<HTMLElement>
+interface.  The class is used by any element in the HTML namespace.
+
+=head1 METHODS
+
+In addition to the methods available for the L<Web::DOM::Element>
+class, following methods are available:
+
+=over 4
+
+=item Reflecting methods
+
+Following methods return the current value or specify the new value
+for the attribute whose name is same as the method name: C<title>,
+C<lang>, C<itemid>, C<accesskey>.
+
+For example:
+
+  $el->lang ('ja');
+  is $el->lang, 'ja';
+  is $el->get_attribute ('lang'), 'ja';
+
+=back
+
+Most HTML elements have their own subclasses.  For example, any HTML
+C<p> element uses the L<Web::DOM::HTMLParagraphElement> class, while
+any HTML C<input> element uses the L<Web::DOM::HTMLInputElement>
+class.  There are following subclasses:
+
+L<Web::DOM::HTMLUnknownElement>,
+L<Web::DOM::HTMLHtmlElement>,
+L<Web::DOM::HTMLHeadElement>,
+L<Web::DOM::HTMLTitleElement>,
+L<Web::DOM::HTMLBaseElement>,
+L<Web::DOM::HTMLLinkElement>,
+L<Web::DOM::HTMLMetaElement>,
+L<Web::DOM::HTMLStyleElement>,
+L<Web::DOM::HTMLScriptElement>,
+L<Web::DOM::HTMLBodyElement>,
+L<Web::DOM::HTMLHeadingElement>,
+L<Web::DOM::HTMLParagraphElement>,
+L<Web::DOM::HTMLHRElement>,
+L<Web::DOM::HTMLPreElement>,
+L<Web::DOM::HTMLQuoteElement>,
+L<Web::DOM::HTMLOListElement>,
+L<Web::DOM::HTMLUListElement>,
+L<Web::DOM::HTMLLIElement>,
+L<Web::DOM::HTMLDListElement>,
+L<Web::DOM::HTMLDivElement>,
+L<Web::DOM::HTMLAnchorElement>,
+L<Web::DOM::HTMLDataElement>,
+L<Web::DOM::HTMLTimeElement>,
+L<Web::DOM::HTMLSpanElement>,
+L<Web::DOM::HTMLBRElement>,
+L<Web::DOM::HTMLModElement>,
+L<Web::DOM::HTMLImageElement>,
+L<Web::DOM::HTMLIFrameElement>,
+L<Web::DOM::HTMLEmbedElement>,
+L<Web::DOM::HTMLObjectElement>,
+L<Web::DOM::HTMLParamElement>,
+L<Web::DOM::HTMLMediaElement>,
+L<Web::DOM::HTMLVideoElement>,
+L<Web::DOM::HTMLAudioElement>,
+L<Web::DOM::HTMLSourceElement>,
+L<Web::DOM::HTMLTrackElement>,
+L<Web::DOM::HTMLCanvasElement>,
+L<Web::DOM::HTMLMapElement>,
+L<Web::DOM::HTMLAreaElement>,
+L<Web::DOM::HTMLTableElement>,
+L<Web::DOM::HTMLTableCaptionElement>,
+L<Web::DOM::HTMLTableColElement>,
+L<Web::DOM::HTMLTableSectionElement>,
+L<Web::DOM::HTMLTableRowElement>,
+L<Web::DOM::HTMLTableCellElement>,
+L<Web::DOM::HTMLTableDataCellElement>,
+L<Web::DOM::HTMLTableHeaderCellElement>,
+L<Web::DOM::HTMLFormElement>,
+L<Web::DOM::HTMLFieldSetElement>,
+L<Web::DOM::HTMLLegendElement>,
+L<Web::DOM::HTMLLabelElement>,
+L<Web::DOM::HTMLInputElement>,
+L<Web::DOM::HTMLButtonElement>,
+L<Web::DOM::HTMLSelectElement>,
+L<Web::DOM::HTMLDataListElement>,
+L<Web::DOM::HTMLOptGroupElement>,
+L<Web::DOM::HTMLOptionElement>,
+L<Web::DOM::HTMLTextAreaElement>,
+L<Web::DOM::HTMLKeygenElement>,
+L<Web::DOM::HTMLOutputElement>,
+L<Web::DOM::HTMLProgressElement>,
+L<Web::DOM::HTMLMeterElement>,
+L<Web::DOM::HTMLDetailsElement>,
+L<Web::DOM::HTMLMenuElement>,
+L<Web::DOM::HTMLMenuItemElement>,
+L<Web::DOM::HTMLDialogElement>,
+L<Web::DOM::HTMLAppletElement>,
+L<Web::DOM::HTMLMarqueeElement>,
+L<Web::DOM::HTMLFrameSetElement>,
+L<Web::DOM::HTMLFrameElement>,
+L<Web::DOM::HTMLBaseFontElement>,
+L<Web::DOM::HTMLDirectoryElement>,
+L<Web::DOM::HTMLFontElement>,
+L<Web::DOM::HTMLTemplateElement>.
+
+=head1 SPECIFICATION
+
+=over 4
+
+=item HTML
+
+HTML Standard
+<http://www.whatwg.org/specs/web-apps/current-work/#htmlelement>.
+
+=back
+
+=head1 SEE ALSO
+
+L<Web::DOM::Element>.
+
+=head1 AUTHOR
+
+Wakaba <wakaba@suikawiki.org>.
+
+=head1 LICENSE
+
+Copyright 2013 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

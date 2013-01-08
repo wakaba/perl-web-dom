@@ -5,7 +5,18 @@ our $VERSION = '1.0';
 push our @ISA, qw(Web::DOM::Element);
 use Web::DOM::Element;
 
-# XXX members
+# XXX implements *EventHandlers
+
+_define_reflect_string title => 'title';
+_define_reflect_string lang => 'lang';
+_define_reflect_string itemid => 'itemid';
+_define_reflect_string accesskey => 'accesskey';
+
+# XXX translate dir dataset itemscope itemtype itemref itemprop
+# properties itemvalue hidden tabindex click focus blur
+# accesskey_label draggable dropzone contenteditable
+# is_contenteditable contextmenu spellcheck forcespellcheck command*
+# style
 
 package Web::DOM::HTMLUnknownElement;
 our $VERSION = '1.0';

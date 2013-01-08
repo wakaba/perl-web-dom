@@ -204,6 +204,10 @@ without case folding.  [MANAKAI]
 
 =back
 
+Any HTML element uses L<Web::DOM::HTMLElement>, a subclass of this
+class.  Most HTML elements have more specific subclasses.  See
+L<Web::DOM::HTMLElement> for details.
+
 =head1 SPECIFICATIONS
 
 =over 4
@@ -220,6 +224,11 @@ DOM Living Standard, commented out
 =item DOMPARSING
 
 DOM Parsing and Serialization <http://domparsing.spec.whatwg.org/>.
+
+=item HTML
+
+HTML Standard
+<http://www.whatwg.org/specs/web-apps/current-work/#htmlelement>.
 
 =item DOM3CORE
 
