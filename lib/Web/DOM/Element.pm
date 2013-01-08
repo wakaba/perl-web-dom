@@ -332,7 +332,7 @@ sub set_attribute_ns ($$$$) {
 
   # WebIDL / 1.
   my $nsurl = defined $_[1] ? ''.$_[1] : undef;
-  $nsurl = undef unless defined $nsurl and length $nsurl;
+  $nsurl = undef if defined $nsurl and not length $nsurl;
 
   # DOMPERL
   if (defined $_[2] and ref $_[2] eq 'ARRAY') {
@@ -610,7 +610,7 @@ sub remove_attribute_ns ($$$) {
   
   # 1., 2.
   my $nsurl = defined $_[1] ? ''.$_[1] : undef;
-  $nsurl = undef unless length $nsurl;
+  $nsurl = undef if defined $nsurl and not length $nsurl;
   my $attr_id = $$node->[2]->{attrs}->{defined $nsurl ? $nsurl : ''}->{$ln};
   if (defined $attr_id) {
     # Remove 1.
@@ -703,6 +703,27 @@ sub _define_reflect_string ($$) {
     1;
   }, $class, $perl_name, $content_name, $content_name or die $@;
 } # _define_reflect_string
+
+push @EXPORT, qw(_define_reflect_boolean);
+sub _define_reflect_boolean ($$) {
+  my ($perl_name, $content_name) = @_;
+  my $class = caller;
+  eval sprintf q{
+    sub %s::%s ($;$) {
+      if (@_ > 1) {
+        if ($_[1]) {
+          $_[0]->set_attribute_ns (undef, '%s', '');
+        } else {
+          $_[0]->remove_attribute_ns (undef, '%s');
+        }
+        return unless defined wantarray;
+      }
+
+      return $_[0]->has_attribute_ns (undef, '%s');
+    }
+    1;
+  }, $class, $perl_name, $content_name, $content_name, $content_name or die $@;
+} # _define_reflect_boolean
 
 _define_reflect_string id => 'id';
 

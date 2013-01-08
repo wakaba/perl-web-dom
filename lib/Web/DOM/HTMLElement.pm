@@ -12,11 +12,13 @@ _define_reflect_string lang => 'lang';
 _define_reflect_string itemid => 'itemid';
 _define_reflect_string accesskey => 'accesskey';
 
-# XXX translate dir dataset itemscope itemtype itemref itemprop
-# properties itemvalue hidden tabindex click focus blur
-# accesskey_label draggable dropzone contenteditable
-# is_contenteditable contextmenu spellcheck forcespellcheck command*
-# style
+_define_reflect_boolean itemscope => 'itemscope';
+_define_reflect_boolean hidden => 'hidden';
+
+# XXX translate dir dataset itemtype itemref itemprop properties
+# itemvalue tabindex click focus blur accesskey_label draggable
+# dropzone contenteditable is_contenteditable contextmenu spellcheck
+# forcespellcheck command* style
 
 package Web::DOM::HTMLUnknownElement;
 our $VERSION = '1.0';
