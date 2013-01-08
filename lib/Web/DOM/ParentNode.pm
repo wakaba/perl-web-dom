@@ -1,4 +1,4 @@
-package Web::DOM::RootNode;
+package Web::DOM::ParentNode;
 use strict;
 use warnings;
 our $VERSION = '1.0';

@@ -3,8 +3,8 @@ use strict;
 use warnings;
 our $VERSION = '1.0';
 use Web::DOM::Node;
-use Web::DOM::RootNode;
-push our @ISA, qw(Web::DOM::RootNode Web::DOM::Node);
+use Web::DOM::ParentNode;
+push our @ISA, qw(Web::DOM::ParentNode Web::DOM::Node);
 
 sub node_name ($) {
   return '#document-fragment';

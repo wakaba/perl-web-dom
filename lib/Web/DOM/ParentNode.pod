@@ -1,12 +1,12 @@
 =head1 NAME
 
-Web::DOM::RootNode - The DOM |RootNode| object
+Web::DOM::ParentNode - The DOM |ParentNode| object
 
 =head1 DESCRIPTION
 
-The C<Web::DOM::RootNode> class implements the DOM C<RootNode>
-interface.  The C<Web::DOM::RootNode> class is an abstract class.  It
-is used as subclasses such as C<Web::DOM::Element> and
+The C<Web::DOM::ParentNode> class implements the DOM C<ParentNode>
+interface.  The C<Web::DOM::ParentNode> class is an abstract class.
+It is used as subclasses such as C<Web::DOM::Element> and
 C<Web::DOM::Document>.
 
 =head1 METHODS
@@ -101,7 +101,8 @@ See also L<Web::DOM/DEPENDENCY>.
 
 =item DOM
 
-DOM Living Standard <http://dom.spec.whatwg.org/#interface-rootnode>.
+DOM Living Standard
+<http://dom.spec.whatwg.org/#interface-parentnode>.
 
 =item HTML
 

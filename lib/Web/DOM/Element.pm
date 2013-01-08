@@ -5,9 +5,9 @@ no warnings 'utf8';
 our $VERSION = '1.0';
 use Web::DOM::Internal;
 use Web::DOM::Node;
-use Web::DOM::RootNode;
+use Web::DOM::ParentNode;
 use Web::DOM::ChildNode;
-push our @ISA, qw(Web::DOM::RootNode Web::DOM::ChildNode Web::DOM::Node);
+push our @ISA, qw(Web::DOM::ParentNode Web::DOM::ChildNode Web::DOM::Node);
 use Char::Class::XML qw(
   InXMLNameChar InXMLNameStartChar
   InXMLNCNameChar InXMLNCNameStartChar
@@ -719,7 +719,7 @@ sub manakai_base_uri ($;$) {
 } # manakai_base_uri
 
 sub outer_html ($;$) {
-  ## See also: RootNode->inner_html, Element->insert_adjacent_html
+  ## See also: ParentNode->inner_html, Element->insert_adjacent_html
   my $self = $_[0];
   if (@_ > 1) {
     # 1.-2.
@@ -778,7 +778,7 @@ sub outer_html ($;$) {
 } # outer_html
 
 sub insert_adjacent_html ($$$) {
-  ## See also: RootNode->inner_html, Element->outer_html
+  ## See also: ParentNode->inner_html, Element->outer_html
   my $self = $_[0];
 
   # 1.

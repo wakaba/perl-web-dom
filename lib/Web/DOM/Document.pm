@@ -4,8 +4,8 @@ use warnings;
 no warnings 'utf8';
 our $VERSION = '1.0';
 use Web::DOM::Node;
-use Web::DOM::RootNode;
-push our @ISA, qw(Web::DOM::RootNode Web::DOM::Node);
+use Web::DOM::ParentNode;
+push our @ISA, qw(Web::DOM::ParentNode Web::DOM::Node);
 use Web::DOM::Internal;
 use Web::DOM::Exception;
 use Char::Class::XML qw(

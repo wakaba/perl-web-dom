@@ -86,11 +86,11 @@ interface's one, and could be changed in future revision of the module
 implementation.  In particular, applications should not test whether
 the object is an instance of the interface that is defined with the
 C<[NoInterfaceObject]> extended attribute.  For example, the
-C<RootNode> interface is defined with the extended attribute.  The
-L<Web::DOM::Document> class inherits the L<Web::DOM::RootNode> class,
-as the C<Document> interface implements the C<RootNode> interface
-according to the DOM Standard, but applications should not test C<<
-$node->isa ('Web::DOM::RootNode') >>.
+C<ParentNode> interface is defined with the extended attribute.  The
+L<Web::DOM::Document> class inherits the L<Web::DOM::ParentNode>
+class, as the C<Document> interface implements the C<ParentNode>
+interface according to the DOM Standard, but applications should not
+test C<< $node->isa ('Web::DOM::ParentNode') >>.
 
 The constructor of a DOM interface, if any, is implemented as the
 C<new> class method.  For example, the constructor of the C<Document>
